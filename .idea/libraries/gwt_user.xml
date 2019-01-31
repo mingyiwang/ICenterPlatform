@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="gwt-user">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Core/libs/gwt-user.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Core/libs/gwt-codeserver.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Core/libs/gwt-dev.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Core/libs/validation-api-1.0.0.GA.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/Core/libs/gwt-user.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Core/libs/gwt-codeserver.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Core/libs/gwt-dev.jar!/" />
+    </SOURCES>
+  </library>
+</component>

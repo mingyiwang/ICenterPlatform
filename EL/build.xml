@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="EL" default="build" basedir=".">
+  <!-- Arguments to gwtc and devmode targets -->
+  <property name="gwt.args" value="" />
+
+  <!-- Configure path to GWT SDK -->
+  <property name="gwt.sdk"  location="D:/Development/API/GWT/gwt-2.8.2" />
+  <property name="core.src" location="../Core/src" />
+
+  <path id="project.class.path">
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar"/>
+    <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar"/>
+    <fileset dir="war/WEB-INF/lib" includes="**/*.jar"/>
+  </path>
+
+  <target name="libs" description="Copy libs to WEB-INF/lib">
+    <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
+    <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
+  </target>
+
+  <target name="prepare-core" description="Compile Core library java source to bytecode">
+    <mkdir dir="war/WEB-INF/classes"/>
+    <javac srcdir="${core.src}" includes="**" encoding="utf-8"
+           destdir="war/WEB-INF/classes"
+           source="1.8" target="1.8" nowarn="true"
+           debug="true" debuglevel="lines,vars,source">
+      <classpath refid="project.class.path"/>
+    </javac>
+    <copy todir="war/WEB-INF/classes">
+      <fileset dir="${core.src}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+   <target name="javac" depends="prepare-core" description="Compile java source to bytecode">
+      <mkdir dir="war/WEB-INF/classes"/>
+      <javac srcdir="src" includes="**" encoding="utf-8"
+             destdir="war/WEB-INF/classes"
+             source="1.8" target="1.8" nowarn="true"
+             debug="true" debuglevel="lines,vars,source">
+        <classpath refid="project.class.path"/>
+      </javac>
+      <copy todir="war/WEB-INF/classes">
+        <fileset dir="src" excludes="**/*.java"/>
+      </copy>
+  </target>
+
+  <target name="gwtc" depends="javac" description="GWT compile to JavaScript (production mode)">
+      <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler" maxmemory="512m">
+        <classpath>
+          <pathelement location="src"/>
+          <pathelement location="../Core/src"/>
+          <path refid="project.class.path"/>
+        </classpath>
+        <arg line="-war"/>
+        <arg value="war"/>
+
+        <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+        <arg line="${gwt.args}"/>
+        <arg value="com.icenter.el.EL"/>
+      </java>
+  </target>
+
+  <target name="devmode" depends="javac" description="Run development mode (pass -Dgwt.args=-nosuperDevMode to fallback to classic DevMode)">
+      <java failonerror="true" fork="true" classname="com.google.gwt.dev.DevMode" maxmemory="1g">
+        <classpath>
+          <pathelement location="src"/>
+          <pathelement location="../Core/src"/>
+          <path refid="project.class.path"/>
+        </classpath>
+        <arg value="-startupUrl"/>
+        <arg value="EL.html"/>
+        <arg line="-war"/>
+        <arg value="war"/>
+
+        <arg line="${gwt.args}"/>
+        <arg value="com.icenter.el.EL"/>
+      </java>
+  </target>
+
+  <target name="build" depends="gwtc" description="Build this project" />
+
+  <target name="clean" description="Cleans this project">
+    <delete dir="war/WEB-INF/classes" failonerror="false" />
+    <delete dir="war/WEB-INF/deploy"  failonerror="false" />
+    <delete dir="war/WEB-INF/lib"     failonerror="false" />
+    <delete dir="war/el" failonerror="false" />
+    <delete dir="gwt-unitCache" failonerror="false" />
+  </target>
+
+</project>
