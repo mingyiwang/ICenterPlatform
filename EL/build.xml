@@ -20,7 +20,7 @@
     <copy todir="war/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
   </target>
 
-  <target name="prepare-core" depends="libs" description="Compile Core library java source to bytecode">
+  <target name="prepare" depends="libs" description="Compile Core library java source to bytecode">
     <mkdir dir="war/WEB-INF/classes"/>
     <javac srcdir="${core.src}" includes="**" encoding="utf-8"
            destdir="war/WEB-INF/classes"
@@ -33,7 +33,7 @@
     </copy>
   </target>
 
-   <target name="javac" depends="prepare-core" description="Compile java source to bytecode">
+   <target name="javac" depends="prepare" description="Compile java source to bytecode">
       <mkdir dir="war/WEB-INF/classes"/>
       <javac srcdir="src" includes="**" encoding="utf-8"
              destdir="war/WEB-INF/classes"
