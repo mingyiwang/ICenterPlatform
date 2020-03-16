@@ -83,6 +83,7 @@
     <delete dir="war/WEB-INF/lib"     failonerror="false" />
     <delete dir="war/el" failonerror="false" />
     <delete dir="gwt-unitCache" failonerror="false" />
+    <delete dir="../out" failonerror="false" />
   </target>
 
 </project>
