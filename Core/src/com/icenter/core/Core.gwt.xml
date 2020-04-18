@@ -6,6 +6,11 @@
 <module rename-to='core'>
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.user.theme.clean.Clean'/>
+
+  <generate-with class="com.iclient.core.client.RemoteRESTServiceGenerator">
+     <when-type-assignable class="com.iclient.core.client.RemoteRESTService"/>
+  </generate-with>
+
   <source path='client'/>
   <source path='shared'/>
   <add-linker name="xsiframe"/>
