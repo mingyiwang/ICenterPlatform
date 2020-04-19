@@ -4,7 +4,7 @@
   <property name="gwt.args" value="" />
 
   <!-- Configure path to GWT SDK -->
-  <property name="gwt.sdk"  location="D:/Development/API/GWT/gwt-2.8.2" />
+  <property name="gwt.sdk"  location="D:/Dev/Sdk/GWT/gwt-2.8.2" />
   <property name="core.src" location="../Core/src" />
 
   <path id="project.class.path">
@@ -47,6 +47,7 @@
         <classpath>
           <pathelement location="src"/>
           <pathelement location="../Core/src"/>
+          <pathelement location="war/WEB-INF/classes"/>
           <path refid="project.class.path"/>
         </classpath>
         <arg line="-war"/>
@@ -63,6 +64,7 @@
         <classpath>
           <pathelement location="src"/>
           <pathelement location="../Core/src"/>
+          <pathelement location="war/WEB-INF/classes"/>
           <path refid="project.class.path"/>
         </classpath>
         <arg value="-startupUrl"/>

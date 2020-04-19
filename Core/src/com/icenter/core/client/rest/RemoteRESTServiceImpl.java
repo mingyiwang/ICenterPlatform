@@ -1,14 +1,13 @@
 package com.icenter.core.client.rest;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
+import com.icenter.core.client.rest.parse.ObjectParser;
 
-public final class RemoteRESTServiceImpl implements RemoteRESTService {
+public class RemoteRESTServiceImpl implements RemoteRESTService {
 
     @Override
     public String getSerializationPolicyName() {
@@ -30,25 +29,29 @@ public final class RemoteRESTServiceImpl implements RemoteRESTService {
 
     }
 
-    /*public Request sendRequest(String methodName,
+    public Request sendRequest(String methodName,
                                JSONObject params,
-                               final JSONObjectProxy responseObjProxy,
-                               AsyncCallback<?> callback ) {
-        RequestBuilder builder = new RequestBuilder();
+                               final ObjectParser objectParser,
+                               AsyncCallback<Object> callback ) {
+
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, methodName);
         try {
-            return new JSONRequestImpl(builder.sendRequest(params.toString(), new JSONRequestCallback(callback) {
-                public Object deserialize(String response) {
-                    if (response.length() == 0) {
-                        return responseObjProxy.deserializeBlankJSON();
-                    }
-                    return responseObjProxy.handle(JSONParser.parseLenient(response));
+            return builder.sendRequest(params.toString(), new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                     callback.onSuccess(objectParser.parse(JSONParser.parseStrict(response.getText())));
                 }
-            }));
+
+                @Override
+                public void onError(Request request, Throwable throwable) {
+
+                }
+            });
         }
         catch (RequestException error) {
             callback.onFailure(error);
         }
         return null;
-    }*/
+    }
 
 }

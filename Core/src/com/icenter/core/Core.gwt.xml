@@ -6,12 +6,15 @@
 <module rename-to='core'>
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.user.theme.clean.Clean'/>
+  <inherits name='com.google.gwt.user.User' />
+  <inherits name='com.google.gwt.json.JSON' />
+  <inherits name='com.google.gwt.http.HTTP' />
+  <inherits name='com.google.gwt.xml.XML' />
+  <inherits name="com.google.gwt.i18n.I18N" />
+  <inherits name="com.google.gwt.resources.Resources" />
+  <inherits name='com.google.gwt.user.theme.standard.StandardResources'/>
 
-  <generate-with class="com.iclient.core.client.RemoteRESTServiceGenerator">
-     <when-type-assignable class="com.iclient.core.client.RemoteRESTService"/>
+  <generate-with class="com.icenter.core.client.rest.RemoteRESTServiceGenerator">
+     <when-type-assignable class="com.icenter.core.client.rest.RemoteRESTService"/>
   </generate-with>
-
-  <source path='client'/>
-  <source path='shared'/>
-  <add-linker name="xsiframe"/>
 </module>
