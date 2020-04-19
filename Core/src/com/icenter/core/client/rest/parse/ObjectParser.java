@@ -5,7 +5,7 @@ import com.google.gwt.json.client.JSONValue;
 
 public abstract class ObjectParser {
 
-    public abstract JSONValue parse(Object object);
-    public abstract Object parse(JSONValue json);
+    public abstract Object toObject(JSONValue jsonValue);
+    public abstract JSONValue toJSONValue(Object object);
 
 }

@@ -6,7 +6,9 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
  * Maker Interface for Json Rest Service.
  *
  * */
-public interface RemoteRESTService extends ServiceDefTarget {
+public interface RemoteRESTService {
+
+    public String getEndPoint();
 
 
 }

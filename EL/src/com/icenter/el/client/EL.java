@@ -4,6 +4,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -19,7 +20,18 @@ public class EL implements EntryPoint {
         button.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
-                ts.tryAlert();
+                //ts.tryAlert();
+                ts.testService(1, "test", new AsyncCallback<EL>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(EL integer) {
+
+                    }
+                });
             }
         });
 
