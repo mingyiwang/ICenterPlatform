@@ -17,7 +17,6 @@ public class RemoteRESTServiceImpl implements RemoteRESTService {
     protected Request sendRequest(String methodName, JSONObject params, final ObjectParser objectParser, AsyncCallback<Object> callback ) {
         RequestBuilder builder = RequestBuilderGenerator.of(RequestBuilder.POST, methodName);
         builder.setRequestData(params.toString());
-
         try {
             return builder.sendRequest(params.toString(), new RequestCallback() {
                 @Override
