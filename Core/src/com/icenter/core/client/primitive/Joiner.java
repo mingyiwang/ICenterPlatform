@@ -1,8 +1,9 @@
 package com.icenter.core.client.primitive;
 
 import com.icenter.core.client.lambda.Func;
+import java.util.stream.IntStream;
 
-public class Joiner {
+public final class Joiner {
 
     private char joiner;
 
@@ -15,29 +16,21 @@ public class Joiner {
     }
 
     public <T> String join(T[] arrays){
-        StringBuffer buffer = new StringBuffer();
-        for(int i=0; i<arrays.length; i++){
-            if(i > 0){
-                buffer.append(joiner);
-            }
-            buffer.append(arrays[i].toString());
-        }
-
-        return buffer.toString();
+        return join(arrays, t -> t.toString());
     }
 
-    public <T> String join(T[] arrays, Func<T, String> func){
+    public <T> String join(T[] arrays, Func<T,String> lambda){
         if(arrays.length == 0) {
-            return "";
+           return "";
         }
 
-        StringBuffer buffer = new StringBuffer();
-        for(int i=0; i<arrays.length; i++){
-            if(i > 0){
+        final StringBuilder buffer = new StringBuilder();
+        IntStream.range(0, arrays.length).forEach(i -> {
+            if (i > 0) {
                 buffer.append(joiner);
             }
-            buffer.append(func.func(arrays[i]));
-        }
+            buffer.append(lambda.func(arrays[i]));
+        });
         return buffer.toString();
     }
 

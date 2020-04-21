@@ -1,5 +1,6 @@
 package com.icenter.el.client;
 
+import com.google.gson.Gson;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,6 +15,9 @@ public class EL implements EntryPoint {
     public void onModuleLoad() {
         AbsolutePanel w = new AbsolutePanel();
         RootPanel.get().add(w);
+
+        Gson gson = new Gson();
+        gson.toJson("test");
 
         final TestingService ts = GWT.create(TestingService.class);
         Button button = new Button("Click me");
