@@ -1,6 +1,8 @@
 package com.icenter.core.client.lambda;
 
-public interface Func<T,R> {
+
+@FunctionalInterface
+public interface Function<T,R> {
 
     R func(T t);
 

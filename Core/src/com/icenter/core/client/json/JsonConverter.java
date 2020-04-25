@@ -1,42 +1,57 @@
 package com.icenter.core.client.json;
 
 import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
-import java.lang.reflect.Field;
 
-public class JsonConverter<T> {
+public abstract class JsonConverter<T> {
 
-//    public abstract JSONValue convertToJSON(Object object);
-//    public abstract Object covertFromJSON(JSONValue json);
+    public final static String Name = JsonConverter.class.getName();
+    private JSONProperty property;
+
+    public JsonConverter(){ }
+
+    public void setProperty(JSONProperty property) {
+        this.property = property;
+    }
+
+    public JSONValue convertToJSONObject(T t) {
+        return handle(t);
+    }
+
+    public T convertJSONToObject(JSONValue value){
+        T object = createInstance();
+        return object;
+    }
 
     public String formatName(String name){
         return name;
     }
 
-    public <T> JSONValue convertToJSON(T t){
-        if(t instanceof Integer){
-            return new JSONNumber((Integer)t);
-        }
-
-
-        JSONObject object = new JSONObject();
-        Field[] fields = t.getClass().getDeclaredFields();
-        fields[0].getName();
-        t.getClass().getCanonicalName();
-        return new JSONObject();
+    public int convertToInt(JSONValue value){
+        return (int) value.isNumber().doubleValue();
     }
 
-    JSONValue convertToJSONObject(Object object){
-
-        return null;
+    public JSONValue convertIntToJSONObject(int object){
+        return new JSONNumber(object);
     }
 
-    public void ss(){
-
+    public Integer convertToInteger(JSONValue value){
+        return (int) value.isNumber().doubleValue();
     }
 
-    class t extends JsonConverter<Integer> {
-
+    public JSONValue convertIntegerToJSONObject(int object){
+        return new JSONNumber(object);
     }
+
+    public abstract T createInstance();
+    public abstract JSONValue handle(T object);
+
+    public T handle(JSONValue value, JSONProperty property){
+        T object = createInstance();
+        return object;
+    }
+
+    // 1. create new object 2. setObjectProperties
+
+
 }

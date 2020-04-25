@@ -1,6 +1,6 @@
 package com.icenter.core.client.primitive;
 
-import com.icenter.core.client.lambda.Func;
+import com.icenter.core.client.lambda.Function;
 import java.util.stream.IntStream;
 
 public final class Joiner {
@@ -11,6 +11,10 @@ public final class Joiner {
         this.joiner = joiner;
     }
 
+    private Joiner(String joiner){
+
+    }
+
     public static Joiner on(char c){
         return new Joiner(c);
     }
@@ -19,7 +23,7 @@ public final class Joiner {
         return join(arrays, t -> t.toString());
     }
 
-    public <T> String join(T[] arrays, Func<T,String> lambda){
+    public <T> String join(T[] arrays, Function<T, String> lambda){
         if(arrays.length == 0) {
            return "";
         }

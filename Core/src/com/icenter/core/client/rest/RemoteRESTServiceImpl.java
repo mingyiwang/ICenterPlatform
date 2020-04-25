@@ -5,24 +5,30 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.icenter.core.client.http.RequestBuilderGenerator;
-import com.icenter.core.client.rest.parse.ObjectParser;
+import com.icenter.core.client.json.Converters;
 
 public class RemoteRESTServiceImpl implements RemoteRESTService {
+
 
     @Override
     public String getEndPoint() {
         return "";
     }
 
-    protected Request sendRequest(String methodName, JSONObject params, final ObjectParser objectParser, AsyncCallback<Object> callback ) {
-        RequestBuilder builder = RequestBuilderGenerator.of(RequestBuilder.POST, methodName);
+    @Override public void initConverters() {
+
+    }
+
+
+    protected Request sendRequest(String url, JSONObject params, String returnTypeName, AsyncCallback<Object> callback ) {
+        RequestBuilder builder = RequestBuilderGenerator.of(RequestBuilder.POST, getEndPoint() + url);
         builder.setRequestData(params.toString());
         try {
             return builder.sendRequest(params.toString(), new RequestCallback() {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
-                    Object obj = objectParser.toObject(JSONParser.parseStrict(response.getText()));
-                    callback.onSuccess(obj);
+                    callback.onSuccess(Converters.get(returnTypeName)
+                                                 .convertJSONToObject(JSONParser.parseStrict(response.getText())));
                 }
 
                 @Override
@@ -34,6 +40,7 @@ public class RemoteRESTServiceImpl implements RemoteRESTService {
         catch (RequestException error) {
             callback.onFailure(error);
         }
+
         return null;
     }
 
