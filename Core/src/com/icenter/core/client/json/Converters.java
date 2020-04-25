@@ -1,26 +1,25 @@
 package com.icenter.core.client.json;
 
 import com.google.gwt.core.client.GWT;
-
 import java.util.HashMap;
 
 public final class Converters {
 
-    private final static HashMap<String, JsonConverter<?>> factories = new HashMap<>();
+    private final static HashMap<String, JSONConverter<?>> factories = new HashMap<>();
 
     static {
-        add("", null); // Integer
+        add(Integer.class.getCanonicalName(), new JSONIntegerConverter()); // Integer
         add("", null); // Double
         add("", null); // String
         add("", null); // Null
         add("", null); // Date
     }
 
-    public static JsonConverter get(String name) {
+    public static JSONConverter get(String name) {
         return factories.get(name);
     }
 
-    public static void add(String typeName, JsonConverter<?> converter){
+    public static void add(String typeName, JSONConverter<?> converter){
         factories.put(typeName, converter);
     }
 
@@ -28,9 +27,12 @@ public final class Converters {
         return factories.size();
     }
 
-    public static JsonConverter<?> get(Class classLiteral){
-        GWT.create(classLiteral);
-        return null;
+    public static JSONConverter<?> get(Class classLiteral){
+        if(factories.containsKey(classLiteral.getCanonicalName())){
+           return get(classLiteral.getCanonicalName());
+        }
+
+        return GWT.create(classLiteral);
     }
 
 }

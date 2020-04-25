@@ -3,12 +3,12 @@ package com.icenter.core.client.json;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONValue;
 
-public abstract class JsonConverter<T> {
+public abstract class JSONConverter<T> {
 
-    public final static String Name = JsonConverter.class.getName();
+    public final static String Name = JSONConverter.class.getName();
     private JSONProperty property;
 
-    public JsonConverter(){ }
+    public JSONConverter(){ }
 
     public void setProperty(JSONProperty property) {
         this.property = property;

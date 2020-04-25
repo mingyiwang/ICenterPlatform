@@ -13,7 +13,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.json.Converters;
-import com.icenter.core.client.json.JsonConverter;
+import com.icenter.core.client.json.JSONConverter;
 import com.icenter.core.client.primitive.Joiner;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class RemoteRESTServiceGenerator extends Generator {
                  sw.println("converter.setProperty(property)");
                  sw.println("Converters.add("+"\""+p.getType().getParameterizedQualifiedSourceName()+"\"" + ",converter");
 
-                 // init JsonConverter
+                 // init JSONConverter
                  System.out.println("Converters.add("+"\""+p.getType().getParameterizedQualifiedSourceName()+"\"" + ",new " + converterName + "());");
             }
 
@@ -116,7 +116,7 @@ public class RemoteRESTServiceGenerator extends Generator {
     private final String createJSONConverterIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType) {
 
         JClassType target = context.getTypeOracle().findType(targetType.getParameterizedQualifiedSourceName());
-        String proxyClassName = target.getName() + JsonConverter.Name;
+        String proxyClassName = target.getName() + JSONConverter.Name;
 
         if (Converters.get(targetType.getParameterizedQualifiedSourceName()) != null) {
             return packageName + "." + proxyClassName;
@@ -132,7 +132,7 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(JSONObject.class.getCanonicalName());
         composerFactory.addImport(JSONString.class.getCanonicalName());
         composerFactory.addImport(target.getParameterizedQualifiedSourceName());
-        composerFactory.setSuperclass(JsonConverter.class.getCanonicalName() + "<" + target.getName() + ">");
+        composerFactory.setSuperclass(JSONConverter.class.getCanonicalName() + "<" + target.getName() + ">");
 
         PrintWriter pw = context.tryCreate(logger, packageName, proxyClassName);
         if (pw == null) {
