@@ -10,6 +10,9 @@ public abstract class JSONConverter<T> {
 
     public JSONConverter(){ }
 
+    public abstract T createInstance();
+    public abstract JSONValue handle(T object);
+
     public void setProperty(JSONProperty property) {
         this.property = property;
     }
@@ -43,15 +46,10 @@ public abstract class JSONConverter<T> {
         return new JSONNumber(object);
     }
 
-    public abstract T createInstance();
-    public abstract JSONValue handle(T object);
-
     public T handle(JSONValue value, JSONProperty property){
         T object = createInstance();
         return object;
     }
-
-    // 1. create new object 2. setObjectProperties
 
 
 }

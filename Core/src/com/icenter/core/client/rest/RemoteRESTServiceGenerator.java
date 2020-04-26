@@ -1,5 +1,6 @@
 package com.icenter.core.client.rest;
 
+import com.google.gson.internal.Streams;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -14,10 +15,13 @@ import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.json.Converters;
 import com.icenter.core.client.json.JSONConverter;
+import com.icenter.core.client.json.JSONProperty;
 import com.icenter.core.client.primitive.Joiner;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
 import static java.util.stream.Stream.of;
 
 public class RemoteRESTServiceGenerator extends Generator {
@@ -49,6 +53,7 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(JSONNumber.class.getCanonicalName());
         composerFactory.addImport(JSONObject.class.getCanonicalName());
         composerFactory.addImport(JSONString.class.getCanonicalName());
+        composerFactory.addImport(JSONProperty.class.getCanonicalName());
         composerFactory.addImport(AsyncCallback.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
@@ -66,39 +71,33 @@ public class RemoteRESTServiceGenerator extends Generator {
             List<JParameter> parameterList = new ArrayList<>();
 
             for (JMethod mt : methods) {
-                 if (mt.getReturnType() == JPrimitiveType.VOID){
-                     JParameter[] parameters = mt.getParameters();
+                if (mt.getReturnType() != JPrimitiveType.VOID){
+                     // all remote json service should not have return type.
+                     continue;
+                }
 
-                     Joiner joiner = Joiner.on(',');
-                     String params = joiner.join(parameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                     of(parameters).forEach(p -> {
-                         parameterList.add(p);
-                     });
+                JParameter[] parameters = mt.getParameters();
+                String params = Joiner.on(',').join(parameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
+                sw.println("JSONObject params = new JSONObject();");
+                of (parameters).forEach(p -> {
+                    parameterList.add(p);
+                    sw.println("params.put("+p.getName()+"," + "Converters.get().handle(property," + p.getName() + ");");
+                });
 
-                     sw.println("public void "+ mt.getName() + "(" + params + "){ ");
-                     sw.println("JSONObject params = new JSONObject();");
-                     of(parameters).forEach(p -> {
-                         sw.println("JSONProperty property = getJSONProperty();");
-                         sw.println("params.put("+p.getName()+"," + "Converters.get().handle(property," + p.getName() + ");");
-                     });
-
-                     sw.println("}");
-                 }
+                sw.println("}");
             }
 
             System.out.println("Generating Converters ----------------------------------------------- ");
             sw.println("@Override public void initConverters() {");
             for (JParameter p : parameterList) {
-                 String converterName = createJSONConverterIfNotExist(treeLogger, generatorContext,target.getPackage().getName(),p.getType());
-                 String propertyName  = createJSONPropertyIfNotExist();
-
-                 sw.println("JSONProperty property   = new " + propertyName +"();");
+                 String converterName = createJSONConverterIfNotExist(treeLogger, generatorContext,target.getPackage().getName(), p.getType());
+                 String propertyClassName = createJSONPropertyIfNotExist(treeLogger, generatorContext,target.getPackage().getName(), p.getType());
                  sw.println("JSONConverter converter = new " + converterName+"();");
+                 sw.println("JSONProperty  property  = new " + propertyClassName +"();");
                  sw.println("converter.setProperty(property)");
                  sw.println("Converters.add("+"\""+p.getType().getParameterizedQualifiedSourceName()+"\"" + ",converter");
-
-                 // init JSONConverter
-                 System.out.println("Converters.add("+"\""+p.getType().getParameterizedQualifiedSourceName()+"\"" + ",new " + converterName + "());");
+                 // System.out.println("Converters.add("+"\""+p.getType().getParameterizedQualifiedSourceName()+"\"" + ",new " + converterName + "());");
             }
 
             sw.println("}");
@@ -109,9 +108,6 @@ public class RemoteRESTServiceGenerator extends Generator {
         }
     }
 
-    private final String createJSONPropertyIfNotExist(){
-        return null;
-    }
 
     private final String createJSONConverterIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType) {
 
@@ -122,16 +118,7 @@ public class RemoteRESTServiceGenerator extends Generator {
             return packageName + "." + proxyClassName;
         }
 
-
-        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packageName, proxyClassName);
-        composerFactory.addImport(JSONValue.class.getCanonicalName());
-        composerFactory.addImport(JSONArray.class.getCanonicalName());
-        composerFactory.addImport(JSONBoolean.class.getCanonicalName());
-        composerFactory.addImport(JSONNull.class.getCanonicalName());
-        composerFactory.addImport(JSONNumber.class.getCanonicalName());
-        composerFactory.addImport(JSONObject.class.getCanonicalName());
-        composerFactory.addImport(JSONString.class.getCanonicalName());
-        composerFactory.addImport(target.getParameterizedQualifiedSourceName());
+        ClassSourceFileComposerFactory composerFactory = getClassSourceFileComposerFactory(packageName, target, proxyClassName);
         composerFactory.setSuperclass(JSONConverter.class.getCanonicalName() + "<" + target.getName() + ">");
 
         PrintWriter pw = context.tryCreate(logger, packageName, proxyClassName);
@@ -153,8 +140,8 @@ public class RemoteRESTServiceGenerator extends Generator {
 
             sw.println("@Override public proxyClassName handle(JSONValue value){ ");
             sw.println("T object = createInstance();");
-//            sw.println("if(property.isPrimitive()) { object.put(property.getName(),object.property.getterName());}");
-//            sw.println("else if(property.isClass()){ Streams.of(property).forEach(p -> )}");
+//          sw.println("if(property.isPrimitive()) { object.put(property.getName(),object.property.getterName());}");
+//          sw.println("else if(property.isClass()){ Streams.of(property).forEach(p -> )}");
             sw.println("return object;" + "}");
 
             sw.commit(logger);
@@ -164,8 +151,70 @@ public class RemoteRESTServiceGenerator extends Generator {
         return packageName + "." + proxyClassName;
     }
 
+    private ClassSourceFileComposerFactory getClassSourceFileComposerFactory(String packageName, JClassType target, String proxyClassName) {
+        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packageName, proxyClassName);
+        composerFactory.addImport(JSONValue.class.getCanonicalName());
+        composerFactory.addImport(JSONArray.class.getCanonicalName());
+        composerFactory.addImport(JSONBoolean.class.getCanonicalName());
+        composerFactory.addImport(JSONNull.class.getCanonicalName());
+        composerFactory.addImport(JSONNumber.class.getCanonicalName());
+        composerFactory.addImport(JSONObject.class.getCanonicalName());
+        composerFactory.addImport(JSONString.class.getCanonicalName());
+        composerFactory.addImport(target.getParameterizedQualifiedSourceName());
+        return composerFactory;
+    }
 
 
+    private final String createJSONPropertyIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType){
+        JClassType target = context.getTypeOracle().findType(targetType.getParameterizedQualifiedSourceName());
+        String proxyClassName = target.getName() + "JSONProperty";
+        ClassSourceFileComposerFactory composerFactory = getClassSourceFileComposerFactory(packageName, target, proxyClassName);
+        composerFactory.setSuperclass(JSONProperty.class.getCanonicalName());
+        PrintWriter pw = context.tryCreate(logger, packageName, proxyClassName);
+        if (pw == null) {
+            return packageName + "." + proxyClassName;
+        }
+        else {
+            SourceWriter sw = composerFactory.createSourceWriter(context, pw);
+            sw.println("public void setUpProperty(String propertyClassName){");
+
+            sw.println("}");
+        }
+        return packageName + "." + proxyClassName;
+
+    }
+
+    private final String setUpProperty(String propertyClassName, JType type){
+        StringBuilder builder = new StringBuilder();
+        builder.append("JSONProperty property = new " + propertyClassName + "();");
+        if(type.isArray() != null) {
+           builder.append(propertyClassName+".setArray(true);");
+           JArrayType arrayType = type.isArray();
+           JArrayType[] types = arrayType.getSubtypes();
+           Stream.of(types).forEach(t -> {
+                String propertyClass = createJSONPropertyIfNotExist(null, null, null, t.getComponentType());
+                setUpProperty(propertyClass, t.getComponentType());
+
+           });
+        }
+        if(type.isPrimitive() != null) {
+           builder.append(propertyClassName + ".setPrimitive(true);");
+        }
+        if(type.isClass() != null){
+            builder.append(propertyClassName + ".setClass(true);");
+        }
+        if(type.isGenericType() != null){
+           JParameterizedType g = type.isParameterized();
+           JClassType[] genericTypes = g.getTypeArgs();
+           Stream.of(genericTypes).forEach(t -> {
+               String propertyClass = createJSONPropertyIfNotExist(null, null, null, t);
+               setUpProperty(propertyClass, t);
+           });
+        }
+
+        builder.append("return property;");
+        return builder.toString();
+    }
 
 
 }
