@@ -19,7 +19,7 @@ public final class Joiner {
         return new Joiner(c);
     }
 
-    public <T> String join(T[] arrays){
+    public <T> String join(T... arrays){
         return join(arrays, t -> t.toString());
     }
 

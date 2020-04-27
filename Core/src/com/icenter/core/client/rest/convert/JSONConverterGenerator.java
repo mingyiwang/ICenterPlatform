@@ -6,20 +6,41 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.icenter.core.client.primitive.Joiner;
+import com.icenter.core.client.reflect.JTypeInfo;
 import java.io.PrintWriter;
 
 public class JSONConverterGenerator extends Generator {
 
+    private String packageName = "com.icenter.core.client.rest.convert";
+
     @Override
     public String generate(TreeLogger treeLogger, GeneratorContext generatorContext, String targetTypeName) throws UnableToCompleteException {
-        JType targetType = generatorContext.getTypeOracle().findType(targetTypeName);
+        JClassType targetType = generatorContext.getTypeOracle().findType(targetTypeName);
+        targetType.isClassOrInterface();
+        String proxyClassName = targetType.getName() + JSONConverter.Name;
+        String canonicalName  = Joiner.on('.').join(packageName, proxyClassName);
 
-        return null;
+
+
+
+        return canonicalName;
     }
 
+    private final String getCanonicalName(JClassType targetType, TypeOracle types){
+        String proxyClassName = targetType.getName() + JSONConverter.Name;
+
+        JTypeInfo.isPrimitive(targetType);
+        JTypeInfo.isCollection(targetType, types);
+        JTypeInfo.isList(targetType, types);
+        JTypeInfo.isMap(targetType, types);
+        JTypeInfo.isQueue(targetType, types);
+        return Joiner.on('.').join(packageName, proxyClassName);
+    }
 
     private final String createJSONConverterIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType) {
 
