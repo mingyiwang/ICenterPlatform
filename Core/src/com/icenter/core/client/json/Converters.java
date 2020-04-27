@@ -1,6 +1,8 @@
 package com.icenter.core.client.json;
 
 import com.google.gwt.core.client.GWT;
+
+import java.util.Date;
 import java.util.HashMap;
 
 public final class Converters {
@@ -8,11 +10,11 @@ public final class Converters {
     private final static HashMap<String, JSONConverter<?>> factories = new HashMap<>();
 
     static {
-        add(Integer.class.getCanonicalName(), new JSONIntegerConverter()); // Integer
-        add("", null); // Double
-        add("", null); // String
-        add("", null); // Null
-        add("", null); // Date
+        add(Integer.class.getCanonicalName(), new IntegerJSONConverter()); // Integer
+        add(Double.class.getCanonicalName(),  new IntegerJSONConverter()); // Double
+        add(String.class.getCanonicalName(),  new IntegerJSONConverter()); // String
+        add("java.lang.null",        new IntegerJSONConverter()); // Null
+        add(Date.class.getCanonicalName(),    new IntegerJSONConverter()); // Date
     }
 
     public static JSONConverter get(String name) {
@@ -32,7 +34,8 @@ public final class Converters {
            return get(classLiteral.getCanonicalName());
         }
 
-        return GWT.create(classLiteral);
+        JSONConverter converter = GWT.create(classLiteral);
+        return converter;
     }
 
 }

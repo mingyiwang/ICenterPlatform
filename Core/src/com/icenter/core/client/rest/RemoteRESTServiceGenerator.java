@@ -82,7 +82,7 @@ public class RemoteRESTServiceGenerator extends Generator {
                 sw.println("JSONObject params = new JSONObject();");
                 of (parameters).forEach(p -> {
                     parameterList.add(p);
-                    sw.println("params.put("+p.getName()+"," + "Converters.get().handle(property," + p.getName() + ");");
+                    sw.println("params.put("+p.getName()+"," + "Converters.get().convertObjectToJSON(" + p.getName() + ");");
                 });
 
                 sw.println("}");
@@ -131,14 +131,14 @@ public class RemoteRESTServiceGenerator extends Generator {
             sw.println("return new " + proxyClassName + "();");
             sw.println("}");
 
-            sw.println("@Override public JSONValue handle(ProxyClassName object){ ");
+            sw.println("@Override public JSONValue convertObjectToJSON(ProxyClassName object){ ");
             sw.println("JSONObject object = new JSONObject();");
 //            sw.println("JSONValue value = new JSONValue();");
 //            sw.println("if(property.isPrimitive()){object.put(property.getName(),object.property.getterName());}");
 //            sw.println("else if(property.isClass()){Streams.of(property).forEach(p -> )}");
             sw.println("return object;" + "}");
 
-            sw.println("@Override public proxyClassName handle(JSONValue value){ ");
+            sw.println("@Override public proxyClassName convertObjectToJSON(JSONValue value){ ");
             sw.println("T object = createInstance();");
 //          sw.println("if(property.isPrimitive()) { object.put(property.getName(),object.property.getterName());}");
 //          sw.println("else if(property.isClass()){ Streams.of(property).forEach(p -> )}");

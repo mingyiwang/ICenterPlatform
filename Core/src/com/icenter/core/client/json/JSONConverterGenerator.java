@@ -11,18 +11,15 @@ import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import java.io.PrintWriter;
 
-public class JSONSerializableGenerator extends Generator {
+public class JSONConverterGenerator extends Generator {
 
     @Override
-    public String generate(TreeLogger treeLogger, GeneratorContext generatorContext, String s) throws UnableToCompleteException {
-        JType targetType = generatorContext.getTypeOracle().findType(s);
+    public String generate(TreeLogger treeLogger, GeneratorContext generatorContext, String targetTypeName) throws UnableToCompleteException {
+        JType targetType = generatorContext.getTypeOracle().findType(targetTypeName);
+
         return null;
     }
 
-
-    private final String createJSONPropertyIfNotExist(){
-        return null;
-    }
 
     private final String createJSONConverterIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType) {
 
@@ -54,14 +51,14 @@ public class JSONSerializableGenerator extends Generator {
             sw.println("return new " + proxyClassName + "();");
             sw.println("}");
 
-            sw.println("@Override public JSONValue handle(ProxyClassName object){ ");
+            sw.println("@Override public JSONValue convertObjectToJSON(ProxyClassName object){ ");
             sw.println("JSONObject object = new JSONObject();");
 //            sw.println("JSONValue value = new JSONValue();");
 //            sw.println("if(property.isPrimitive()){object.put(property.getName(),object.property.getterName());}");
 //            sw.println("else if(property.isClass()){Streams.of(property).forEach(p -> )}");
             sw.println("return object;" + "}");
 
-            sw.println("@Override public proxyClassName handle(JSONValue value){ ");
+            sw.println("@Override public proxyClassName convertObjectToJSON(JSONValue value){ ");
             sw.println("T object = createInstance();");
 //            sw.println("if(property.isPrimitive()) { object.put(property.getName(),object.property.getterName());}");
 //            sw.println("else if(property.isClass()){ Streams.of(property).forEach(p -> )}");
@@ -72,6 +69,10 @@ public class JSONSerializableGenerator extends Generator {
 
 
         return packageName + "." + proxyClassName;
+    }
+
+    private final String createJSONPropertyIfNotExist(){
+        return null;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.icenter.core.client.json;
 
 import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
 public abstract class JSONConverter<T> {
@@ -11,19 +12,16 @@ public abstract class JSONConverter<T> {
     public JSONConverter(){ }
 
     public abstract T createInstance();
-    public abstract JSONValue handle(T object);
+    public abstract JSONValue convertObjectToJSON(T object);
+    public abstract T convertJSONToObject(JSONValue value);
 
-    public void setProperty(JSONProperty property) {
+    public final void setProperty(JSONProperty property) {
         this.property = property;
     }
 
-    public JSONValue convertToJSONObject(T t) {
-        return handle(t);
-    }
-
-    public T convertJSONToObject(JSONValue value){
-        T object = createInstance();
-        return object;
+    public String convertObjectToJSONString(T object){
+        JSONValue value = convertObjectToJSON(object);
+        return value.toString();
     }
 
     public String formatName(String name){
@@ -46,7 +44,7 @@ public abstract class JSONConverter<T> {
         return new JSONNumber(object);
     }
 
-    public T handle(JSONValue value, JSONProperty property){
+    public T convertObjectToJSON(JSONValue value, JSONProperty property){
         T object = createInstance();
         return object;
     }

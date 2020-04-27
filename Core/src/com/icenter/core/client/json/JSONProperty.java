@@ -7,19 +7,19 @@ import java.util.List;
 
 public class JSONProperty {
 
-    private boolean isArray = false;
-    private boolean isClass = false;
-    private boolean isClassOrInterface = false;
-    private boolean isEnum = false;
-    private boolean isGenericType = false;
-    private boolean isInterface = false;
-    private boolean isParameterized = false;
-    private boolean isPrimitive = false;
-    private boolean isWildCard = false;
-    private String setMethod = Strings.Empty;
-    private String getMethod = Strings.Empty;
     private List<JSONProperty> properties = new ArrayList<JSONProperty>();
-
+    private boolean isArray            = false;
+    private boolean isClass            = false;
+    private boolean isClassOrInterface = false;
+    private boolean isEnum             = false;
+    private boolean isGenericType      = false;
+    private boolean isInterface        = false;
+    private boolean isParameterized    = false;
+    private boolean isPrimitive        = false;
+    private boolean isWildCard         = false;
+    private String setMethod           = Strings.Empty;
+    private String getMethod           = Strings.Empty;
+    private String name = Strings.Empty;
 
     public void setValue(JSONValue value){
         //1. check property has the same type of value
@@ -120,6 +120,14 @@ public class JSONProperty {
 
     public void setProperties(List<JSONProperty> properties) {
         this.properties = properties;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }
