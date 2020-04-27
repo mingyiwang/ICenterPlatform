@@ -6,7 +6,7 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.icenter.core.client.http.RequestBuilderGenerator;
-import com.icenter.core.client.json.JSONConverter;
+import com.icenter.core.client.rest.convert.JSONConverter;
 
 public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 

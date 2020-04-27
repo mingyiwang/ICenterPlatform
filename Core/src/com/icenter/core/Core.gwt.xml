@@ -18,8 +18,8 @@
      <when-type-assignable class="com.icenter.core.client.rest.RemoteRESTService"/>
   </generate-with>
 
-  <generate-with class="com.icenter.core.client.json.JSONConverterGenerator">
-     <when-type-assignable class="com.icenter.core.client.json.JSONSerializable"/>
+  <generate-with class="com.icenter.core.client.rest.convert.JSONConverterGenerator">
+     <when-type-assignable class="com.icenter.core.client.rest.convert.JSONConvertable"/>
   </generate-with>
 
 </module>

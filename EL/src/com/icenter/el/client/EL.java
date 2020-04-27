@@ -1,12 +1,11 @@
 package com.icenter.el.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.icenter.core.client.json.Converters;
-import com.icenter.core.client.json.JSONConverter;
+import com.icenter.core.client.rest.convert.Converters;
+import com.icenter.core.client.rest.convert.JSONConverter;
 import com.icenter.el.client.transfer.Category;
 
 public class EL implements EntryPoint {

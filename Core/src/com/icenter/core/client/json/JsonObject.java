@@ -1,5 +1,5 @@
 package com.icenter.core.client.json;
 
-public interface JSONSerializable {
-
+public interface JsonObject {
 }
+

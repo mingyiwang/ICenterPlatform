@@ -1,6 +1,5 @@
 package com.icenter.core.client.rest;
 
-import com.google.gson.internal.Streams;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -13,9 +12,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
-import com.icenter.core.client.json.Converters;
-import com.icenter.core.client.json.JSONConverter;
-import com.icenter.core.client.json.JSONProperty;
+import com.icenter.core.client.rest.convert.Converters;
+import com.icenter.core.client.rest.convert.JSONConverter;
+import com.icenter.core.client.rest.convert.JSONProperty;
 import com.icenter.core.client.primitive.Joiner;
 import java.io.PrintWriter;
 import java.util.ArrayList;
