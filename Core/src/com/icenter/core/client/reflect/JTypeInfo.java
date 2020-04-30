@@ -3,9 +3,13 @@ package com.icenter.core.client.reflect;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import java.util.*;
 
-public class JTypeInfo {
+public final class JTypeInfo {
+
+    public static JPrimitiveType Boolean = JPrimitiveType.BOOLEAN;
 
     public static boolean isPrimitive(JType type){
         return type.isPrimitive() != null;
@@ -40,5 +44,16 @@ public class JTypeInfo {
                 && type.isClassOrInterface().isAssignableTo(types.findType(Queue.class.getCanonicalName()));
     }
 
+    public static boolean isAsyncCallback(JType type, TypeOracle types){
+        return type.isClassOrInterface() != null
+            && type.isClassOrInterface().isAssignableTo(types.findType(AsyncCallback.class.getCanonicalName()));
+    }
+
+    public static JType get(JType type){
+        if(type.isParameterized() != null){
+           return type.isParameterized().getTypeArgs()[0];
+        }
+        return null;
+    }
 
 }

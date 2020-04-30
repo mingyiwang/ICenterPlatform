@@ -33,7 +33,7 @@ public final class Joiner {
             if (i > 0) {
                 buffer.append(joiner);
             }
-            buffer.append(lambda.func(arrays[i]));
+            buffer.append(lambda.execute(arrays[i]));
         });
         return buffer.toString();
     }

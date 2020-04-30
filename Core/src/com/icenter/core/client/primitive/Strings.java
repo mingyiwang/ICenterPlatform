@@ -25,9 +25,9 @@ public final class Strings {
 
     public static <T> String of(T object, Function<T, String> converter, Function<T, String> defaultValue){
         if (Objects.isNull(object)){
-            return defaultValue.func(object);
+            return defaultValue.execute(object);
         }
-        return converter.func(object);
+        return converter.execute(object);
     }
 
 }

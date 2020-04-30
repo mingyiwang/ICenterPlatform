@@ -11,4 +11,5 @@ public interface RemoteRESTService {
     public String getEndPoint();
 
     public void initConverters();
+
 }

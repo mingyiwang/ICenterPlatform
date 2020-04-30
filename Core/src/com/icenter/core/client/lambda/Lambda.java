@@ -1,6 +1,6 @@
 package com.icenter.core.client.lambda;
 
-public class Lambda {
+public final class Lambda {
 
 
 }

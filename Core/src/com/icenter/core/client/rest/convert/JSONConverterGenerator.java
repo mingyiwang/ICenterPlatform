@@ -19,15 +19,11 @@ public class JSONConverterGenerator extends Generator {
     private String packageName = "com.icenter.core.client.rest.convert";
 
     @Override
-    public String generate(TreeLogger treeLogger, GeneratorContext generatorContext, String targetTypeName) throws UnableToCompleteException {
-        JClassType targetType = generatorContext.getTypeOracle().findType(targetTypeName);
+    public String generate(TreeLogger logger, GeneratorContext context, String targetTypeName) throws UnableToCompleteException {
+        JClassType targetType = context.getTypeOracle().findType(targetTypeName);
         targetType.isClassOrInterface();
         String proxyClassName = targetType.getName() + JSONConverter.Name;
         String canonicalName  = Joiner.on('.').join(packageName, proxyClassName);
-
-
-
-
         return canonicalName;
     }
 
@@ -79,10 +75,10 @@ public class JSONConverterGenerator extends Generator {
 //            sw.println("else if(property.isClass()){Streams.of(property).forEach(p -> )}");
             sw.println("return object;" + "}");
 
-            sw.println("@Override public proxyClassName convertObjectToJSON(JSONValue value){ ");
-            sw.println("T object = createInstance();");
-//            sw.println("if(property.isPrimitive()) { object.put(property.getName(),object.property.getterName());}");
-//            sw.println("else if(property.isClass()){ Streams.of(property).forEach(p -> )}");
+            sw.println("@Override public proxyClassName convertJSONToObject(JSONValue value){ ");
+            sw.println("proxyClassName object = createInstance();");
+//          sw.println("if(property.isPrimitive()) { object.put(property.getName(),object.property.getterName());}");
+//          sw.println("else if(property.isClass()){ Streams.of(property).forEach(p -> )}");
             sw.println("return object;" + "}");
 
             sw.commit(logger);

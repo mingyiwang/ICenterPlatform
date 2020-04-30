@@ -20,7 +20,28 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 
     }
 
-    protected final <T> Request sendRequest(String url, JSONObject params, JSONConverter<T> converter, AsyncCallback<T> callback) {
+    protected final Request put(String url, JSONObject params) {
+        RequestBuilder builder = RequestBuilderGenerator.of(RequestBuilder.POST, getEndPoint() + url);
+        builder.setRequestData(params.toString());
+        try {
+            return builder.sendRequest(params.toString(), new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    JSONValue resp = JSONParser.parseStrict(response.getText());
+                }
+
+                @Override
+                public void onError(Request request, Throwable throwable) {
+                }
+            });
+        }
+        catch (RequestException error) {
+
+        }
+        return null;
+    }
+
+    protected final <T> Request send(String url, JSONObject params, JSONConverter<T> converter, AsyncCallback<T> callback) {
         RequestBuilder builder = RequestBuilderGenerator.of(RequestBuilder.POST, getEndPoint() + url);
         builder.setRequestData(params.toString());
         try {
@@ -29,8 +50,8 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
                 public void onResponseReceived(Request request, Response response) {
                     JSONValue resp = JSONParser.parseStrict(response.getText());
                     //1. check response is Error Response or not
+                    //2. check response is empty value or not
                     //2. check response is primitive type or not
-                    //3. check response is empty value or not
                     if (resp.isNull() != null){
                         callback.onSuccess(null);
                     }
@@ -49,6 +70,7 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 
         return null;
     }
+
 
 
 }
