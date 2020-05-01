@@ -18,64 +18,50 @@ public class Category {
     public String getUserName() {
         return userName;
     }
-
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
     public int getAge() {
         return age;
     }
-
     public void setAge(int age) {
         this.age = age;
     }
-
     public String getSex() {
         return sex;
     }
-
     public void setSex(String sex) {
         this.sex = sex;
     }
-
     public Category getCategory() {
         return category;
     }
-
     public void setCategory(Category category) {
         this.category = category;
     }
-
     public List<Category> getChildren() {
         return children;
     }
-
     public void setChildren(List<Category> children) {
         this.children = children;
     }
-
     public Map<String, Category> getChildMap() {
         return childMap;
     }
-
     public void setChildMap(Map<String, Category> childMap) {
         this.childMap = childMap;
     }
-
     public Queue<Category> getChildQueue() {
         return childQueue;
     }
-
     public void setChildQueue(Queue<Category> childQueue) {
         this.childQueue = childQueue;
     }
-
     public double getLength() {
         return length;
     }
-
     public void setLength(double length) {
         this.length = length;
     }
+
 }

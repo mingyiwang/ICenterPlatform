@@ -4,15 +4,14 @@ import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.core.ext.typeinfo.JClassType;
-import com.google.gwt.core.ext.typeinfo.JType;
-import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.primitive.Joiner;
 import com.icenter.core.client.reflect.JTypeInfo;
 import java.io.PrintWriter;
+import java.util.stream.Stream;
 
 public class JSONConverterGenerator extends Generator {
 
@@ -87,9 +86,68 @@ public class JSONConverterGenerator extends Generator {
 
         return packageName + "." + proxyClassName;
     }
+    private ClassSourceFileComposerFactory getClassSourceFileComposerFactory(String packageName, JClassType target, String proxyClassName) {
+        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packageName, proxyClassName);
+        composerFactory.addImport(JSONValue.class.getCanonicalName());
+        composerFactory.addImport(JSONArray.class.getCanonicalName());
+        composerFactory.addImport(JSONBoolean.class.getCanonicalName());
+        composerFactory.addImport(JSONNull.class.getCanonicalName());
+        composerFactory.addImport(JSONNumber.class.getCanonicalName());
+        composerFactory.addImport(JSONObject.class.getCanonicalName());
+        composerFactory.addImport(JSONString.class.getCanonicalName());
+        composerFactory.addImport(target.getParameterizedQualifiedSourceName());
+        return composerFactory;
+    }
 
-    private final String createJSONPropertyIfNotExist(){
-        return null;
+    private final String createJSONPropertyIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType){
+        JClassType target = context.getTypeOracle().findType(targetType.getParameterizedQualifiedSourceName());
+        String proxyClassName = target.getName() + "JSONProperty";
+        ClassSourceFileComposerFactory composerFactory = getClassSourceFileComposerFactory(packageName, target, proxyClassName);
+        composerFactory.setSuperclass(JSONProperty.class.getCanonicalName());
+        PrintWriter pw = context.tryCreate(logger, packageName, proxyClassName);
+        if (pw == null) {
+            return packageName + "." + proxyClassName;
+        }
+        else {
+            SourceWriter sw = composerFactory.createSourceWriter(context, pw);
+            sw.println("public void setUpProperty(String propertyClassName){");
+
+            sw.println("}");
+        }
+        return packageName + "." + proxyClassName;
+
+    }
+
+    private final String setUpProperty(String propertyClassName, JType type){
+        StringBuilder builder = new StringBuilder();
+        builder.append("JSONProperty property = new " + propertyClassName + "();");
+        if(type.isArray() != null) {
+            builder.append(propertyClassName+".setArray(true);");
+            JArrayType arrayType = type.isArray();
+            JArrayType[] types = arrayType.getSubtypes();
+            Stream.of(types).forEach(t -> {
+                String propertyClass = createJSONPropertyIfNotExist(null, null, null, t.getComponentType());
+                setUpProperty(propertyClass, t.getComponentType());
+
+            });
+        }
+        if(type.isPrimitive() != null) {
+            builder.append(propertyClassName + ".setPrimitive(true);");
+        }
+        if(type.isClass() != null){
+            builder.append(propertyClassName + ".setClass(true);");
+        }
+        if(type.isGenericType() != null){
+            JParameterizedType g = type.isParameterized();
+            JClassType[] genericTypes = g.getTypeArgs();
+            Stream.of(genericTypes).forEach(t -> {
+                String propertyClass = createJSONPropertyIfNotExist(null, null, null, t);
+                setUpProperty(propertyClass, t);
+            });
+        }
+
+        builder.append("return property;");
+        return builder.toString();
     }
 
 }

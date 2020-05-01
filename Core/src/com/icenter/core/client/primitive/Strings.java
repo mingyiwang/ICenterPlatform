@@ -7,8 +7,16 @@ public final class Strings {
 
     public static String Empty = "";
 
+    public static boolean isNullOrEmpty(String value){
+        return value == null || value.length() == 0;
+    }
+
     public static String of(Object object){
         return of(object, Empty);
+    }
+
+    public static String of(int value){
+        return String.valueOf(value);
     }
 
     public static String of(Object object, String defaultValue){
