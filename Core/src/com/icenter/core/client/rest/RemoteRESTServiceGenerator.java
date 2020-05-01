@@ -6,7 +6,6 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.core.ext.typeinfo.JParameter;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestException;
@@ -16,10 +15,14 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.primitive.Joiner;
-import com.icenter.core.client.rest.convert.Converters;
-import com.icenter.core.client.rest.convert.JSONProperty;
+import com.icenter.core.client.reflect.JMethodInfo;
+import com.icenter.core.client.rest.convert.*;
+import com.icenter.core.client.rest.convert.custom.IntegerJSONConverter;
+import com.icenter.core.client.rest.convert.JSONConverterGenerator;
+import com.icenter.core.client.rest.convert.custom.StringJSONConverter;
+
 import java.io.PrintWriter;
-import java.util.List;
+
 import static java.util.stream.Stream.of;
 
 public class RemoteRESTServiceGenerator extends Generator {
@@ -27,7 +30,10 @@ public class RemoteRESTServiceGenerator extends Generator {
     public RemoteRESTServiceGenerator() { }
 
     @Deprecated
-    public String generate(TreeLogger logger, GeneratorContext context, String targetTypeName) throws UnableToCompleteException {
+    public String generate(TreeLogger logger,
+                           GeneratorContext context,
+                           String targetTypeName) throws UnableToCompleteException {
+
         TypeOracle types  = context.getTypeOracle();
         JClassType target = types.findType(targetTypeName);
 
@@ -41,6 +47,7 @@ public class RemoteRESTServiceGenerator extends Generator {
 
         String packagePath = target.getPackage().getName();
         String proxyClassName = target.getName()+"Async";
+
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(target.getPackage().getName(), proxyClassName);
         composerFactory.addImport(ServiceDefTarget.class.getCanonicalName());
         composerFactory.addImport(IllegalArgumentException.class.getCanonicalName());
@@ -58,6 +65,9 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(AsyncCallback.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
+        composerFactory.addImport(JSONConverter.class.getCanonicalName());
+        composerFactory.addImport(IntegerJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
         composerFactory.addImport(Converters.class.getCanonicalName());
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
@@ -72,33 +82,31 @@ public class RemoteRESTServiceGenerator extends Generator {
 
             of(methods)
                .forEach(mt -> {
-                   if(!RemoteRESTServiceHelper.isValid(mt, types)) {
-                       return;
+                   if(RemoteRESTServiceHelper.isValid(mt, types)) {
+                       JMethodInfo methodInfo = JMethodInfo.of(mt, types);
+                       String params = Joiner.on(',').join(methodInfo.getParameters(), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                       sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
+
+
+//                       sw.println("JSONConverter converter = Converters.get("+ methodInfo.getReturnType().getParameterizedQualifiedSourceName()+");");
+//                       methodInfo.getParameters().forEach(p -> {
+//                           String converterKey = p.getType().getParameterizedQualifiedSourceName();
+//                           sw.println("params.put("+p.getName()+"," + "Converters.get("+converterKey+").convertObjectToJSON(" + p.getName() + ");");
+//                       });
+//
+//
+
+                       String converter = JSONConverterGenerator.generate(logger, context, methodInfo.getReturnType());
+                       System.out.println("Converter -->  " + converter);
+                       sw.println("JSONObject params = new JSONObject();");
+                       sw.print("JSONConverter converter = new "+converter+"();");
+                       sw.println("send(params, converter," + methodInfo.getReturnParam().getName() + ");");
+                       sw.println("}");
                    }
-
-                   List<JParameter> parameters = RemoteRESTServiceHelper.getParams(mt);
-
-                   JParameter asyncCallback = RemoteRESTServiceHelper.getAsyncCallbackParameter(mt);
-                   JClassType returnType = asyncCallback.getType().isParameterized().getTypeArgs()[0];
-
-                   String params = Joiner.on(',').join(parameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                   sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
-                   sw.println("JSONObject params = new JSONObject();");
-                   sw.println("JSONConverter converter = Converters.get("+ returnType.getParameterizedQualifiedSourceName()+");");
-
-                   parameters.forEach(p -> {
-                       String converterKey = p.getType().getParameterizedQualifiedSourceName();
-                       sw.println("params.put("+p.getName()+"," + "Converters.get("+converterKey+").convertObjectToJSON(" + p.getName() + ");");
-                   });
-
-                   sw.println("send(getEndpoint(), params, converter," + asyncCallback.getName() + ");");
-                   sw.println("}");
             });
 
             sw.commit(logger);
-            System.out.println(sw.toString());
-
-            return target.getPackage().getName()+"."+proxyClassName;
+            return target.getPackage().getName() + "."+ proxyClassName;
         }
     }
 

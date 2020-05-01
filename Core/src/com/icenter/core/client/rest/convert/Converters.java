@@ -1,6 +1,9 @@
 package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.core.client.GWT;
+import com.icenter.core.client.rest.convert.custom.IntegerJSONConverter;
+import com.icenter.core.client.rest.convert.custom.StringJSONConverter;
+
 import java.util.Date;
 import java.util.HashMap;
 
@@ -11,8 +14,7 @@ public final class Converters {
     static {
         add(Integer.class.getCanonicalName(), new IntegerJSONConverter()); // Integer
         add(Double.class.getCanonicalName(),  new IntegerJSONConverter()); // Double
-        add(String.class.getCanonicalName(),  new IntegerJSONConverter()); // String
-        add("java.lang.null",       new IntegerJSONConverter()); // Null
+        add(String.class.getCanonicalName(),  new StringJSONConverter()); // String
         add(Date.class.getCanonicalName(),    new IntegerJSONConverter()); // Date
     }
 

@@ -4,7 +4,6 @@ import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import java.util.*;
 
 public final class JTypeInfo {
@@ -12,11 +11,27 @@ public final class JTypeInfo {
     public static JPrimitiveType Boolean = JPrimitiveType.BOOLEAN;
 
     public static boolean isPrimitive(JType type){
-        return type.isPrimitive() != null;
+        return type.isPrimitive() != null ||
+               type.getQualifiedSourceName().equals(String.class.getCanonicalName())    ||
+               type.getQualifiedSourceName().equals(Character.class.getCanonicalName()) ||
+               type.getQualifiedSourceName().equals(Byte.class.getCanonicalName())      ||
+               type.getQualifiedSourceName().equals(Short.class.getCanonicalName())     ||
+               type.getQualifiedSourceName().equals(Integer.class.getCanonicalName())   ||
+               type.getQualifiedSourceName().equals(Long.class.getCanonicalName())      ||
+               type.getQualifiedSourceName().equals(Float.class.getCanonicalName())     ||
+               type.getQualifiedSourceName().equals(Double.class.getCanonicalName())    ||
+               type.getQualifiedSourceName().equals(Boolean.class.getCanonicalName())
+        ;
     }
 
     public static boolean isBoolean(JType type){
-        return isPrimitive(type) && type.isPrimitive() == JPrimitiveType.BOOLEAN;
+        return type.isPrimitive() == JPrimitiveType.BOOLEAN
+            || type.getQualifiedSourceName().equals(Boolean.class.getCanonicalName())
+            ;
+    }
+
+    public static boolean isString(JType type){
+        return type.getQualifiedSourceName().equals(String.class.getCanonicalName());
     }
 
     public static boolean isSet(JType type, TypeOracle types){
