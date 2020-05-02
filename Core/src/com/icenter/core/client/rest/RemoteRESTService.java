@@ -8,8 +8,6 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
  * */
 public interface RemoteRESTService {
 
-    public String getServiceEndpoint();
-
-    public void initConverters();
+    String getServiceEndpoint();
 
 }

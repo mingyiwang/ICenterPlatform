@@ -6,4 +6,5 @@ public interface Function<T,R> {
 
     R execute(T t);
 
+    
 }

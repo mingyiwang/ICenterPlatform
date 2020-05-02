@@ -6,7 +6,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.icenter.el.client.transfer.Category;
 
 public class EL implements EntryPoint {
 
@@ -20,7 +19,7 @@ public class EL implements EntryPoint {
             service.postService(0, "", new AsyncCallback<String>() {
                 @Override
                 public void onFailure(Throwable throwable) {
-
+                    showMessage(throwable.getMessage());
                 }
 
                 @Override

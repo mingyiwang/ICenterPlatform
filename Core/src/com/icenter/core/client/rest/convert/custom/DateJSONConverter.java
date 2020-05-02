@@ -3,30 +3,30 @@ package com.icenter.core.client.rest.convert.custom;
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
-import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.JSONConverter;
+import java.util.Date;
 
-public final class StringJSONConverter extends JSONConverter<String> {
+public final class DateJSONConverter extends JSONConverter<Date> {
 
     @Override
-    public String createInstance() {
-        return Strings.Empty;
+    public Date createInstance() {
+        return new Date();
     }
 
     @Override
-    public JSONValue convertObjectToJSON(String object) {
+    public JSONValue convertObjectToJSON(Date object) {
         if(object == null){
            return JSONNull.getInstance();
         }
-        return new JSONString(object);
+        return new JSONString(String.valueOf(object.getTime()));
     }
 
     @Override
-    public String convertJSONToObject(JSONValue value) {
+    public Date convertJSONToObject(JSONValue value) {
         if (value == null || value.isNull() != null){
-            return Strings.Empty;
+            return null;
         }
-        return value.isString().stringValue();
+        return new Date(Long.valueOf(value.isString().stringValue()));
     }
 
 }

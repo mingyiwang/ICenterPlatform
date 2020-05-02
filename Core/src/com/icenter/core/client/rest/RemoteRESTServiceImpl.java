@@ -3,14 +3,13 @@ package com.icenter.core.client.rest;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.icenter.core.client.http.SimpleRequestBuilder;
 import com.icenter.core.client.lambda.Function;
 import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
 public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 
-    private Function<String,String> url = s -> s;
+    private Function<String, String> urlFormatter = s -> s;
     private String serviceEndpoint = Strings.Empty;
 
     @Override
@@ -18,18 +17,20 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         return serviceEndpoint;
     }
 
-    @Override
-    public void initConverters() { }
+    public final void setUrlFormatter(Function<String, String> urlFormatter) {
+        this.urlFormatter = urlFormatter;
+    }
 
-    public final void setUrl(Function<String, String> url) {
-        this.url = url;
+    public final Function<String, String> getUrlFormatter() {
+        return this.urlFormatter;
     }
 
     protected final <T> Request send(JSONObject params, JSONConverter<T> converter, AsyncCallback<T> callback) {
 
-        callback.onSuccess(converter.convertJSONToObject(new JSONString("testssss")));
+        JSONString value = new JSONString("I am a string.");
+        callback.onSuccess(converter.convertJSONToObject(value));
 
-//        RequestBuilder builder = SimpleRequestBuilder.of(RequestBuilder.POST, url.execute(getServiceEndpoint()));
+//        RequestBuilder builder = SimpleRequestBuilder.of(RequestBuilder.POST, urlFormatter.execute(getServiceEndpoint()));
 //        builder.setRequestData(params.toString());
 //        try {
 //            return builder.sendRequest(params.toString(), new RequestCallback() {
@@ -57,9 +58,5 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 
         return null;
     }
-
-    public static native void showMessage(String text)/*-{
-        alert(text);
-    }-*/;
 
 }

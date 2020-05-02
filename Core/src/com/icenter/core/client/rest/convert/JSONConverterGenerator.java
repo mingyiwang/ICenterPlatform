@@ -15,6 +15,9 @@ public class JSONConverterGenerator  {
         if(JTypeInfo.isPrimitive(targetType)){
            return generatePrimitive(logger, context, targetType);
         }
+        else if(JTypeInfo.isDate(targetType)){
+           return generatePrimitive(logger,context, targetType);
+        }
         else {
            return generateClass(logger, context, targetType);
         }
@@ -32,7 +35,6 @@ public class JSONConverterGenerator  {
         return IntegerJSONConverter.class.getCanonicalName();
     }
 
-
 //    private final String getCanonicalName(JClassType targetType, TypeOracle types){
 //        String proxyClassName = targetType.getName() + JSONConverter.Name;
 //
@@ -49,7 +51,7 @@ public class JSONConverterGenerator  {
 //        JClassType target = context.getTypeOracle().findType(targetType.getParameterizedQualifiedSourceName());
 //        String proxyClassName = target.getName() + JSONConverter.Name;
 //
-//        if (Converters.get(targetType.getParameterizedQualifiedSourceName()) != null) {
+//        if (Converters.getOrCreateIfNotExist(targetType.getParameterizedQualifiedSourceName()) != null) {
 //            return packageName + "." + proxyClassName;
 //        }
 //

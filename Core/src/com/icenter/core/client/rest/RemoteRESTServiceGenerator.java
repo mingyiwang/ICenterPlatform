@@ -88,10 +88,10 @@ public class RemoteRESTServiceGenerator extends Generator {
                        sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
 
 
-//                       sw.println("JSONConverter converter = Converters.get("+ methodInfo.getReturnType().getParameterizedQualifiedSourceName()+");");
+//                       sw.println("JSONConverter converter = Converters.getOrCreateIfNotExist("+ methodInfo.getReturnType().getParameterizedQualifiedSourceName()+");");
 //                       methodInfo.getParameters().forEach(p -> {
 //                           String converterKey = p.getType().getParameterizedQualifiedSourceName();
-//                           sw.println("params.put("+p.getName()+"," + "Converters.get("+converterKey+").convertObjectToJSON(" + p.getName() + ");");
+//                           sw.println("params.put("+p.getName()+"," + "Converters.getOrCreateIfNotExist("+converterKey+").convertObjectToJSON(" + p.getName() + ");");
 //                       });
 //
 //

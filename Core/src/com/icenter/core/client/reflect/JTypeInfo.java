@@ -34,6 +34,10 @@ public final class JTypeInfo {
         return type.getQualifiedSourceName().equals(String.class.getCanonicalName());
     }
 
+    public static boolean isDate(JType type){
+        return type.getQualifiedSourceName().equals(Date.class.getCanonicalName());
+    }
+
     public static boolean isSet(JType type, TypeOracle types){
         return type.isClassOrInterface() != null
             && type.isClassOrInterface().isAssignableTo(types.findType(Set.class.getCanonicalName()));
