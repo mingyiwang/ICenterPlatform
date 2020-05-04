@@ -16,7 +16,7 @@ public class EL implements EntryPoint {
         Button button = new Button("Click me");
         button.addClickHandler(clickEvent -> {
             TestingService service = GWT.create(TestingService.class);
-            service.postService(0, "", new AsyncCallback<String>() {
+            service.postService(0, "I am text1", "I am text2", 12, new AsyncCallback<String>() {
                 @Override
                 public void onFailure(Throwable throwable) {
                     showMessage(throwable.getMessage());

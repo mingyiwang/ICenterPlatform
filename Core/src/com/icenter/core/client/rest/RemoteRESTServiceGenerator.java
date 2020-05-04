@@ -94,11 +94,14 @@ public class RemoteRESTServiceGenerator extends Generator {
                                String converterKey = paramType.isPrimitive() != null
                                        ? paramType.isPrimitive().getQualifiedBoxedSourceName()
                                        : paramType.getQualifiedSourceName();
-                               sw.print("params.put("+"\""+param.getName()+"\""+","+"Converters.get("+"\""+ converterKey +"\""+").convertObjectToJSON("+"\""+param.getName()+"\""+");");
+
+                               System.out.println("(JSONConverter<" + converterKey + ">)");
+                               System.out.println("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" +converterKey + ">)"+"Converters.get("+"\""+ converterKey +"\""+")).convertObjectToJSON("+param.getName()+"));");
+                               sw.print("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" + converterKey + ">)"+"Converters.get("+"\""+ converterKey +"\""+")).convertObjectToJSON("+param.getName()+"));");
                            }
                            else {
                                sw.print("params.put("+"\""+param.getName()+"\""+","
-                                       + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+"\"" + param.getName() + "\""+")"+")");
+                                       + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+param.getName()+"));");
                            }
                        });
 

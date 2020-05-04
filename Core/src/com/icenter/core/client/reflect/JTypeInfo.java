@@ -11,7 +11,6 @@ public final class JTypeInfo {
     public static JPrimitiveType Boolean = JPrimitiveType.BOOLEAN;
 
     public static boolean isPrimitive(JType type){
-        type.isPrimitive().getQualifiedSourceName();
         return type.isPrimitive() != null ||
                type.getQualifiedSourceName().equals(String.class.getCanonicalName())    ||
                type.getQualifiedSourceName().equals(Character.class.getCanonicalName()) ||

@@ -5,6 +5,6 @@ import com.icenter.core.client.rest.RemoteRESTService;
 
 public interface TestingService extends RemoteRESTService {
 
-    public void postService(int number, String text, AsyncCallback<String> callback);
+    public void postService(int number, String text, String text2, int number2, AsyncCallback<String> callback);
 
 }

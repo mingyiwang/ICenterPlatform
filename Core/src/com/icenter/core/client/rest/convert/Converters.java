@@ -19,16 +19,16 @@ public final class Converters {
         add(Date.class.getCanonicalName(),    new DateJSONConverter());    // Date
     }
 
-    public final static JSONConverter<?> get(String key){
-        return factories.get(key);
+    public final static <T extends JSONConverter<?>> T get(String key){
+        return (T) factories.get(key);
     }
-
-    public final static JSONConverter<?> getOrCreateIfNotExist(Class classLiteral){
-        if(factories.containsKey(classLiteral.getCanonicalName())){
-           return factories.get(classLiteral.getCanonicalName());
-        }
-        return add(classLiteral.getCanonicalName(), GWT.create(classLiteral));
-    }
+//
+//    public final static JSONConverter<?> getOrCreateIfNotExist(Class classLiteral){
+//        if(factories.containsKey(classLiteral.getCanonicalName())){
+//            return factories.get(classLiteral.getCanonicalName());
+//        }
+//        return add(classLiteral.getCanonicalName(), GWT.create(classLiteral));
+//    }
 
     public final static JSONConverter<?> add(String typeName, JSONConverter<?> converter){
         factories.put(typeName, converter);
