@@ -3,30 +3,38 @@ package com.icenter.core.client.rest.convert;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.reflect.JTypeInfo;
 import com.icenter.core.client.rest.convert.custom.IntegerJSONConverter;
 
-public class JSONConverterGenerator  {
+public final class JSONConverterGenerator  {
 
     private final static String packageName = "com.icenter.core.client.rest.convert";
 
-    public static String generate(TreeLogger logger, GeneratorContext context, JType targetType){
+    public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType){
         if(JTypeInfo.isPrimitive(targetType)){
            return generatePrimitive(logger, context, targetType);
+        }
+        else if(JTypeInfo.isMap(targetType, context.getTypeOracle())){
+           return generateMap(logger, context, targetType);
         }
         else {
            return generateClass(logger, context, targetType);
         }
     }
 
-    public static String generatePrimitive(TreeLogger logger, GeneratorContext context, JType primitiveType) {
+    public final static String generatePrimitive(TreeLogger logger, GeneratorContext context, JType primitiveType) {
         String converterKey = primitiveType.isPrimitive() != null
                             ? primitiveType.isPrimitive().getQualifiedBoxedSourceName()
                             : primitiveType.getQualifiedSourceName();
         return Converters.get(converterKey).getClass().getCanonicalName();
     }
 
-    public static String generateClass(TreeLogger logger, GeneratorContext context, JType targetType) {
+    public final static String generateMap(TreeLogger logger, GeneratorContext context, JType targetType){
+        return Strings.Empty;
+    }
+
+    public final static String generateClass(TreeLogger logger, GeneratorContext context, JType targetType) {
         // Map, list,
         return IntegerJSONConverter.class.getCanonicalName();
     }
