@@ -11,6 +11,7 @@ public final class JTypeInfo {
     public static JPrimitiveType Boolean = JPrimitiveType.BOOLEAN;
 
     public static boolean isPrimitive(JType type){
+        type.isPrimitive().getQualifiedSourceName();
         return type.isPrimitive() != null ||
                type.getQualifiedSourceName().equals(String.class.getCanonicalName())    ||
                type.getQualifiedSourceName().equals(Character.class.getCanonicalName()) ||
@@ -36,6 +37,10 @@ public final class JTypeInfo {
 
     public static boolean isDate(JType type){
         return type.getQualifiedSourceName().equals(Date.class.getCanonicalName());
+    }
+
+    public static boolean isArray(JType type){
+        return type.isArray() != null;
     }
 
     public static boolean isSet(JType type, TypeOracle types){

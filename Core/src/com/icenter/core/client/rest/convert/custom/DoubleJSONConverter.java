@@ -19,7 +19,7 @@ public final class DoubleJSONConverter extends JSONConverter<Double> {
 
     @Override
     public Double convertJSONToObject(JSONValue value) {
-        if (value.isNull()!= null){
+        if (value.isNull() != null){
             return null;
         }
 

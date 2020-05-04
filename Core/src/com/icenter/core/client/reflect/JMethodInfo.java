@@ -13,19 +13,17 @@ public final class JMethodInfo {
     private List<JParameter> parameters = new ArrayList<>();
     private JParameter returnParam;
 
-    public static JMethodInfo of(JMethod method, TypeOracle types){
+    public final static JMethodInfo of(JMethod method, TypeOracle types){
         JMethodInfo info = new JMethodInfo();
         JParameter[] parameters = method.getParameters();
         int length = parameters.length;
 
-        if(JTypeInfo.isAsyncCallback(parameters[length-1].getType(),types)){
-           info.returnParam = parameters[length-1];
-        }
-
         IntStream.range(0, length).forEach(i -> {
             info.parameters.add(method.getParameters()[i]);
+            if (i == length -1 && JTypeInfo.isAsyncCallback(parameters[i].getType(),types)){
+                info.returnParam = parameters[i];
+            }
         });
-
         return info;
     }
 
@@ -33,7 +31,7 @@ public final class JMethodInfo {
         return this.parameters;
     }
 
-    public JParameter getReturnParam() {
+    public JParameter getReturnParameter() {
         return this.returnParam;
     }
 
@@ -42,7 +40,7 @@ public final class JMethodInfo {
     }
 
     public JClassType getReturnType() {
-        return hasReturnType() ? getReturnParam().getType().isParameterized().getTypeArgs()[0] : null;
+        return hasReturnType() ? getReturnParameter().getType().isParameterized().getTypeArgs()[0] : null;
     }
 
 }
