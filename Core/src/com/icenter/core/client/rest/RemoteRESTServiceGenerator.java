@@ -16,13 +16,11 @@ import com.icenter.core.client.primitive.Joiner;
 import com.icenter.core.client.reflect.JMethodInfo;
 import com.icenter.core.client.reflect.JTypeInfo;
 import com.icenter.core.client.rest.convert.*;
-import com.icenter.core.client.rest.convert.custom.IntegerJSONConverter;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
-import com.icenter.core.client.rest.convert.custom.StringJSONConverter;
+
 import java.io.PrintWriter;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Stream.of;
+import java.util.stream.Stream;
 
 public class RemoteRESTServiceGenerator extends Generator {
 
@@ -44,11 +42,11 @@ public class RemoteRESTServiceGenerator extends Generator {
             throw new UnableToCompleteException();
         }
 
-        String rebindServicePackagePath = target.getPackage().getName();
-        String rebindServiceName = target.getName()+"Async"; // Custom rebind service name
-        String rebindServiceQualifiedSourceName = rebindServicePackagePath + "." + rebindServiceName;
+        String remoteServicePackage = target.getPackage().getName();
+        String remoteServiceName = target.getName()+"Async"; // Custom rebind service name
+        String remoteServiceQualifiedSourceName = remoteServicePackage + "." + remoteServiceName;
 
-        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(target.getPackage().getName(), rebindServiceName);
+        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(target.getPackage().getName(), remoteServiceName);
         composerFactory.addImport(ServiceDefTarget.class.getCanonicalName());
         composerFactory.addImport(IllegalArgumentException.class.getCanonicalName());
         composerFactory.addImport(RequestBuilder.class.getCanonicalName());
@@ -66,55 +64,53 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImport(JSONConverter.class.getCanonicalName());
-        composerFactory.addImport(IntegerJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
         composerFactory.addImport(Converters.class.getCanonicalName());
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
 
-        PrintWriter pw  = context.tryCreate(logger, rebindServicePackagePath, rebindServiceName);
+        PrintWriter pw  = context.tryCreate(logger, remoteServicePackage, remoteServiceName);
         if (pw == null){
-            return rebindServiceQualifiedSourceName;
+            return remoteServiceQualifiedSourceName;
         }
         else {
             SourceWriter sw = composerFactory.createSourceWriter(context, pw);
-            of(target.getMethods())
-               .forEach(mt -> {
-                   if (RemoteRESTServiceHelper.isValidMethod(mt, types)) {
-                       JMethodInfo methodInfo = JMethodInfo.of(mt, types);
-                       String params = Joiner.on(',').join(methodInfo.getParameters(), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                       sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
+            Stream.of(target.getMethods())
+                  .forEach(mt -> {
+                       if (RemoteRESTServiceHelper.isValidMethod(mt, types)) {
+                           JMethodInfo methodInfo = JMethodInfo.of(mt, types);
+                           String params = Joiner.on(',').join(methodInfo.getParameters(), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                           sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
 
-                       // Generate parameters
-                       sw.println("JSONObject params = new JSONObject();");
-                       IntStream.range(0, methodInfo.getParameters().size() -1).forEach(i -> {
-                           JParameter param = methodInfo.getParameters().get(i);
-                           JType paramType  = param.getType();
-                           if (JTypeInfo.isPrimitive(paramType)){
-                               String converterKey = paramType.isPrimitive() != null
-                                       ? paramType.isPrimitive().getQualifiedBoxedSourceName()
-                                       : paramType.getQualifiedSourceName();
+                           // Generate parameters
+                           sw.println("JSONObject params = new JSONObject();");
+                           IntStream.range(0, methodInfo.getParameters().size() -1).forEach(i -> {
+                               JParameter param = methodInfo.getParameters().get(i);
+                               JType paramType  = param.getType();
+                               if (JTypeInfo.isPrimitive(paramType)){
+                                   String qualifiedParamName = paramType.isPrimitive() != null
+                                           ? paramType.isPrimitive().getQualifiedBoxedSourceName()
+                                           : paramType.getQualifiedSourceName();
 
-                               System.out.println("(JSONConverter<" + converterKey + ">)");
-                               System.out.println("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" +converterKey + ">)"+"Converters.get("+"\""+ converterKey +"\""+")).convertObjectToJSON("+param.getName()+"));");
-                               sw.print("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" + converterKey + ">)"+"Converters.get("+"\""+ converterKey +"\""+")).convertObjectToJSON("+param.getName()+"));");
-                           }
-                           else {
-                               sw.print("params.put("+"\""+param.getName()+"\""+","
-                                       + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+param.getName()+"));");
-                           }
-                       });
+                                   System.out.println("(JSONConverter<" + qualifiedParamName + ">)");
+                                   System.out.println("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" + qualifiedParamName + ">)"+"Converters.get("+"\""+ qualifiedParamName +"\""+")).convertObjectToJSON("+param.getName()+"));");
+                                   sw.print("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" + qualifiedParamName + ">)"+"Converters.get("+"\""+ qualifiedParamName +"\""+")).convertObjectToJSON("+param.getName()+"));");
+                               }
+                               else {
+                                   sw.print("params.put("+"\""+param.getName()+"\""+","
+                                           + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+param.getName()+"));");
+                               }
+                           });
 
-                       // Generate Return Type converter
-                       String converter = JSONConverterGenerator.generate(logger, context, methodInfo.getReturnType());
-                       sw.print("JSONConverter converter = new " + converter + "();");
-                       sw.println("send(params, converter," + methodInfo.getReturnParameter().getName() + ");");
-                       sw.println("}");
-                   }
-            });
+                           // Generate Return Type converter
+                           String converter = JSONConverterGenerator.generate(logger, context, methodInfo.getReturnType());
+                           sw.print("JSONConverter converter = new " + converter + "();");
+                           sw.println("send(params, converter," + methodInfo.getReturnParameter().getName() + ");");
+                           sw.println("}");
+                       }
+                  });
 
             sw.commit(logger);
-            return rebindServiceQualifiedSourceName;
+            return remoteServiceQualifiedSourceName;
         }
     }
 

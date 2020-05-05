@@ -1,6 +1,6 @@
 package com.icenter.core.client.rest.convert;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.ext.typeinfo.JType;
 import com.icenter.core.client.rest.convert.custom.DateJSONConverter;
 import com.icenter.core.client.rest.convert.custom.DoubleJSONConverter;
 import com.icenter.core.client.rest.convert.custom.IntegerJSONConverter;
@@ -19,24 +19,21 @@ public final class Converters {
         add(Date.class.getCanonicalName(),    new DateJSONConverter());    // Date
     }
 
-    public final static <T extends JSONConverter<?>> T get(String key){
-        return (T) factories.get(key);
-    }
-//
-//    public final static JSONConverter<?> getOrCreateIfNotExist(Class classLiteral){
-//        if(factories.containsKey(classLiteral.getCanonicalName())){
-//            return factories.get(classLiteral.getCanonicalName());
-//        }
-//        return add(classLiteral.getCanonicalName(), GWT.create(classLiteral));
-//    }
-
-    public final static JSONConverter<?> add(String typeName, JSONConverter<?> converter){
+    private final static JSONConverter<?> add(String typeName, JSONConverter<?> converter){
         factories.put(typeName, converter);
         return converter;
     }
 
+    public final static boolean has(JType type){
+        return factories.containsKey(type.getQualifiedSourceName());
+    }
+
     public final static int size(){
         return factories.size();
+    }
+
+    public final static <T extends JSONConverter<?>> T get(String key){
+        return (T) factories.get(key);
     }
 
 }

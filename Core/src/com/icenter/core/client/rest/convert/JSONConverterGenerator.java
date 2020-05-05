@@ -2,24 +2,38 @@ package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.typeinfo.JArrayType;
+import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JParameterizedType;
 import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.json.client.*;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.reflect.JTypeInfo;
-import com.icenter.core.client.rest.convert.custom.IntegerJSONConverter;
 
+/***
+ * JSONConvertible Object Converter, used to generates object converters, shouldn't use it directly
+ */
 public final class JSONConverterGenerator  {
 
-    private final static String packageName = "com.icenter.core.client.rest.convert";
+    private final static String packagePath = "com.icenter.core.client.rest.convert";
 
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType){
         if(JTypeInfo.isPrimitive(targetType)){
-           return generatePrimitive(logger, context, targetType);
+            return generatePrimitive(logger, context, targetType);
         }
         else if(JTypeInfo.isMap(targetType, context.getTypeOracle())){
-           return generateMap(logger, context, targetType);
+            return generateMap(logger, context, targetType);
+        }
+        else if(JTypeInfo.isArray(targetType)){
+            return generateArray(logger, context, targetType);
+        }
+        else if(JTypeInfo.isList(targetType, context.getTypeOracle())){
+            return generateList(logger, context, targetType);
         }
         else {
-           return generateClass(logger, context, targetType);
+            return generateClass(logger, context, targetType);
         }
     }
 
@@ -30,13 +44,54 @@ public final class JSONConverterGenerator  {
         return Converters.get(converterKey).getClass().getCanonicalName();
     }
 
+    public final static String generateArray(TreeLogger logger, GeneratorContext context, JType targetType){
+        JArrayType arrayType = targetType.isArray();
+        return generate(logger, context, arrayType.getComponentType());
+    }
+
+    public final static String generateList(TreeLogger logger, GeneratorContext context, JType targetType){
+        JParameterizedType classType = targetType.isParameterized();
+        JType key = classType.getTypeArgs()[0];
+        JType value = classType.getTypeArgs()[1];
+        ClassSourceFileComposerFactory composer = createClassSourceComoser(targetType, classType.getName());
+
+        return Strings.Empty;
+    }
+
     public final static String generateMap(TreeLogger logger, GeneratorContext context, JType targetType){
+        JParameterizedType classType = targetType.isParameterized();
+        JType key   = classType.getTypeArgs()[0];
+        JType value = classType.getTypeArgs()[1];
+        ClassSourceFileComposerFactory composer = createClassSourceComoser(targetType, classType.getName());
+        // Generates key and value converters
+
         return Strings.Empty;
     }
 
     public final static String generateClass(TreeLogger logger, GeneratorContext context, JType targetType) {
-        // Map, list,
-        return IntegerJSONConverter.class.getCanonicalName();
+        String sourceName = targetType.isClassOrInterface().getName() + "JSONConverter";
+        String qualifiedSourceName = packagePath + "." + sourceName;
+        JClassType classType = targetType.isClass();
+        ClassSourceFileComposerFactory composer = createClassSourceComoser(targetType, sourceName);
+
+        return qualifiedSourceName;
+    }
+
+    private final static ClassSourceFileComposerFactory createClassSourceComoser(JType targetType, String sourceName) {
+        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packagePath, sourceName);
+        composerFactory.addImport(JSONParser.class.getCanonicalName());
+        composerFactory.addImport(JSONValue.class.getCanonicalName());
+        composerFactory.addImport(JSONArray.class.getCanonicalName());
+        composerFactory.addImport(JSONBoolean.class.getCanonicalName());
+        composerFactory.addImport(JSONNull.class.getCanonicalName());
+        composerFactory.addImport(JSONNumber.class.getCanonicalName());
+        composerFactory.addImport(JSONObject.class.getCanonicalName());
+        composerFactory.addImport(JSONString.class.getCanonicalName());
+        composerFactory.addImport(JSONProperty.class.getCanonicalName());
+        composerFactory.addImport(AsyncCallback.class.getCanonicalName());
+        composerFactory.addImport(JSONConverter.class.getCanonicalName());
+        composerFactory.addImport(targetType.isClassOrInterface().getParameterizedQualifiedSourceName());
+        return composerFactory;
     }
 
 //    private final String getCanonicalName(JClassType targetType, TypeOracle types){
@@ -47,19 +102,19 @@ public final class JSONConverterGenerator  {
 //        JTypeInfo.isList(targetType, types);
 //        JTypeInfo.isMap(targetType, types);
 //        JTypeInfo.isQueue(targetType, types);
-//        return Joiner.on('.').join(packageName, proxyClassName);
+//        return Joiner.on('.').join(packagePath, proxyClassName);
 //    }
 //
-//    private final String createJSONConverterIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType) {
+//    private final String createJSONConverterIfNotExist(TreeLogger logger, GeneratorContext context, String packagePath, JType targetType) {
 //
 //        JClassType target = context.getTypeOracle().findType(targetType.getParameterizedQualifiedSourceName());
 //        String proxyClassName = target.getName() + JSONConverter.Name;
 //
 //        if (Converters.getOrCreateIfNotExist(targetType.getParameterizedQualifiedSourceName()) != null) {
-//            return packageName + "." + proxyClassName;
+//            return packagePath + "." + proxyClassName;
 //        }
 //
-//        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packageName, proxyClassName);
+//        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packagePath, proxyClassName);
 //        composerFactory.addImport(JSONValue.class.getCanonicalName());
 //        composerFactory.addImport(JSONArray.class.getCanonicalName());
 //        composerFactory.addImport(JSONBoolean.class.getCanonicalName());
@@ -70,9 +125,9 @@ public final class JSONConverterGenerator  {
 //        composerFactory.addImport(target.getParameterizedQualifiedSourceName());
 //        composerFactory.setSuperclass(JSONConverter.class.getCanonicalName() + "<" + target.getName() + ">");
 //
-//        PrintWriter pw = context.tryCreate(logger, packageName, proxyClassName);
+//        PrintWriter pw = context.tryCreate(logger, packagePath, proxyClassName);
 //        if (pw == null) {
-//            return packageName + "." + proxyClassName;
+//            return packagePath + "." + proxyClassName;
 //        }
 //        else {
 //            SourceWriter sw = composerFactory.createSourceWriter(context, pw);
@@ -97,10 +152,10 @@ public final class JSONConverterGenerator  {
 //        }
 //
 //
-//        return packageName + "." + proxyClassName;
+//        return packagePath + "." + proxyClassName;
 //    }
-//    private ClassSourceFileComposerFactory getClassSourceFileComposerFactory(String packageName, JClassType target, String proxyClassName) {
-//        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packageName, proxyClassName);
+//    private ClassSourceFileComposerFactory getClassSourceFileComposerFactory(String packagePath, JClassType target, String proxyClassName) {
+//        ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packagePath, proxyClassName);
 //        composerFactory.addImport(JSONValue.class.getCanonicalName());
 //        composerFactory.addImport(JSONArray.class.getCanonicalName());
 //        composerFactory.addImport(JSONBoolean.class.getCanonicalName());
@@ -112,14 +167,14 @@ public final class JSONConverterGenerator  {
 //        return composerFactory;
 //    }
 //
-//    private final String createJSONPropertyIfNotExist(TreeLogger logger, GeneratorContext context, String packageName, JType targetType){
+//    private final String createJSONPropertyIfNotExist(TreeLogger logger, GeneratorContext context, String packagePath, JType targetType){
 //        JClassType target = context.getTypeOracle().findType(targetType.getParameterizedQualifiedSourceName());
 //        String proxyClassName = target.getName() + "JSONProperty";
-//        ClassSourceFileComposerFactory composerFactory = getClassSourceFileComposerFactory(packageName, target, proxyClassName);
+//        ClassSourceFileComposerFactory composerFactory = getClassSourceFileComposerFactory(packagePath, target, proxyClassName);
 //        composerFactory.setSuperclass(JSONProperty.class.getCanonicalName());
-//        PrintWriter pw = context.tryCreate(logger, packageName, proxyClassName);
+//        PrintWriter pw = context.tryCreate(logger, packagePath, proxyClassName);
 //        if (pw == null) {
-//            return packageName + "." + proxyClassName;
+//            return packagePath + "." + proxyClassName;
 //        }
 //        else {
 //            SourceWriter sw = composerFactory.createSourceWriter(context, pw);
@@ -127,7 +182,7 @@ public final class JSONConverterGenerator  {
 //
 //            sw.println("}");
 //        }
-//        return packageName + "." + proxyClassName;
+//        return packagePath + "." + proxyClassName;
 //
 //    }
 //

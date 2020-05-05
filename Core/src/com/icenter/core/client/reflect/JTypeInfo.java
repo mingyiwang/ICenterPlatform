@@ -12,7 +12,7 @@ public final class JTypeInfo {
 
     public static boolean isPrimitive(JType type){
         return type.isPrimitive() != null ||
-               type.getQualifiedSourceName().equals(String.class.getCanonicalName())    ||
+               String.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
                type.getQualifiedSourceName().equals(Character.class.getCanonicalName()) ||
                type.getQualifiedSourceName().equals(Byte.class.getCanonicalName())      ||
                type.getQualifiedSourceName().equals(Short.class.getCanonicalName())     ||
