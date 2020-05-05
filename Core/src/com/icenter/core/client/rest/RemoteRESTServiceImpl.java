@@ -14,14 +14,14 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 
     @Override
     public final String getServiceEndpoint() {
-        return serviceEndpoint;
+        return this.serviceEndpoint;
     }
 
     public final void setUrlFormatter(Function<String, String> urlFormatter) {
         this.urlFormatter = urlFormatter;
     }
 
-    public final Function<String, String> getUrlFormatter() {
+    public final Function<String,String> getUrlFormatter() {
         return this.urlFormatter;
     }
 
@@ -29,6 +29,7 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 
         JSONValue value = new JSONString(params.toString());
         callback.onSuccess(converter.convertJSONToObject(value));
+        String url = getUrlFormatter().execute(getServiceEndpoint());
 
 //        RequestBuilder builder = SimpleRequestBuilder.of(RequestBuilder.POST, urlFormatter.execute(getServiceEndpoint()));
 //        builder.setRequestData(params.toString());
