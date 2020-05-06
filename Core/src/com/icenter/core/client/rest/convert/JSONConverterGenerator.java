@@ -58,14 +58,14 @@ public final class JSONConverterGenerator  {
             sw.println("return new " + targetQualifiedName + "();");
             sw.println("}");
 
-
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetQualifiedName +" instance){ ");
             sw.println("if (instance == null) {return JSONNull.getInstance();}");
             sw.println("JSONObject jsonObject = new JSONObject();");
             JField[] fields = targetType.isClassOrInterface().getFields();
 
             Stream.of(fields).forEach(f -> {
-                sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + JSONConverterGenerator.generate(logger, context, f.getType())+"().convertObjectToJSON("+
+                sw.println("jsonObject.put("+"\""+f.getName()+"\"" + ","
+                         + "new " + JSONConverterGenerator.generate(logger, context, f.getType())+"().convertObjectToJSON("+
                            "instance."+f.getName()+"));");
             });
 
