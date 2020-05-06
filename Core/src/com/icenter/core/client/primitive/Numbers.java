@@ -10,4 +10,15 @@ public final class Numbers {
         return Double.valueOf(0);
     }
 
+    public static Byte getDefaultByte(){
+        return null;
+    }
+
+    public static Float getDefaultFloat(){
+        return null;
+    }
+
+    public static Boolean getDefaultBoolean(){
+        return Boolean.FALSE;
+    }
 }

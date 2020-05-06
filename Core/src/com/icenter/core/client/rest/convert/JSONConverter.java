@@ -22,7 +22,7 @@ public abstract class JSONConverter<T> {
         this.property = property;
     }
 
-    public final String asJSONString(T object){
+    public final String toJSONString(T object){
         return convertObjectToJSON(object).toString();
     }
 

@@ -34,9 +34,12 @@ public final class JSONConverterGenerator  {
     }
 
     public final static String generateClass(TreeLogger logger, GeneratorContext context, JType targetType) {
+        String targetClassName = targetType.isClassOrInterface().getName();
         String sourceName = targetType.isClassOrInterface().getName() + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;
         ClassSourceFileComposerFactory composer = createClassSourceComoser(targetType, sourceName);
+        composer.setSuperclass("JSONConverter<"+targetClassName+">");
+
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
            return qualifiedSourceName;

@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 public final class JMethodInfo {
 
     private List<JParameter> parameters = new ArrayList<>();
-    private JParameter returnParam;
+    private JParameter returnParameter;
 
     public final static JMethodInfo of(JMethod method, TypeOracle types){
         JMethodInfo info = new JMethodInfo();
@@ -21,7 +21,7 @@ public final class JMethodInfo {
         IntStream.range(0, length).forEach(i -> {
             info.parameters.add(method.getParameters()[i]);
             if (i == length -1 && JTypeInfo.isAsyncCallback(parameters[i].getType(),types)){
-                info.returnParam = parameters[i];
+                info.returnParameter = parameters[i];
             }
         });
         return info;
@@ -32,11 +32,11 @@ public final class JMethodInfo {
     }
 
     public JParameter getReturnParameter() {
-        return this.returnParam;
+        return this.returnParameter;
     }
 
     private boolean hasReturnType(){
-        return returnParam != null;
+        return this.returnParameter != null;
     }
 
     public JClassType getReturnType() {

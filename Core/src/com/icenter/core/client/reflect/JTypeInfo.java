@@ -7,7 +7,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.*;
 
 public final class JTypeInfo {
-
     public static JPrimitiveType Boolean = JPrimitiveType.BOOLEAN;
 
     public static boolean isPrimitive(JType type){
@@ -19,14 +18,15 @@ public final class JTypeInfo {
                type.getQualifiedSourceName().equals(Integer.class.getCanonicalName())   ||
                type.getQualifiedSourceName().equals(Long.class.getCanonicalName())      ||
                type.getQualifiedSourceName().equals(Float.class.getCanonicalName())     ||
-               type.getQualifiedSourceName().equals(Double.class.getCanonicalName())    ||
-               type.getQualifiedSourceName().equals(Boolean.class.getCanonicalName())
+               Double.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
+               Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
+               Short.class.getCanonicalName().equals(type.getQualifiedSourceName())
         ;
     }
 
     public static boolean isBoolean(JType type){
         return type.isPrimitive() == JPrimitiveType.BOOLEAN
-            || type.getQualifiedSourceName().equals(Boolean.class.getCanonicalName())
+            || Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())
             ;
     }
 

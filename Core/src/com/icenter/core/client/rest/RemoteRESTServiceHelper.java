@@ -2,7 +2,7 @@ package com.icenter.core.client.rest;
 
 import com.google.gwt.core.ext.typeinfo.*;
 import com.icenter.core.client.reflect.JTypeInfo;
-import com.icenter.core.client.rest.convert.JSONConvertable;
+import com.icenter.core.client.rest.convert.JSONConvertible;
 import java.io.Serializable;
 
 public final class RemoteRESTServiceHelper {
@@ -31,7 +31,7 @@ public final class RemoteRESTServiceHelper {
             else {
                 valid =  type.isClass() != null && (
                          type.isClass().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
-                      || type.isClass().isAssignableTo(types.findType(JSONConvertable.class.getCanonicalName()))
+                      || type.isClass().isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
                 );
             }
 
