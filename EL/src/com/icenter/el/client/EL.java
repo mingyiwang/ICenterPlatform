@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.icenter.el.client.transfer.Test;
 
 public class EL implements EntryPoint {
 
@@ -16,15 +17,15 @@ public class EL implements EntryPoint {
         Button button = new Button("Click me");
         button.addClickHandler(clickEvent -> {
             TestingService service = GWT.create(TestingService.class);
-            service.postService(0, "I am text1", "I am text2", 12, new AsyncCallback<String>() {
+            service.postService(new Test(), new AsyncCallback<String>() {
                 @Override
                 public void onFailure(Throwable throwable) {
-                    showMessage(throwable.getMessage());
+
                 }
 
                 @Override
-                public void onSuccess(String integer) {
-                    showMessage("Value : " + integer);
+                public void onSuccess(String s) {
+                    showMessage(s);
                 }
             });
         });

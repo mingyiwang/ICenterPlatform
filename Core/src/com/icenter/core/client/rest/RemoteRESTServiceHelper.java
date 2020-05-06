@@ -29,9 +29,9 @@ public final class RemoteRESTServiceHelper {
                 valid = true;
             }
             else {
-                valid =  type.isClass() != null && (
-                         type.isClass().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
-                      || type.isClass().isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
+                valid =  type.isClassOrInterface() != null && (
+                         type.isClassOrInterface().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
+                      || type.isClassOrInterface().isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
                 );
             }
 

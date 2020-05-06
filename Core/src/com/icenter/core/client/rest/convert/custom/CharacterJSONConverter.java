@@ -14,10 +14,7 @@ public final class CharacterJSONConverter extends JSONConverter<Character> {
 
     @Override
     public JSONValue convertObjectToJSON(Character object) {
-            if(object == null){
-           return JSONNull.getInstance();
-        }
-        return new JSONString(String.valueOf(object));
+        return object == null ? JSONNull.getInstance() : new JSONString(String.valueOf(object));
     }
 
     @Override
@@ -25,7 +22,8 @@ public final class CharacterJSONConverter extends JSONConverter<Character> {
         if (value == null || value.isNull() != null){
             return null;
         }
-        return Character.valueOf('c');
+
+        return value.isString().stringValue().charAt(0);
     }
 
 }

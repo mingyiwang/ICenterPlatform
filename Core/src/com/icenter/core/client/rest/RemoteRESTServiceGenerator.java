@@ -17,7 +17,7 @@ import com.icenter.core.client.reflect.JMethodInfo;
 import com.icenter.core.client.reflect.JTypeInfo;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
-
+import com.icenter.core.client.rest.convert.custom.*;
 import java.io.PrintWriter;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -64,6 +64,16 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImport(JSONConverter.class.getCanonicalName());
+        composerFactory.addImport(BooleanJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(ByteJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(CharacterJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(DateJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(DoubleJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(FloatJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(IntegerJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(LongJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(ShortJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
         composerFactory.addImport(SimpleConverters.class.getCanonicalName());
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
@@ -79,6 +89,7 @@ public class RemoteRESTServiceGenerator extends Generator {
                        if (RemoteRESTServiceHelper.isValidMethod(mt, types)) {
                            JMethodInfo methodInfo = JMethodInfo.of(mt, types);
                            String params = Joiner.on(',').join(methodInfo.getParameters(), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                           System.out.println("Generating method :" + "@Override public void "+ mt.getName() + "(" + params + "){ " );
                            sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
 
                            // Generate parameters

@@ -11,13 +11,13 @@ public final class JTypeInfo {
 
     public static boolean isPrimitive(JType type){
         return type.isPrimitive() != null ||
-               String.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
-               type.getQualifiedSourceName().equals(Character.class.getCanonicalName()) ||
-               type.getQualifiedSourceName().equals(Byte.class.getCanonicalName())      ||
-               type.getQualifiedSourceName().equals(Short.class.getCanonicalName())     ||
-               type.getQualifiedSourceName().equals(Integer.class.getCanonicalName())   ||
-               type.getQualifiedSourceName().equals(Long.class.getCanonicalName())      ||
-               type.getQualifiedSourceName().equals(Float.class.getCanonicalName())     ||
+               String.class.getCanonicalName().equals(type.getQualifiedSourceName())    ||
+               Character.class.getCanonicalName().equals(type.getQualifiedSourceName()) ||
+               Byte.class.getCanonicalName().equals(type.getQualifiedSourceName())      ||
+               Short.class.getCanonicalName().equals(type.getQualifiedSourceName())     ||
+               Integer.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
+               Long.class.getCanonicalName().equals(type.getQualifiedSourceName()) ||
+               Float.class.getCanonicalName().equals(type.getQualifiedSourceName())||
                Double.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
                Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
                Short.class.getCanonicalName().equals(type.getQualifiedSourceName())

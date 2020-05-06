@@ -1,5 +1,6 @@
 package com.icenter.core.client.rest.convert.custom;
 
+import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.primitive.Numbers;
@@ -14,20 +15,21 @@ public final class LongJSONConverter extends JSONConverter<Long> {
 
     @Override
     public JSONValue convertObjectToJSON(Long object) {
-        return new JSONNumber(object);
+        return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }
 
     @Override
     public Long convertJSONToObject(JSONValue value) {
-        if (value.isNull()!= null){
+        if (value == null || value.isNull()!= null){
             return null;
         }
 
-        if (value.isNumber() != null){
-            return (long) value.isNumber().doubleValue();
+        if (value.isString() != null){
+            return Long.parseLong(value.isString().stringValue());
         }
 
-        return null;
+        return (long) value.isNumber().doubleValue();
     }
+
 
 }

@@ -21,11 +21,18 @@ public final class BooleanJSONConverter extends JSONConverter<Boolean> {
 
     @Override
     public Boolean convertJSONToObject(JSONValue value) {
-        if (value.isBoolean() != null){
-            return value.isBoolean().booleanValue();
+        if (value == null || value.isNull() != null) {
+            return Boolean.FALSE;
         }
 
-        return Numbers.getDefaultBoolean();
+        if (value.isString() != null) {
+            return Boolean.parseBoolean(value.isString().stringValue());
+        }
+
+        return value.isBoolean() != null
+             ? value.isBoolean().booleanValue()
+             : Boolean.FALSE
+             ;
     }
 
 }

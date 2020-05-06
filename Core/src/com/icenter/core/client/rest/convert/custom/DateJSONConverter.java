@@ -15,10 +15,7 @@ public final class DateJSONConverter extends JSONConverter<Date> {
 
     @Override
     public JSONValue convertObjectToJSON(Date object) {
-        if(object == null){
-           return JSONNull.getInstance();
-        }
-        return new JSONString(String.valueOf(object.getTime()));
+        return object == null ? JSONNull.getInstance() : new JSONString(String.valueOf(object.getTime()));
     }
 
     @Override
@@ -26,7 +23,12 @@ public final class DateJSONConverter extends JSONConverter<Date> {
         if (value == null || value.isNull() != null){
             return null;
         }
-        return new Date(Long.valueOf(value.isString().stringValue()));
+
+        if(value.isString() != null){
+           return new Date(Long.parseLong(value.isString().stringValue()));
+        }
+
+        return new Date((long)value.isNumber().doubleValue());
     }
 
 }
