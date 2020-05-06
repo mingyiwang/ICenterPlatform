@@ -1,10 +1,7 @@
 package com.icenter.el.client;
 
-import com.google.gson.Gson;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -16,30 +13,27 @@ public class EL implements EntryPoint {
         AbsolutePanel w = new AbsolutePanel();
         RootPanel.get().add(w);
 
-        Gson gson = new Gson();
-        gson.toJson("test");
-
-        final TestingService ts = GWT.create(TestingService.class);
         Button button = new Button("Click me");
-        button.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent clickEvent) {
-                //ts.tryAlert();
-                ts.testService(1, "test", new AsyncCallback<EL>() {
-                    @Override
-                    public void onFailure(Throwable throwable) {
+        button.addClickHandler(clickEvent -> {
+            TestingService service = GWT.create(TestingService.class);
+            service.postService(0, "I am text1", "I am text2", 12, new AsyncCallback<String>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    showMessage(throwable.getMessage());
+                }
 
-                    }
-
-                    @Override
-                    public void onSuccess(EL integer) {
-
-                    }
-                });
-            }
+                @Override
+                public void onSuccess(String integer) {
+                    showMessage("Value : " + integer);
+                }
+            });
         });
 
         w.add(button);
     }
+
+    public static native void showMessage(String text)/*-{
+        alert(text);
+    }-*/;
 
 }

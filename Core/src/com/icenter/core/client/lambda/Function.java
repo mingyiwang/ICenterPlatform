@@ -1,8 +1,10 @@
 package com.icenter.core.client.lambda;
 
+
 @FunctionalInterface
-public interface Action<T> {
+public interface Function<T,R> {
 
-    void run(T t);
+    R execute(T t);
 
+    
 }
