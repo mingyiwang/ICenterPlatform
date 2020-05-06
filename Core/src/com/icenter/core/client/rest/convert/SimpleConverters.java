@@ -8,7 +8,7 @@ import com.icenter.core.client.rest.convert.custom.StringJSONConverter;
 import java.util.Date;
 import java.util.HashMap;
 
-public final class Converters {
+public final class SimpleConverters {
 
     private final static HashMap<String, JSONConverter<?>> factories = new HashMap<>();
 
