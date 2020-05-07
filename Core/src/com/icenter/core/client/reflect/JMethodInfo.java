@@ -30,11 +30,9 @@ public final class JMethodInfo {
     public List<JParameter> getParameters() {
         return this.parameters;
     }
-
     public JParameter getReturnParameter() {
         return this.returnParameter;
     }
-
     private boolean hasReturnType(){
         return this.returnParameter != null;
     }

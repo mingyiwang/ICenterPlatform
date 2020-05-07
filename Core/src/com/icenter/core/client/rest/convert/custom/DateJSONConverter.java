@@ -31,4 +31,9 @@ public final class DateJSONConverter extends JSONConverter<Date> {
         return new Date((long)value.isNumber().doubleValue());
     }
 
+
+    public enum DateKind {
+        WCF, JAVA
+    }
+
 }

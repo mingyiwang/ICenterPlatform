@@ -7,27 +7,21 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.*;
 
 public final class JTypeInfo {
+
     public static JPrimitiveType Boolean = JPrimitiveType.BOOLEAN;
 
     public static boolean isPrimitive(JType type){
-        return type.isPrimitive() != null ||
-               String.class.getCanonicalName().equals(type.getQualifiedSourceName())    ||
-               Character.class.getCanonicalName().equals(type.getQualifiedSourceName()) ||
-               Byte.class.getCanonicalName().equals(type.getQualifiedSourceName())      ||
-               Short.class.getCanonicalName().equals(type.getQualifiedSourceName())     ||
-               Integer.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
-               Long.class.getCanonicalName().equals(type.getQualifiedSourceName()) ||
-               Float.class.getCanonicalName().equals(type.getQualifiedSourceName())||
-               Double.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
-               Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())   ||
-               Short.class.getCanonicalName().equals(type.getQualifiedSourceName())
-        ;
-    }
-
-    public static boolean isBoolean(JType type){
-        return type.isPrimitive() == JPrimitiveType.BOOLEAN
+        return type.isPrimitive() != null
+            || String.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Character.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Byte.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Short.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Integer.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Long.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Float.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Double.class.getCanonicalName().equals(type.getQualifiedSourceName())
             || Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())
-            ;
+            || Short.class.getCanonicalName().equals(type.getQualifiedSourceName());
     }
 
     public static boolean isString(JType type){
@@ -35,7 +29,7 @@ public final class JTypeInfo {
     }
 
     public static boolean isDate(JType type){
-        return type.getQualifiedSourceName().equals(Date.class.getCanonicalName());
+        return Date.class.getCanonicalName().equals(type.getQualifiedSourceName());
     }
 
     public static boolean isArray(JType type){
