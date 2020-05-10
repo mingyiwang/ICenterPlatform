@@ -13,12 +13,10 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.primitive.Joiner;
-import com.icenter.core.client.reflect.JMethodInfo;
-import com.icenter.core.client.reflect.JTypeInfo;
+import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.base.*;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,17 +93,15 @@ public class RemoteRESTServiceGenerator extends Generator {
                   .forEach(mt -> {
                        if (RemoteRESTServiceHelper.isValidMethod(mt, types)) {
 
-                           JMethodInfo methodInfo = JMethodInfo.of(mt, types);
-                           String params = Joiner.on(',').join(methodInfo.getParameters(), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                           String params = Joiner.on(',').join(RemoteRESTServiceHelper.getMethodParameters(mt), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
                            sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
 
-                           // Generate parameters
                            sw.println("JSONObject params = new JSONObject();");
-                           IntStream.range(0, methodInfo.getParameters().size() -1).forEach(i -> {
-                               JParameter param = methodInfo.getParameters().get(i);
+                           IntStream.range(0, RemoteRESTServiceHelper.getMethodParameters(mt).size() -1).forEach(i -> {
+                               JParameter param = RemoteRESTServiceHelper.getMethodParameters(mt).get(i);
                                JType paramType  = param.getType();
                                if(RemoteRESTServiceHelper.isValidParam(param, types)){
-                                   if (JTypeInfo.isPrimitive(paramType)){
+                                   if (Reflects.isPrimitive(paramType)){
                                        String qualifiedParamName = paramType.isPrimitive() != null
                                                                  ? paramType.isPrimitive().getQualifiedBoxedSourceName()
                                                                  : paramType.getQualifiedSourceName();
@@ -120,10 +116,9 @@ public class RemoteRESTServiceGenerator extends Generator {
 
                            });
 
-                           // Generate Return Type converter
-                           String converter = JSONConverterGenerator.generate(logger, context, methodInfo.getReturnType());
+                           String converter = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getAsyncReturnType(mt));
                            sw.print("JSONConverter callbackConverter = new " + converter + "();");
-                           sw.println("send(params, callbackConverter," + methodInfo.getReturnParameter().getName() + ");");
+                           sw.println("send(params, callbackConverter," +RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");
                            sw.println("}");
                        }
                   });

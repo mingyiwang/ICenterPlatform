@@ -1,11 +1,11 @@
 package com.icenter.core.client.rest;
 
 import com.google.gwt.core.ext.typeinfo.*;
-import com.icenter.core.client.reflect.JTypeInfo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.convert.JSONConvertible;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class RemoteRESTServiceHelper {
 
@@ -23,7 +23,7 @@ public final class RemoteRESTServiceHelper {
         }
 
         // Check has return type or not
-        boolean valid = JTypeInfo.isAsyncCallback(parameters[parameters.length - 1].getType(),types);
+        boolean valid = isAsyncCallback(parameters[parameters.length - 1].getType(),types);
 
         for(int i = 0; i < parameters.length - 1; i++){
             valid = isValidParam(parameters[i], types);
@@ -36,7 +36,7 @@ public final class RemoteRESTServiceHelper {
     }
 
     public static boolean isValidParam(JParameter parameter, TypeOracle types){
-        if (JTypeInfo.isPrimitive(parameter.getType())){
+        if (Reflects.isPrimitive(parameter.getType())){
             return true;
         }
         else {
@@ -47,6 +47,26 @@ public final class RemoteRESTServiceHelper {
                             || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()))
             );
         }
+    }
+
+    public static boolean isAsyncCallback(JType type, TypeOracle types){
+        return type.isClassOrInterface() != null
+                && type.isClassOrInterface().isAssignableTo(types.findType(AsyncCallback.class.getCanonicalName()));
+    }
+
+    public static JParameter getAsyncReturnParameter(JMethod method){
+        JParameter[] ps = method.getParameters();
+        return ps[ps.length-1];
+    }
+
+    public static JClassType getAsyncReturnType(JMethod method) {
+        JParameter[] ps = method.getParameters();
+        JParameter last = ps[ps.length-1];
+        return last.getType().isParameterized().getTypeArgs()[0];
+    }
+
+    public static List<JParameter> getMethodParameters(JMethod method){
+        return Arrays.asList(method.getParameters());
     }
 
 }
