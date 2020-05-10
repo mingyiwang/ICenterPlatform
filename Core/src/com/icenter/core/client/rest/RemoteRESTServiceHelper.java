@@ -4,6 +4,8 @@ import com.google.gwt.core.ext.typeinfo.*;
 import com.icenter.core.client.reflect.JTypeInfo;
 import com.icenter.core.client.rest.convert.JSONConvertible;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public final class RemoteRESTServiceHelper {
 
@@ -24,23 +26,27 @@ public final class RemoteRESTServiceHelper {
         boolean valid = JTypeInfo.isAsyncCallback(parameters[parameters.length - 1].getType(),types);
 
         for(int i = 0; i < parameters.length - 1; i++){
-            JType type = parameters[i].getType();
-            if (JTypeInfo.isPrimitive(type)){
-                valid = true;
-            }
-            else {
-                valid =  type.isClassOrInterface() != null && (
-                         type.isClassOrInterface().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
-                      || type.isClassOrInterface().isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
-                );
-            }
-
+            valid = isValidParam(parameters[i], types);
             if(!valid){
                 break;
             }
         }
 
         return valid;
+    }
+
+    public static boolean isValidParam(JParameter parameter, TypeOracle types){
+        if (JTypeInfo.isPrimitive(parameter.getType())){
+            return true;
+        }
+        else {
+            return parameter.getType().isClassOrInterface() != null && (
+                    parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
+                            || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
+                            || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()))
+                            || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()))
+            );
+        }
     }
 
 }

@@ -1,6 +1,8 @@
 package com.icenter.el.client.transfer;
 
 import com.icenter.core.client.rest.convert.JSONConvertible;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Test implements JSONConvertible {
 
@@ -14,7 +16,6 @@ public class Test implements JSONConvertible {
     public float floatValue   = 1f;
     public short shortValue   = 0;
     public Test2 testValue    = new Test2();
-    public Test2 testValue2   = new Test2();
-    public Test2 testValue3   = new Test2();
+    public List<Test2> testListValue = new ArrayList<Test2>();
 
 }

@@ -7,39 +7,68 @@ import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
-import com.icenter.core.client.reflect.JTypeInfo;
+import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
 import com.icenter.core.client.rest.convert.custom.*;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 /***
- * JSONConvertible Object Converter, used to generates object converters, shouldn't use it directly
- * not responsible for any cost of direct use.
+ * JSONConvertible Object Converter, used to generates object converters,
+ * shouldn't use it directly not responsible for any cost of direct use.
  */
 public final class JSONConverterGenerator  {
 
     private final static String packagePath = "com.icenter.core.client.rest.convert";
 
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType){
-        if (SimpleConverters.get(targetType.getQualifiedSourceName()) != null) {
-            return SimpleConverters.get(targetType.getQualifiedSourceName()).getClass().getCanonicalName();
-        }
+//        if (SimpleConverters.get(targetType.getQualifiedSourceName()) != null) {
+//            return SimpleConverters.get(targetType.getQualifiedSourceName()).getClass().getCanonicalName();
+//        }
 
-        if(JTypeInfo.isPrimitive(targetType)){
-           return generatePrimitive(logger, context, targetType);
+        if(Reflects.isPrimitive(targetType)){
+           return generatePrimitive(targetType);
+        }
+        else if(Reflects.isList(targetType, context.getTypeOracle())){
+           return generateList(logger, context, targetType);
         }
         else {
            return generateClass(logger, context, targetType);
         }
     }
 
-    private final static String generatePrimitive(TreeLogger logger, GeneratorContext context, JType primitiveType) {
+    private final static String generatePrimitive(JType primitiveType) {
         String typeQualifiedName = primitiveType.isPrimitive() != null
-                            ? primitiveType.isPrimitive().getQualifiedBoxedSourceName()
-                            : primitiveType.getQualifiedSourceName();
+                                 ? primitiveType.isPrimitive().getQualifiedBoxedSourceName()
+                                 : primitiveType.getQualifiedSourceName();
         return SimpleConverters.get(typeQualifiedName).getClass().getCanonicalName();
+    }
+
+    private final static String generateList(TreeLogger logger, GeneratorContext context, JType targetType) {
+        JClassType componentType  = targetType.isParameterized().getTypeArgs()[0];
+        String sourceName = componentType.getName() +"List" + JSONConverter.class.getSimpleName();
+        String qualifiedSourceName = packagePath + "." + sourceName;
+
+        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
+        composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
+        composer.addImport(componentType.getParameterizedQualifiedSourceName());
+
+        composer.setSuperclass("AbstractListJSONConverter<" + componentType.getName() + ">");
+        PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
+        if(pw == null) {
+            return qualifiedSourceName;
+        }
+        else {
+            SourceWriter sw = composer.createSourceWriter(context, pw);
+            sw.println("@Override public JSONConverter<" + componentType.isClassOrInterface().getParameterizedQualifiedSourceName() + "> getConverter(){ ");
+            sw.println("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
+            sw.println("}");
+            sw.commit(logger);
+        }
+        return qualifiedSourceName;
     }
 
     private final static String generateClass(TreeLogger logger, GeneratorContext context, JType targetType) {
@@ -48,7 +77,8 @@ public final class JSONConverterGenerator  {
 
         String qualifiedSourceName = packagePath + "." + sourceName;
         ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
-        composer.setSuperclass("JSONConverter<"+ targetTypeClassName +">");
+        composer.addImport(targetType.getQualifiedSourceName());
+        composer.setSuperclass("JSONConverter<"+ targetType.getQualifiedSourceName() +">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
@@ -63,20 +93,23 @@ public final class JSONConverterGenerator  {
             sw.println("return new " + targetTypeQualifiedName + "();");
             sw.println("}");
 
+            // Generate object to json method
+            System.out.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
-            sw.println("if (instance == null) {return JSONNull.getInstance();}");
+            sw.println("if (instance == null) {return JSONNull.getInstance();}");//should we handle null value?
             sw.println("JSONObject jsonObject = new JSONObject();");
+
             JField[] fields = targetType.isClassOrInterface().getFields();
-
-
             Stream.of(fields).forEach(f -> {
-                sw.println("jsonObject.put("+"\""+f.getName()+"\"" + ","
-                         + "new " + JSONConverterGenerator.generate(logger, context, f.getType())+"().convertObjectToJSON("+
-                           "instance."+f.getName()+"));");
+                String converterName = JSONConverterGenerator.generate(logger, context, f.getType());
+                sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterName +"().convertObjectToJSON("+ "instance."+f.getName()+"));");
             });
-
             sw.println("return jsonObject;}");
-            sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ return createInstance();}");
+
+            // Generate Json to object method
+            sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
+            sw.println(targetTypeQualifiedName + " instance = createInstance();");
+            sw.println("return instance;}");
             sw.commit(logger);
         }
 
@@ -109,7 +142,8 @@ public final class JSONConverterGenerator  {
         composerFactory.addImport(ShortJSONConverter.class.getCanonicalName());
         composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
         composerFactory.addImport(SimpleConverters.class.getCanonicalName());
-        composerFactory.addImport(targetType.isClassOrInterface().getParameterizedQualifiedSourceName());
+        composerFactory.addImport(List.class.getCanonicalName());
+        composerFactory.addImport(ArrayList.class.getCanonicalName());
         return composerFactory;
     }
 

@@ -7,19 +7,19 @@ public abstract class JSONConverter<T> {
 
     public final static String Name = JSONConverter.class.getName();
     private Function<String, String> paramNameFormatter = name -> name;
-    private JSONProperty property;
+
 
     public JSONConverter(){ }
     public abstract T createInstance();
     public abstract JSONValue convertObjectToJSON(T object);
     public abstract T convertJSONToObject(JSONValue value);
 
-    public final void setParamNameFormatter(Function<String,String> nameFormatter) {
+    public void setParamNameFormatter(Function<String,String> nameFormatter) {
         this.paramNameFormatter = nameFormatter;
     }
 
-    public final void setProperty(JSONProperty property) {
-        this.property = property;
+    public final Function<String, String> getParamNameFormatter() {
+        return this.paramNameFormatter;
     }
 
     public final String toJSONString(T object){

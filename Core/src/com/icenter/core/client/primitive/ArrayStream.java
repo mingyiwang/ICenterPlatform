@@ -1,5 +1,6 @@
 package com.icenter.core.client.primitive;
 
+
 public final class ArrayStream {
 
     private Object[] elements;

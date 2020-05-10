@@ -2,6 +2,7 @@ package com.icenter.core.client.reflect;
 
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import java.util.List;
 
 public final class Reflects {
 
@@ -17,6 +18,12 @@ public final class Reflects {
                 || Double.class.getCanonicalName().equals(type.getQualifiedSourceName())
                 || Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())
                 || Short.class.getCanonicalName().equals(type.getQualifiedSourceName());
+    }
+
+    public static boolean isList(JType type, TypeOracle types){
+        return type.isClassOrInterface() != null && (
+               type.isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()))
+        );
     }
 
     public static boolean isReflectible(JType type, TypeOracle types){

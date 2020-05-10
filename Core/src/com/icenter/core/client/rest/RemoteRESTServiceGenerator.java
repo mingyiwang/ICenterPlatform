@@ -19,6 +19,8 @@ import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.custom.*;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -75,6 +77,10 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(ShortJSONConverter.class.getCanonicalName());
         composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
         composerFactory.addImport(SimpleConverters.class.getCanonicalName());
+        composerFactory.addImport(AbstractListJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(List.class.getCanonicalName());
+        composerFactory.addImport(ArrayList.class.getCanonicalName());
+
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
 
@@ -87,9 +93,9 @@ public class RemoteRESTServiceGenerator extends Generator {
             Stream.of(target.getMethods())
                   .forEach(mt -> {
                        if (RemoteRESTServiceHelper.isValidMethod(mt, types)) {
+
                            JMethodInfo methodInfo = JMethodInfo.of(mt, types);
                            String params = Joiner.on(',').join(methodInfo.getParameters(), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                           System.out.println("Generating method :" + "@Override public void "+ mt.getName() + "(" + params + "){ " );
                            sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
 
                            // Generate parameters
@@ -97,19 +103,20 @@ public class RemoteRESTServiceGenerator extends Generator {
                            IntStream.range(0, methodInfo.getParameters().size() -1).forEach(i -> {
                                JParameter param = methodInfo.getParameters().get(i);
                                JType paramType  = param.getType();
-                               if (JTypeInfo.isPrimitive(paramType)){
-                                   String qualifiedParamName = paramType.isPrimitive() != null
-                                           ? paramType.isPrimitive().getQualifiedBoxedSourceName()
-                                           : paramType.getQualifiedSourceName();
-                                   sw.print("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" + qualifiedParamName + ">)"+"SimpleConverters.get("+"\""+ qualifiedParamName +"\""+")).convertObjectToJSON("+param.getName()+"));");
+                               if(RemoteRESTServiceHelper.isValidParam(param, types)){
+                                   if (JTypeInfo.isPrimitive(paramType)){
+                                       String qualifiedParamName = paramType.isPrimitive() != null
+                                                                 ? paramType.isPrimitive().getQualifiedBoxedSourceName()
+                                                                 : paramType.getQualifiedSourceName();
+                                       String converterName = SimpleConverters.get(qualifiedParamName).getClass().getCanonicalName();
+                                       sw.print("params.put("+"\""+param.getName()+"\""+","+"new " + converterName + "().convertObjectToJSON("+param.getName()+"));");
+                                   }
+                                   else {
+                                       String converterName = JSONConverterGenerator.generate(logger, context, paramType);
+                                       sw.print("params.put("+"\""+param.getName()+"\""+"," + "new " + converterName + "().convertObjectToJSON("+param.getName()+"));");
+                                   }
                                }
-                               else {
-                                   System.out.println("params.put("+"\""+param.getName()+"\""+","
-                                           + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+param.getName()+"));");
 
-                                   sw.print("params.put("+"\""+param.getName()+"\""+","
-                                          + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+param.getName()+"));");
-                               }
                            });
 
                            // Generate Return Type converter
