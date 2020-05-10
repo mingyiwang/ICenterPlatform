@@ -8,10 +8,13 @@ public class Test implements JSONConvertible {
     public boolean booleanValue = false;
     public String stringValue = "Empty";
     public double doubleValue = 0d;
-    public long longValue = 0l;
-    public byte byteValue = 1;
-    public char charValue = 'a';
-    public float floatValue = 1f;
-    public short shortValue = 0;
+    public long longValue     = 0l;
+    public byte byteValue     = 1;
+    public char charValue     = 'a';
+    public float floatValue   = 1f;
+    public short shortValue   = 0;
+    public Test2 testValue    = new Test2();
+    public Test2 testValue2   = new Test2();
+    public Test2 testValue3   = new Test2();
 
 }

@@ -104,6 +104,9 @@ public class RemoteRESTServiceGenerator extends Generator {
                                    sw.print("params.put("+"\""+param.getName()+"\""+","+"((JSONConverter<" + qualifiedParamName + ">)"+"SimpleConverters.get("+"\""+ qualifiedParamName +"\""+")).convertObjectToJSON("+param.getName()+"));");
                                }
                                else {
+                                   System.out.println("params.put("+"\""+param.getName()+"\""+","
+                                           + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+param.getName()+"));");
+
                                    sw.print("params.put("+"\""+param.getName()+"\""+","
                                           + "new " + JSONConverterGenerator.generate(logger, context, paramType.isClassOrInterface()) + "().convertObjectToJSON("+param.getName()+"));");
                                }

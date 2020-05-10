@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 /***
  * JSONConvertible Object Converter, used to generates object converters, shouldn't use it directly
+ * not responsible for any cost of direct use.
  */
 public final class JSONConverterGenerator  {
 
@@ -46,7 +47,7 @@ public final class JSONConverterGenerator  {
         String sourceName = targetTypeClassName + JSONConverter.class.getSimpleName();
 
         String qualifiedSourceName = packagePath + "." + sourceName;
-        ClassSourceFileComposerFactory composer = createClassSourceComposer(targetType, sourceName);
+        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
         composer.setSuperclass("JSONConverter<"+ targetTypeClassName +">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
@@ -56,8 +57,8 @@ public final class JSONConverterGenerator  {
         else {
             String targetTypeQualifiedName = targetType.getQualifiedSourceName();
             SourceWriter sw = composer.createSourceWriter(context, pw);
-            // Generate new instance method
 
+            // Generate new instance method
             sw.println("@Override public "+ targetType.isClassOrInterface().getName() + " createInstance(){ ");
             sw.println("return new " + targetTypeQualifiedName + "();");
             sw.println("}");
@@ -66,6 +67,7 @@ public final class JSONConverterGenerator  {
             sw.println("if (instance == null) {return JSONNull.getInstance();}");
             sw.println("JSONObject jsonObject = new JSONObject();");
             JField[] fields = targetType.isClassOrInterface().getFields();
+
 
             Stream.of(fields).forEach(f -> {
                 sw.println("jsonObject.put("+"\""+f.getName()+"\"" + ","
@@ -81,7 +83,7 @@ public final class JSONConverterGenerator  {
         return qualifiedSourceName;
     }
 
-    private final static ClassSourceFileComposerFactory createClassSourceComposer(JType targetType, String sourceName) {
+    private final static ClassSourceFileComposerFactory createJSONConverterClassComposer(JType targetType, String sourceName) {
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packagePath, sourceName);
         composerFactory.addImport(JSONParser.class.getCanonicalName());
         composerFactory.addImport(JSONValue.class.getCanonicalName());
