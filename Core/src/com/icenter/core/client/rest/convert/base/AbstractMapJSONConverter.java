@@ -1,4 +1,4 @@
-package com.icenter.core.client.rest.convert.custom;
+package com.icenter.core.client.rest.convert.base;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;

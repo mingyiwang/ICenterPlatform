@@ -1,6 +1,7 @@
 package com.icenter.core.client.rest.convert;
 
-import com.icenter.core.client.rest.convert.custom.*;
+import com.icenter.core.client.rest.convert.base.*;
+
 import java.util.Date;
 import java.util.HashMap;
 

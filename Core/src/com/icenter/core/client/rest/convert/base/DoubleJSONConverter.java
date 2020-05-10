@@ -1,4 +1,4 @@
-package com.icenter.core.client.rest.convert.custom;
+package com.icenter.core.client.rest.convert.base;
 
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONNumber;
@@ -6,29 +6,30 @@ import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.primitive.Numbers;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public final class FloatJSONConverter extends JSONConverter<Float> {
+public final class DoubleJSONConverter extends JSONConverter<Double> {
 
     @Override
-    public Float createInstance() {
-        return Numbers.getDefaultFloat();
+    public Double createInstance() {
+        return Numbers.getDefaultDouble();
     }
 
     @Override
-    public JSONValue convertObjectToJSON(Float object) {
+    public JSONValue convertObjectToJSON(Double object) {
         return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }
 
     @Override
-    public Float convertJSONToObject(JSONValue value) {
+    public Double convertJSONToObject(JSONValue value) {
         if (value == null || value.isNull() != null){
             return null;
         }
 
         if (value.isString() != null) {
-            return Float.parseFloat(value.isString().stringValue());
+            return Double.parseDouble(value.isString().stringValue());
         }
 
-        return (float) value.isNumber().doubleValue();
+        return value.isNumber().doubleValue();
+
     }
 
 }

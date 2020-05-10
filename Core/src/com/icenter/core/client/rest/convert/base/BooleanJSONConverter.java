@@ -1,4 +1,4 @@
-package com.icenter.core.client.rest.convert.custom;
+package com.icenter.core.client.rest.convert.base;
 
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONValue;
@@ -12,6 +12,7 @@ public final class BooleanJSONConverter extends JSONConverter<Boolean> {
         return Numbers.getDefaultBoolean();
     }
 
+    @Override
     public JSONValue convertObjectToJSON(Boolean object) {
         return object == null
              ? JSONBoolean.getInstance(false)

@@ -17,7 +17,8 @@ import com.icenter.core.client.reflect.JMethodInfo;
 import com.icenter.core.client.reflect.JTypeInfo;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
-import com.icenter.core.client.rest.convert.custom.*;
+import com.icenter.core.client.rest.convert.base.*;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;

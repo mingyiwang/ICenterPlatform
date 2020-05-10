@@ -10,7 +10,8 @@ import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
-import com.icenter.core.client.rest.convert.custom.*;
+import com.icenter.core.client.rest.convert.base.*;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
