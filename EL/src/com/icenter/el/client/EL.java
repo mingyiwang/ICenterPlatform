@@ -16,13 +16,13 @@ public class EL implements EntryPoint {
         RootPanel.get().add(w);
 
         final Test test = new Test();
-        test.testListValue.add(new Test2());
-        test.testListValue.add(new Test2());
+        test.getTestListValue().add(new Test2());
+        test.getTestListValue().add(new Test2());
 
         Button button = new Button("Click me");
         button.addClickHandler(clickEvent -> {
             TestingService service = GWT.create(TestingService.class);
-            service.postService(test,test.testListValue, new AsyncCallback<String>() {
+            service.postService(test,test.getTestListValue(), new AsyncCallback<String>() {
                 @Override
                 public void onFailure(Throwable throwable) {
 

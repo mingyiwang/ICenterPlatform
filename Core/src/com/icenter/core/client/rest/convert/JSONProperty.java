@@ -3,14 +3,9 @@ package com.icenter.core.client.rest.convert;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
-import com.google.gwt.core.ext.typeinfo.JType;
-import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.primitive.Strings;
-import com.icenter.core.client.reflect.Reflects;
 
-import java.util.stream.IntStream;
-
-public class JSONProperty {
+public final class JSONProperty {
 
     private boolean isArray            = false;
     private boolean isClass            = false;
@@ -26,23 +21,37 @@ public class JSONProperty {
     private String name = Strings.Empty;
 
     public final static JSONProperty of(JField field, JClassType targetType){
+        JMethod setMethod = findSetMethod(field, targetType);
+        JMethod getMethod = findGetMethod(field, targetType);
+
         JSONProperty property =  new JSONProperty();
         property.setName(field.getName());
-        property.setSetMethod(findSetMethod(field, targetType).getName());
-        property.setGetMethod(findGetMethod(field, targetType).getName());
+        property.setSetMethod(setMethod == null ? Strings.Empty : setMethod.getName());
+        property.setGetMethod(getMethod == null ? Strings.Empty : getMethod.getName());
         return property;
     }
 
     private static JMethod findSetMethod(JField field, JClassType type){
         JMethod[] methods = type.getMethods();
         String name = field.getName();
-
+        for(int i=0 ; i< methods.length; i++){
+            String methodName = methods[i].getName();
+            if (methodName.startsWith("set") && methodName.toLowerCase().contains(name.toLowerCase())){
+                return methods[i];
+            }
+        }
         return null;
     }
 
     private static JMethod findGetMethod(JField field, JClassType type){
         JMethod[] methods = type.getMethods();
         String name = field.getName();
+        for(int i=0 ; i< methods.length; i++){
+            String methodName = methods[i].getName();
+            if ((methodName.startsWith("get") || methodName.startsWith("is")) && methodName.toLowerCase().contains(name.toLowerCase())){
+                return methods[i];
+            }
+        }
         return null;
     }
 

@@ -127,6 +127,7 @@ public final class JSONConverterGenerator  {
             JField[] fields = targetType.isClassOrInterface().getFields();
             JFieldStream.of(fields, targetType.isClassOrInterface()).forEach((f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
+                System.out.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
                 sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
             });
 
@@ -136,9 +137,11 @@ public final class JSONConverterGenerator  {
             sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
             sw.println("JSONObject jsonObject = value.isObject();");
             sw.println(targetTypeQualifiedName + " instance = createInstance();");
+
             JField[] properties = targetType.isClassOrInterface().getFields();
             JFieldStream.of(properties, targetType.isClassOrInterface()).forEach((f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
+
                 sw.println("instance."+p.getSetMethod()+"(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
             });
 

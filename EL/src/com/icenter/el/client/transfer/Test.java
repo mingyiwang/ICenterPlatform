@@ -6,22 +6,21 @@ import java.util.List;
 
 public class Test implements JSONConvertible {
 
-    public int integer = 0;
-    public boolean booleanValue = false;
-    public String stringValue = "Empty";
-    public double doubleValue = 0d;
-    public long longValue     = 0l;
-    public byte byteValue     = 1;
-    public char charValue     = 'a';
-    public float floatValue   = 1f;
-    public short shortValue   = 0;
-    public Test2 testValue    = new Test2();
-    public List<Test2> testListValue = new ArrayList<Test2>();
+    private int integer = 0;
+    private boolean booleanValue = false;
+    private String stringValue = "Empty";
+    private double doubleValue = 0d;
+    private long longValue     = 0l;
+    private byte byteValue     = 1;
+    private char charValue     = 'a';
+    private float floatValue   = 1f;
+    private short shortValue   = 0;
+    private Test2 testValue    = new Test2();
+    private List<Test2> testListValue = new ArrayList<Test2>();
 
     public int getInteger() {
         return integer;
     }
-
     public void setInteger(int integer) {
         this.integer = integer;
     }
@@ -29,7 +28,6 @@ public class Test implements JSONConvertible {
     public boolean isBooleanValue() {
         return booleanValue;
     }
-
     public void setBooleanValue(boolean booleanValue) {
         this.booleanValue = booleanValue;
     }

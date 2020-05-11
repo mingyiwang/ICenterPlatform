@@ -25,8 +25,10 @@ public final class JFieldStream {
     }
 
     public JFieldStream forEach(BiConsumer<JField, JSONProperty> consumer){
-        final int len = fields.length;
-        IntStream.of(0, len).forEach(i -> {
+        Objects.requireNonNull(consumer);
+
+        int len = fields.length;
+        IntStream.of(0, len-1).forEach(i -> {
             consumer.accept(fields[i], JSONProperty.of(fields[i], targetType));
         });
         return this;
