@@ -26,8 +26,7 @@ public final class RemoteRESTServiceHelper {
         }
 
         // Check has return type or not
-        boolean valid = isAsyncCallback(parameters[parameters.length - 1].getType(),types);
-
+        boolean valid = isAsyncCallbackClass(parameters[parameters.length - 1].getType(),types);
         for(int i = 0; i < parameters.length - 1; i++){
             valid = isValidParam(parameters[i], types);
             if(!valid){
@@ -39,12 +38,12 @@ public final class RemoteRESTServiceHelper {
     }
 
     public static boolean isValidParam(JParameter parameter, TypeOracle types){
-        if (Reflects.isPrimitive(parameter.getType())){
+        if (Reflects.isPrimitive(parameter.getType()) || Reflects.isArray(parameter.getType())){
             return true;
         }
         else {
             return parameter.getType().isClassOrInterface() != null && (
-                    parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
+                   parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
                             || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
                             || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()))
                             || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()))
@@ -52,9 +51,9 @@ public final class RemoteRESTServiceHelper {
         }
     }
 
-    public static boolean isAsyncCallback(JType type, TypeOracle types){
+    public static boolean isAsyncCallbackClass(JType type, TypeOracle types){
         return type.isClassOrInterface() != null
-                && type.isClassOrInterface().isAssignableTo(types.findType(AsyncCallback.class.getCanonicalName()));
+            && type.isClassOrInterface().isAssignableTo(types.findType(AsyncCallback.class.getCanonicalName()));
     }
 
     public static JParameter getAsyncReturnParameter(JMethod method){
@@ -63,9 +62,7 @@ public final class RemoteRESTServiceHelper {
     }
 
     public static JClassType getAsyncReturnType(JMethod method) {
-        JParameter[] ps = method.getParameters();
-        JParameter last = ps[ps.length-1];
-        return last.getType().isParameterized().getTypeArgs()[0];
+        return  getAsyncReturnParameter(method).getType().isParameterized().getTypeArgs()[0];
     }
 
     public static List<JParameter> getMethodParameters(JMethod method){

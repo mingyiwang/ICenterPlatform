@@ -10,7 +10,7 @@ public final class ByteJSONConverter extends JSONConverter<Byte> {
 
     @Override
     public Byte createInstance() {
-        return Numbers.getDefaultByte();
+        return null;
     }
 
     @Override

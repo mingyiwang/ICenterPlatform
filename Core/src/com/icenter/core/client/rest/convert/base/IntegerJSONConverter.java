@@ -10,7 +10,7 @@ public final class IntegerJSONConverter extends JSONConverter<Integer> {
 
     @Override
     public Integer createInstance() {
-        return Numbers.getDefaultInteger();
+        return null;
     }
 
     @Override

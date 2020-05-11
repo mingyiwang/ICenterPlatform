@@ -10,7 +10,7 @@ public final class FloatJSONConverter extends JSONConverter<Float> {
 
     @Override
     public Float createInstance() {
-        return Numbers.getDefaultFloat();
+        return null;
     }
 
     @Override

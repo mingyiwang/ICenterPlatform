@@ -11,7 +11,6 @@ import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
 import com.icenter.core.client.rest.convert.base.*;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public final class JSONConverterGenerator  {
            return generatePrimitive(targetType);
         }
         else if(Reflects.isArray(targetType)){
-            return generateArray(logger, context, targetType);
+           return generateArray(logger, context, targetType);
         }
         else if(Reflects.isList(targetType, context.getTypeOracle())){
            return generateList(logger, context, targetType);
@@ -53,12 +52,13 @@ public final class JSONConverterGenerator  {
         String qualifiedSourceName = packagePath + "." + sourceName;
 
         ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
-        composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
+        composer.addImport(AbstractArrayJSONConverter.class.getCanonicalName());
         composer.addImport(componentType.getParameterizedQualifiedSourceName());
         composer.setSuperclass("AbstractArrayJSONConverter<" + componentType.getParameterizedQualifiedSourceName() + ">");
+
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
-            return qualifiedSourceName;
+           return qualifiedSourceName;
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
@@ -101,7 +101,7 @@ public final class JSONConverterGenerator  {
         String qualifiedSourceName = packagePath + "." + sourceName;
         ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
         composer.addImport(targetType.getQualifiedSourceName());
-        composer.setSuperclass("JSONConverter<"+ targetType.getQualifiedSourceName() +">");
+        composer.setSuperclass(JSONConverter.class.getName() + "<" + targetType.getQualifiedSourceName() + ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
@@ -120,8 +120,8 @@ public final class JSONConverterGenerator  {
             System.out.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("if (instance == null) {return JSONNull.getInstance();}");//should we handle null value?
-            sw.println("JSONObject jsonObject = new JSONObject();");
 
+            sw.println("JSONObject jsonObject = new JSONObject();");
             JField[] fields = targetType.isClassOrInterface().getFields();
             Stream.of(fields).forEach(f -> {
                 String converterName = JSONConverterGenerator.generate(logger, context, f.getType());
@@ -135,7 +135,7 @@ public final class JSONConverterGenerator  {
             JField[] properties = targetType.isClassOrInterface().getFields();
             Stream.of(properties).forEach(f -> {
                 String converterName = JSONConverterGenerator.generate(logger, context, f.getType());
-                sw.println("instance."+f.getName()+"\"" + "," + "new " + converterName +"().convertJSONToObject("+ "value.isObject().get("+f.getName()+"));");
+                sw.println("instance."+f.getName()+" = new " + converterName +"().convertJSONToObject("+ "value.isObject().get("+"\""+f.getName()+"\""+"));");
             });
             sw.println("return instance;}");
             sw.commit(logger);

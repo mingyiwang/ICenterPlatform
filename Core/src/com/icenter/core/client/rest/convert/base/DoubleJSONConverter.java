@@ -10,7 +10,7 @@ public final class DoubleJSONConverter extends JSONConverter<Double> {
 
     @Override
     public Double createInstance() {
-        return Numbers.getDefaultDouble();
+        return null;
     }
 
     @Override

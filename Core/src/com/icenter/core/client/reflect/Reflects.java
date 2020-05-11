@@ -3,6 +3,7 @@ package com.icenter.core.client.reflect;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import java.util.List;
+import java.util.Map;
 
 public final class Reflects {
 
@@ -27,6 +28,12 @@ public final class Reflects {
     public static boolean isList(JType type, TypeOracle types){
         return type.isClassOrInterface() != null && (
                type.isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()))
+        );
+    }
+
+    public static boolean isMap(JType type, TypeOracle types){
+        return type.isClassOrInterface() != null && (
+                type.isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()))
         );
     }
 

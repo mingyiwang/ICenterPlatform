@@ -1,20 +1,43 @@
 package com.icenter.core.client.primitive;
 
 
-public final class ArrayStream {
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
-    private Object[] elements;
+public final class ArrayStream<T> {
 
-    private ArrayStream(Object[] elements){
+    private T[] elements;
+
+    private ArrayStream(T[] elements){
         this.elements = elements;
     }
 
-    public static ArrayStream of(Object... elements){
+    public static <T> ArrayStream of(T... elements){
         return new ArrayStream(elements);
     }
 
-    public Object last(){
-        return null;
+    public ArrayStream<T> forEach(Consumer<T> consumer){
+        final int len = elements.length;
+        IntStream.of(0, len).forEach(i -> {
+            consumer.accept(elements[i]);
+        });
+        return this;
+    }
+
+    public ArrayStream<T> forEach(BiConsumer<Integer,T> consumer){
+        final int len = elements.length;
+        IntStream.of(0, len).forEach(i -> {
+            consumer.accept(i, elements[i]);
+        });
+        return this;
+    }
+
+
+    public ArrayStream<T> last(Consumer<T> consumer){
+        final int len = elements.length;
+        consumer.accept(elements[len-1]);
+        return this;
     }
 
 }

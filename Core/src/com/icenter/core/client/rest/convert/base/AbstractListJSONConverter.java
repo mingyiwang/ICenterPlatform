@@ -33,17 +33,16 @@ public abstract class AbstractListJSONConverter<T> extends JSONConverter<List<T>
 
     @Override
     public final List<T> convertJSONToObject(JSONValue value) {
-        List<T> list = createInstance();
-
-        if (value == null || value.isArray() != null){
-            return list;
+        if (value == null || value.isNull() != null || value.isArray() == null){
+            return null;
         }
 
+        List<T> list = createInstance();
         JSONArray array = (JSONArray) value;
         int size = array.size();
         for (int i = 0; i < size; i++) {
              list.add(getConverter().convertJSONToObject(array.get(i)));
-        };
+        }
         return list;
     }
 
