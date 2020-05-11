@@ -2,12 +2,9 @@ package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.primitive.Strings;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JSONProperty {
 
-    private List<JSONProperty> properties = new ArrayList<JSONProperty>();
     private boolean isArray            = false;
     private boolean isClass            = false;
     private boolean isClassOrInterface = false;
@@ -112,14 +109,6 @@ public class JSONProperty {
 
     public void setGetMethod(String getMethod) {
         this.getMethod = getMethod;
-    }
-
-    public List<JSONProperty> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(List<JSONProperty> properties) {
-        this.properties = properties;
     }
 
     public String getName() {

@@ -7,6 +7,7 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map<T1,T2>> {
 
@@ -24,17 +25,7 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
     @Override
     public JSONValue convertObjectToJSON(Map<T1, T2> object) {
         JSONArray array = new JSONArray();
-        Set<T1> keys = object.keySet();
-        int index = 0;
 
-        keys.forEach(key -> {
-            JSONObject entry     = new JSONObject();
-            JSONValue keyEntry   = getKeyConverter().convertObjectToJSON(key);
-            JSONValue valueEntry = getValueConverter().convertObjectToJSON(object.get(key));
-            entry.put("Key",   keyEntry);
-            entry.put("Value", valueEntry);
-            array.set(index, entry);
-        });
         return array;
     }
 
@@ -46,7 +37,11 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
         }
 
         JSONArray array = value.isArray();
-
+        int size = array.size();
+        IntStream.of(0, size).forEach(i -> {
+            JSONValue entry = array.get(i);
+            entry.isObject().get("");//
+        });
         return map;
     }
 

@@ -65,4 +65,16 @@ public final class Joiner {
         });
         return buffer.toString();
     }
+
+    public <T> String join(Iterable<T> iterator, Function<T, String> lambda){
+        if(!iterator.iterator().hasNext()) {
+            return null;
+        }
+
+        while(iterator.iterator().hasNext()){
+            T current = iterator.iterator().next();
+        }
+
+        return Strings.Empty;
+    }
 }

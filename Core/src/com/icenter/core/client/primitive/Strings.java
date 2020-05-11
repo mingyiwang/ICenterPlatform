@@ -1,7 +1,6 @@
 package com.icenter.core.client.primitive;
 
 import com.icenter.core.client.lambda.Function;
-
 import java.util.Objects;
 
 public final class Strings {

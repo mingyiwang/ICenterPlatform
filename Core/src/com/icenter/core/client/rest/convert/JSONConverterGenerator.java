@@ -26,12 +26,11 @@ public final class JSONConverterGenerator  {
     private final static String packagePath = "com.icenter.core.client.rest.convert";
 
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType){
-//        if (SimpleConverters.get(targetType.getQualifiedSourceName()) != null) {
-//            return SimpleConverters.get(targetType.getQualifiedSourceName()).getClass().getCanonicalName();
-//        }
-
         if(Reflects.isPrimitive(targetType)){
            return generatePrimitive(targetType);
+        }
+        else if(Reflects.isArray(targetType)){
+            return generateArray(logger, context, targetType);
         }
         else if(Reflects.isList(targetType, context.getTypeOracle())){
            return generateList(logger, context, targetType);
@@ -48,8 +47,31 @@ public final class JSONConverterGenerator  {
         return SimpleConverters.get(typeQualifiedName).getClass().getCanonicalName();
     }
 
+    private final static String generateArray(TreeLogger logger, GeneratorContext context, JType targetType) {
+        JType componentType = targetType.isArray().getComponentType();
+        String sourceName = componentType.getSimpleSourceName() + "Array" + JSONConverter.class.getSimpleName();
+        String qualifiedSourceName = packagePath + "." + sourceName;
+
+        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
+        composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
+        composer.addImport(componentType.getParameterizedQualifiedSourceName());
+        composer.setSuperclass("AbstractArrayJSONConverter<" + componentType.getParameterizedQualifiedSourceName() + ">");
+        PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
+        if(pw == null) {
+            return qualifiedSourceName;
+        }
+        else {
+            SourceWriter sw = composer.createSourceWriter(context, pw);
+            sw.println("@Override public JSONConverter<" + componentType.getParameterizedQualifiedSourceName() + "> getConverter(){ ");
+            sw.println("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
+            sw.println("}");
+            sw.commit(logger);
+        }
+        return qualifiedSourceName;
+    }
+
     private final static String generateList(TreeLogger logger, GeneratorContext context, JType targetType) {
-        JClassType componentType  = targetType.isParameterized().getTypeArgs()[0];
+        JClassType componentType  = getComponentType(targetType);
         String sourceName = componentType.getName() +"List" + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;
 
@@ -110,6 +132,11 @@ public final class JSONConverterGenerator  {
             // Generate Json to object method
             sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
             sw.println(targetTypeQualifiedName + " instance = createInstance();");
+            JField[] properties = targetType.isClassOrInterface().getFields();
+            Stream.of(properties).forEach(f -> {
+                String converterName = JSONConverterGenerator.generate(logger, context, f.getType());
+                sw.println("instance."+f.getName()+"\"" + "," + "new " + converterName +"().convertJSONToObject("+ "value.isObject().get("+f.getName()+"));");
+            });
             sw.println("return instance;}");
             sw.commit(logger);
         }
@@ -148,5 +175,26 @@ public final class JSONConverterGenerator  {
         return composerFactory;
     }
 
+    private static JClassType getComponentType(JType target){
+        if (target.isParameterized() != null){
+            return target.isParameterized().getTypeArgs()[0];
+        }
+        return getComponentType(target.isClassOrInterface().getSuperclass());
+    }
+
+    private static JClassType getValueComponentTypeOfMap(JType target){
+        if (target.isParameterized() != null){
+            return target.isParameterized().getTypeArgs()[1];
+        }
+        return getValueComponentTypeOfMap(target.isClassOrInterface().getSuperclass());
+    }
+
+    private static String getSetValueMethod(JField field){
+        return "set" + field.getName();
+    }
+
+    private static String getGetValueMethod(JField field){
+        return "get" + field.getName();
+    }
 
 }

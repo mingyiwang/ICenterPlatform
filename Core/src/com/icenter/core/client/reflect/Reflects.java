@@ -20,6 +20,10 @@ public final class Reflects {
                 || Short.class.getCanonicalName().equals(type.getQualifiedSourceName());
     }
 
+    public static boolean isArray(JType type){
+        return type.isArray() != null;
+    }
+
     public static boolean isList(JType type, TypeOracle types){
         return type.isClassOrInterface() != null && (
                type.isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()))
