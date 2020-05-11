@@ -7,6 +7,7 @@ import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.icenter.core.client.reflect.JFieldStream;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
@@ -116,27 +117,31 @@ public final class JSONConverterGenerator  {
             sw.println("return new " + targetTypeQualifiedName + "();");
             sw.println("}");
 
+
             // Generate object to json method
             System.out.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
-            sw.println("if (instance == null) {return JSONNull.getInstance();}");//should we handle null value?
+            sw.println("if (instance == null) { return JSONNull.getInstance(); }"); //should we handle null value?
 
             sw.println("JSONObject jsonObject = new JSONObject();");
             JField[] fields = targetType.isClassOrInterface().getFields();
-            Stream.of(fields).forEach(f -> {
-                String converterName = JSONConverterGenerator.generate(logger, context, f.getType());
-                sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterName +"().convertObjectToJSON("+ "instance."+f.getName()+"));");
+            JFieldStream.of(fields, targetType.isClassOrInterface()).forEach((f, p)-> {
+                String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
+                sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
             });
+
             sw.println("return jsonObject;}");
 
             // Generate Json to object method
             sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
+            sw.println("JSONObject jsonObject = value.isObject();");
             sw.println(targetTypeQualifiedName + " instance = createInstance();");
             JField[] properties = targetType.isClassOrInterface().getFields();
-            Stream.of(properties).forEach(f -> {
-                String converterName = JSONConverterGenerator.generate(logger, context, f.getType());
-                sw.println("instance."+f.getName()+" = new " + converterName +"().convertJSONToObject("+ "value.isObject().get("+"\""+f.getName()+"\""+"));");
+            JFieldStream.of(properties, targetType.isClassOrInterface()).forEach((f, p)-> {
+                String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
+                sw.println("instance."+p.getSetMethod()+"(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
             });
+
             sw.println("return instance;}");
             sw.commit(logger);
         }

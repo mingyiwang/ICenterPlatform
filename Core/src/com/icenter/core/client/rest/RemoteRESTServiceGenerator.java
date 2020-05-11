@@ -20,6 +20,8 @@ import com.icenter.core.client.rest.convert.base.*;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -76,10 +78,10 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(ShortJSONConverter.class.getCanonicalName());
         composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
         composerFactory.addImport(SimpleConverters.class.getCanonicalName());
-        composerFactory.addImport(AbstractListJSONConverter.class.getCanonicalName());
         composerFactory.addImport(List.class.getCanonicalName());
         composerFactory.addImport(ArrayList.class.getCanonicalName());
-
+        composerFactory.addImport(Set.class.getCanonicalName());
+        composerFactory.addImport(Map.class.getCanonicalName());
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
 
@@ -92,33 +94,29 @@ public class RemoteRESTServiceGenerator extends Generator {
             Stream.of(target.getMethods())
                   .forEach(mt -> {
                        if (RemoteRESTServiceHelper.isValidMethod(mt, types)) {
-
                            String params = Joiner.on(',').join(RemoteRESTServiceHelper.getMethodParameters(mt), p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
                            sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
-
                            sw.println("JSONObject params = new JSONObject();");
                            IntStream.range(0, RemoteRESTServiceHelper.getMethodParameters(mt).size() -1).forEach(i -> {
                                JParameter param = RemoteRESTServiceHelper.getMethodParameters(mt).get(i);
-                               JType paramType  = param.getType();
+                               JType parameterType = param.getType();
                                if(RemoteRESTServiceHelper.isValidParam(param, types)){
-                                   if (Reflects.isPrimitive(paramType)){
-                                       String qualifiedParamName = paramType.isPrimitive() != null
-                                                                 ? paramType.isPrimitive().getQualifiedBoxedSourceName()
-                                                                 : paramType.getQualifiedSourceName();
-                                       String converterName = SimpleConverters.get(qualifiedParamName).getClass().getCanonicalName();
-                                       sw.print("params.put("+"\""+param.getName()+"\""+","+"new " + converterName + "().convertObjectToJSON("+param.getName()+"));");
+                                   if (Reflects.isPrimitive(parameterType)){
+                                       String qualifiedParamName = parameterType.isPrimitive() != null
+                                                                 ? parameterType.isPrimitive().getQualifiedBoxedSourceName()
+                                                                 : parameterType.getQualifiedSourceName();
+                                       sw.print("params.put("+"\""+param.getName()+"\""+","+"SimpleConverters.get(\"" + qualifiedParamName + "\").convertObjectToJSON("+param.getName()+"));");
                                    }
                                    else {
-                                       String converterName = JSONConverterGenerator.generate(logger, context, paramType);
-                                       sw.print("params.put("+"\""+param.getName()+"\""+"," + "new " + converterName + "().convertObjectToJSON("+param.getName()+"));");
+                                       String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
+                                       sw.print("params.put("+"\""+param.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+param.getName()+"));");
                                    }
                                }
 
                            });
-
-                           String converter = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getAsyncReturnType(mt));
-                           sw.print("JSONConverter callbackConverter = new " + converter + "();");
-                           sw.println("send(params, callbackConverter," +RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");
+                           String converterSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getAsyncReturnType(mt));
+                           sw.print("JSONConverter callbackConverter = new " + converterSourceName + "();");
+                           sw.println("send(params, callbackConverter," + RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");
                            sw.println("}");
                        }
                   });

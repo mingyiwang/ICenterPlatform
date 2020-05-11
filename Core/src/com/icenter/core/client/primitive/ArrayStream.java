@@ -25,7 +25,7 @@ public final class ArrayStream<T> {
         return this;
     }
 
-    public ArrayStream<T> forEach(BiConsumer<Integer,T> consumer){
+    public ArrayStream<T> forEach(BiConsumer<Integer, T> consumer){
         final int len = elements.length;
         IntStream.of(0, len).forEach(i -> {
             consumer.accept(i, elements[i]);
