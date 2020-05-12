@@ -69,40 +69,4 @@ public final class RemoteRESTServiceHelper {
         return Arrays.asList(method.getParameters());
     }
 
-    public static List<JSONProperty> getProperties(JType type, TypeOracle types){
-        List<JSONProperty> properties = new ArrayList<>();
-        JField[] fields   = type.isClassOrInterface().getFields();
-        JMethod[] methods = type.isClassOrInterface().getMethods();
-
-        Stream.of(0, fields.length).forEach(i -> {
-            JField field = fields[i];
-            JType propertyType = field.getType();
-            JSONProperty property = new JSONProperty();
-            property.setName(field.getName());
-            property.setArray(propertyType.isArray() != null);
-            property.setClass(propertyType.isClass() != null);
-            property.setClassOrInterface(propertyType.isClassOrInterface() != null);
-            property.setEnum(propertyType.isEnum() != null);
-            property.setGenericType(propertyType.isGenericType() != null);
-            property.setInterface(propertyType.isInterface() != null);
-            property.setClassOrInterface(propertyType.isClassOrInterface() != null);
-            property.setParameterized(propertyType.isParameterized() != null);
-            property.setWildCard(propertyType.isWildcard() != null);
-
-        });
-
-        return properties;
-    }
-
-    public JMethod hasSetMethod(JField field, JMethod[] methods){
-        String name = field.getName();
-        String expectedMethodName = "set" + name;
-        Stream.of(0, methods.length).forEach(i -> {
-            if (expectedMethodName.equals(methods[i].getName())){
-
-            }
-        });
-
-        return null;
-    }
 }

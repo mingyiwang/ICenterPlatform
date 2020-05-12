@@ -12,25 +12,28 @@ public final class JFieldStream {
     private JField[] fields;
     private JClassType targetType;
 
-    private JFieldStream(JField[] fields, JClassType targetType){
-        Objects.requireNonNull(fields);
+    private JFieldStream(JClassType targetType){
         Objects.requireNonNull(targetType);
+        Objects.requireNonNull(targetType.getFields());
+        Objects.requireNonNull(targetType.getMethods());
 
-        this.fields = fields;
         this.targetType = targetType;
+        this.fields = targetType.getFields();
     }
 
-    public static JFieldStream of(JField[] fields, JClassType targetType){
-        return new JFieldStream(fields, targetType);
+    public static JFieldStream of(JClassType targetType){
+        return new JFieldStream(targetType);
     }
 
     public JFieldStream forEach(BiConsumer<JField, JSONProperty> consumer){
         Objects.requireNonNull(consumer);
 
         int len = fields.length;
-        IntStream.of(0, len-1).forEach(i -> {
-            consumer.accept(fields[i], JSONProperty.of(fields[i], targetType));
-        });
+        if(len == 0) {
+
+        }
+
+        IntStream.of(0, len-1).forEach(i -> consumer.accept(fields[i], JSONProperty.of(fields[i], targetType)));
         return this;
     }
 

@@ -15,7 +15,6 @@ import com.icenter.core.client.rest.convert.base.*;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /***
  * JSONConvertible Object Converter, used to generates object converters,
@@ -52,7 +51,7 @@ public final class JSONConverterGenerator  {
         String sourceName = componentType.getSimpleSourceName() + "Array" + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;
 
-        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
+        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(sourceName);
         composer.addImport(AbstractArrayJSONConverter.class.getCanonicalName());
         composer.addImport(componentType.getParameterizedQualifiedSourceName());
         composer.setSuperclass("AbstractArrayJSONConverter<" + componentType.getParameterizedQualifiedSourceName() + ">");
@@ -76,7 +75,7 @@ public final class JSONConverterGenerator  {
         String sourceName = componentType.getName() +"List" + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;
 
-        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
+        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(sourceName);
         composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
         composer.addImport(componentType.getParameterizedQualifiedSourceName());
 
@@ -100,7 +99,7 @@ public final class JSONConverterGenerator  {
         String sourceName = targetTypeClassName + JSONConverter.class.getSimpleName();
 
         String qualifiedSourceName = packagePath + "." + sourceName;
-        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(targetType, sourceName);
+        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(sourceName);
         composer.addImport(targetType.getQualifiedSourceName());
         composer.setSuperclass(JSONConverter.class.getName() + "<" + targetType.getQualifiedSourceName() + ">");
 
@@ -122,29 +121,22 @@ public final class JSONConverterGenerator  {
             System.out.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("if (instance == null) { return JSONNull.getInstance(); }"); //should we handle null value?
-
             sw.println("JSONObject jsonObject = new JSONObject();");
-            JField[] fields = targetType.isClassOrInterface().getFields();
-            JFieldStream.of(fields, targetType.isClassOrInterface()).forEach((f, p)-> {
+            JFieldStream.of(targetType.isClassOrInterface()).forEach((f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
                 System.out.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
                 sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
             });
-
             sw.println("return jsonObject;}");
 
             // Generate Json to object method
             sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
             sw.println("JSONObject jsonObject = value.isObject();");
             sw.println(targetTypeQualifiedName + " instance = createInstance();");
-
-            JField[] properties = targetType.isClassOrInterface().getFields();
-            JFieldStream.of(properties, targetType.isClassOrInterface()).forEach((f, p)-> {
+            JFieldStream.of(targetType.isClassOrInterface()).forEach((f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
-
-                sw.println("instance."+p.getSetMethod()+"(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
+                sw.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
             });
-
             sw.println("return instance;}");
             sw.commit(logger);
         }
@@ -152,7 +144,7 @@ public final class JSONConverterGenerator  {
         return qualifiedSourceName;
     }
 
-    private final static ClassSourceFileComposerFactory createJSONConverterClassComposer(JType targetType, String sourceName) {
+    private final static ClassSourceFileComposerFactory createJSONConverterClassComposer(String sourceName) {
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packagePath, sourceName);
         composerFactory.addImport(JSONParser.class.getCanonicalName());
         composerFactory.addImport(JSONValue.class.getCanonicalName());
@@ -190,19 +182,6 @@ public final class JSONConverterGenerator  {
         return getComponentType(target.isClassOrInterface().getSuperclass());
     }
 
-    private static JClassType getValueComponentTypeOfMap(JType target){
-        if (target.isParameterized() != null){
-            return target.isParameterized().getTypeArgs()[1];
-        }
-        return getValueComponentTypeOfMap(target.isClassOrInterface().getSuperclass());
-    }
 
-    private static String getSetValueMethod(JField field){
-        return "set" + field.getName();
-    }
-
-    private static String getGetValueMethod(JField field){
-        return "get" + field.getName();
-    }
 
 }

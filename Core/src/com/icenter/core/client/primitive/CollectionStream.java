@@ -1,8 +1,7 @@
 package com.icenter.core.client.primitive;
 
 import com.icenter.core.client.lambda.Action;
-import com.icenter.core.client.lambda.BiIntAction;
-
+import com.icenter.core.client.lambda.IntAction;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
@@ -24,12 +23,12 @@ public final class CollectionStream<T>{
 
         Iterator<T> iter = elements.iterator();
         while(iter.hasNext()){
-            action.run(iter.next());
+              action.run(iter.next());
         }
         return this;
     }
 
-    public CollectionStream<T> forEach(BiIntAction<T> action){
+    public CollectionStream<T> forEach(IntAction<T> action){
         Objects.requireNonNull(action);
 
         Iterator<T> iter = elements.iterator();

@@ -1,8 +1,9 @@
 package com.icenter.core.client.primitive;
 
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import com.icenter.core.client.lambda.Action;
+import com.icenter.core.client.lambda.IntAction;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 public final class ArrayStream<T> {
@@ -17,26 +18,24 @@ public final class ArrayStream<T> {
         return new ArrayStream(elements);
     }
 
-    public ArrayStream<T> forEach(Consumer<T> consumer){
+    public ArrayStream<T> forEach(Action<T> action){
+        Objects.requireNonNull(action);
         final int len = elements.length;
-        IntStream.of(0, len).forEach(i -> {
-            consumer.accept(elements[i]);
-        });
+        IntStream.of(0, len-1).forEach(i -> action.run(elements[i]));
         return this;
     }
 
-    public ArrayStream<T> forEach(BiConsumer<Integer, T> consumer){
+    public ArrayStream<T> forEach(IntAction<T> action){
+        Objects.requireNonNull(action);
         final int len = elements.length;
-        IntStream.of(0, len).forEach(i -> {
-            consumer.accept(i, elements[i]);
-        });
+        IntStream.of(0, len-1).forEach(i -> action.run(i, elements[i]));
         return this;
     }
 
-
-    public ArrayStream<T> last(Consumer<T> consumer){
+    public ArrayStream<T> last(Action<T> action){
+        Objects.requireNonNull(action);
         final int len = elements.length;
-        consumer.accept(elements[len-1]);
+        action.run(elements[len - 1]);
         return this;
     }
 
