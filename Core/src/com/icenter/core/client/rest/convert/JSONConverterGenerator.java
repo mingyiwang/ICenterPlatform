@@ -2,6 +2,7 @@ package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -25,7 +26,10 @@ public final class JSONConverterGenerator  {
 
     private final static String packagePath = "com.icenter.core.client.rest.convert";
 
-    public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType){
+    public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType) {
+        if (!RemoteRESTServiceHelper.isValidType(targetType, context.getTypeOracle())) {
+
+        }
 
         if(Reflects.isPrimitive(targetType)){
            return generatePrimitive(targetType);
@@ -41,14 +45,14 @@ public final class JSONConverterGenerator  {
         }
     }
 
-    private final static String generatePrimitive(JType primitiveType) {
+    private final static String generatePrimitive(JType primitiveType)  {
         String typeQualifiedName = primitiveType.isPrimitive() != null
                                  ? primitiveType.isPrimitive().getQualifiedBoxedSourceName()
                                  : primitiveType.getQualifiedSourceName();
         return SimpleConverters.get(typeQualifiedName).getClass().getCanonicalName();
     }
 
-    private final static String generateArray(TreeLogger logger, GeneratorContext context, JArrayType targetType) {
+    private final static String generateArray(TreeLogger logger, GeneratorContext context, JArrayType targetType)  {
         JType componentType = targetType.getComponentType();
 
         String sourceName = componentType.getSimpleSourceName() + "Array" + JSONConverter.class.getSimpleName();

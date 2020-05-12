@@ -100,20 +100,13 @@ public class RemoteRESTServiceGenerator extends Generator {
                            IntStream.range(0, RemoteRESTServiceHelper.getMethodParameters(mt).size() -1).forEach(i -> {
                                JParameter param = RemoteRESTServiceHelper.getMethodParameters(mt).get(i);
                                JType parameterType = param.getType();
-                               if(RemoteRESTServiceHelper.isValidParam(param, types)){
-                                   if (Reflects.isPrimitive(parameterType)){
-                                       String qualifiedParamName = parameterType.isPrimitive() != null
-                                                                 ? parameterType.isPrimitive().getQualifiedBoxedSourceName()
-                                                                 : parameterType.getQualifiedSourceName();
-                                       sw.print("params.put("+"\""+param.getName()+"\""+","+"SimpleConverters.get(\"" + qualifiedParamName + "\").convertObjectToJSON("+param.getName()+"));");
-                                   }
-                                   else {
-                                       String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
-                                       sw.print("params.put("+"\""+param.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+param.getName()+"));");
-                                   }
-                               }
 
+                               if (RemoteRESTServiceHelper.isValidParam(param, types)){
+                                   String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
+                                   sw.print("params.put("+"\""+param.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+param.getName()+"));");
+                               }
                            });
+
                            String converterSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getAsyncReturnType(mt));
                            sw.print("JSONConverter callbackConverter = new " + converterSourceName + "();");
                            sw.println("send(params, callbackConverter," + RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");

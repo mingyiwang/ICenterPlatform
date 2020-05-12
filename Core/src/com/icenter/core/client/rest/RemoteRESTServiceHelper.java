@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.convert.JSONConvertible;
 import com.icenter.core.client.rest.convert.JSONProperty;
+import sun.util.calendar.JulianCalendar;
 
 import java.io.Serializable;
 import java.util.*;
@@ -38,17 +39,28 @@ public final class RemoteRESTServiceHelper {
     }
 
     public static boolean isValidParam(JParameter parameter, TypeOracle types){
-        if (Reflects.isPrimitive(parameter.getType()) || Reflects.isArray(parameter.getType())){
+        return isValidType(parameter.getType(), types);
+    }
+
+    public static boolean isValidType(JType type, TypeOracle types){
+        if (Reflects.isPrimitive(type) || Reflects.isArray(type) || Reflects.isEnum(type)){
             return true;
         }
-        else {
-            return parameter.getType().isClassOrInterface() != null && (
-                   parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
-                            || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
-                            || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()))
-                            || parameter.getType().isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()))
-            );
+
+        JClassType classType = type.isClassOrInterface();
+        if (classType == null) {
+            return false;
         }
+
+        if (Reflects.isList(type, types) || Reflects.isMap(type,types)){
+            return true;
+        }
+
+        // classType.getConstructors(); should have default constructor?
+
+        return classType.isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
+            || classType.isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
+            ;
     }
 
     public static boolean isAsyncCallbackClass(JType type, TypeOracle types){

@@ -2,6 +2,8 @@ package com.icenter.core.client.reflect;
 
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,37 +11,36 @@ public final class Reflects {
 
     public static boolean isPrimitive(JType type){
         return type.isPrimitive() != null
-                || String.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Character.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Byte.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Short.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Integer.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Long.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Float.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Double.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())
-                || Short.class.getCanonicalName().equals(type.getQualifiedSourceName());
+            || String.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Character.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Byte.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Short.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Integer.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Long.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Float.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Double.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Short.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            || Date.class.getCanonicalName().equals(type.getQualifiedSourceName())
+            ;
     }
 
     public static boolean isArray(JType type){
         return type.isArray() != null;
     }
 
+    public static boolean isEnum(JType type){
+        return type.isEnum() != null;
+    }
+
     public static boolean isList(JType type, TypeOracle types){
-        return type.isClassOrInterface() != null && (
-               type.isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()))
-        );
+        return type.isClassOrInterface() != null
+            && type.isClassOrInterface().isAssignableTo(types.findType(List.class.getCanonicalName()));
     }
 
     public static boolean isMap(JType type, TypeOracle types){
-        return type.isClassOrInterface() != null && (
-                type.isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()))
-        );
-    }
-
-    public static boolean isReflectible(JType type, TypeOracle types){
-        return isPrimitive(type)
-            || (type.isClassOrInterface() != null) && type.isClassOrInterface().isAssignableTo(types.findType(Reflectible.class.getCanonicalName()));
+        return type.isClassOrInterface() != null
+            && type.isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()));
     }
 
 }
