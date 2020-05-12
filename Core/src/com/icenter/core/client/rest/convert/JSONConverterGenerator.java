@@ -10,6 +10,7 @@ import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.reflect.JFieldStream;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
+import com.icenter.core.client.rest.RemoteRESTServiceHelper;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
 import com.icenter.core.client.rest.convert.base.*;
 import java.io.PrintWriter;
@@ -25,17 +26,18 @@ public final class JSONConverterGenerator  {
     private final static String packagePath = "com.icenter.core.client.rest.convert";
 
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType){
+
         if(Reflects.isPrimitive(targetType)){
            return generatePrimitive(targetType);
         }
         else if(Reflects.isArray(targetType)){
-           return generateArray(logger, context, targetType);
+           return generateArray(logger, context, targetType.isArray());
         }
         else if(Reflects.isList(targetType, context.getTypeOracle())){
            return generateList(logger, context, targetType);
         }
         else {
-           return generateClass(logger, context, targetType);
+           return generateClass(logger, context, targetType.isClassOrInterface());
         }
     }
 
@@ -46,19 +48,44 @@ public final class JSONConverterGenerator  {
         return SimpleConverters.get(typeQualifiedName).getClass().getCanonicalName();
     }
 
-    private final static String generateArray(TreeLogger logger, GeneratorContext context, JType targetType) {
-        JType componentType = targetType.isArray().getComponentType();
+    private final static String generateArray(TreeLogger logger, GeneratorContext context, JArrayType targetType) {
+        JType componentType = targetType.getComponentType();
+
         String sourceName = componentType.getSimpleSourceName() + "Array" + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;
 
-        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(sourceName);
+        ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(AbstractArrayJSONConverter.class.getCanonicalName());
-        composer.addImport(componentType.getParameterizedQualifiedSourceName());
-        composer.setSuperclass("AbstractArrayJSONConverter<" + componentType.getParameterizedQualifiedSourceName() + ">");
+        composer.addImport(componentType.getQualifiedSourceName());
+        composer.setSuperclass(AbstractArrayJSONConverter.class.getCanonicalName()+"<" + componentType.getQualifiedSourceName() + ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
            return qualifiedSourceName;
+        }
+        else {
+            SourceWriter sw = composer.createSourceWriter(context, pw);
+            sw.println("@Override public " + JSONConverter.class.getSimpleName()+"<" + componentType.getQualifiedSourceName() + "> getConverter(){ ");
+            sw.println("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
+            sw.println("}");
+            sw.commit(logger);
+        }
+        return qualifiedSourceName;
+    }
+
+    private final static String generateList(TreeLogger logger, GeneratorContext context, JType targetType) {
+        JClassType componentType = getTypeArg(targetType);
+        String sourceName = componentType.getName() +"List" + JSONConverter.class.getSimpleName();
+        String qualifiedSourceName = packagePath + "." + sourceName;
+
+        ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
+        composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
+        composer.addImport(componentType.getParameterizedQualifiedSourceName());
+
+        composer.setSuperclass(AbstractArrayJSONConverter.class.getCanonicalName() + "<" + componentType.getName() + ">");
+        PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
+        if(pw == null) {
+            return qualifiedSourceName;
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
@@ -70,36 +97,12 @@ public final class JSONConverterGenerator  {
         return qualifiedSourceName;
     }
 
-    private final static String generateList(TreeLogger logger, GeneratorContext context, JType targetType) {
-        JClassType componentType  = getComponentType(targetType);
-        String sourceName = componentType.getName() +"List" + JSONConverter.class.getSimpleName();
-        String qualifiedSourceName = packagePath + "." + sourceName;
-
-        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(sourceName);
-        composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
-        composer.addImport(componentType.getParameterizedQualifiedSourceName());
-
-        composer.setSuperclass("AbstractListJSONConverter<" + componentType.getName() + ">");
-        PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
-        if(pw == null) {
-            return qualifiedSourceName;
-        }
-        else {
-            SourceWriter sw = composer.createSourceWriter(context, pw);
-            sw.println("@Override public JSONConverter<" + componentType.isClassOrInterface().getParameterizedQualifiedSourceName() + "> getConverter(){ ");
-            sw.println("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
-            sw.println("}");
-            sw.commit(logger);
-        }
-        return qualifiedSourceName;
-    }
-
-    private final static String generateClass(TreeLogger logger, GeneratorContext context, JType targetType) {
-        String targetTypeClassName = targetType.isClassOrInterface().getName();
+    private final static String generateClass(TreeLogger logger, GeneratorContext context, JClassType targetType) {
+        String targetTypeClassName = targetType.getName();
         String sourceName = targetTypeClassName + JSONConverter.class.getSimpleName();
-
         String qualifiedSourceName = packagePath + "." + sourceName;
-        ClassSourceFileComposerFactory composer = createJSONConverterClassComposer(sourceName);
+
+        ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(targetType.getQualifiedSourceName());
         composer.setSuperclass(JSONConverter.class.getName() + "<" + targetType.getQualifiedSourceName() + ">");
 
@@ -133,10 +136,12 @@ public final class JSONConverterGenerator  {
             sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
             sw.println("JSONObject jsonObject = value.isObject();");
             sw.println(targetTypeQualifiedName + " instance = createInstance();");
+
             JFieldStream.of(targetType.isClassOrInterface()).forEach((f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
                 sw.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
             });
+
             sw.println("return instance;}");
             sw.commit(logger);
         }
@@ -144,7 +149,7 @@ public final class JSONConverterGenerator  {
         return qualifiedSourceName;
     }
 
-    private final static ClassSourceFileComposerFactory createJSONConverterClassComposer(String sourceName) {
+    private final static ClassSourceFileComposerFactory createSourceComposer(String sourceName) {
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(packagePath, sourceName);
         composerFactory.addImport(JSONParser.class.getCanonicalName());
         composerFactory.addImport(JSONValue.class.getCanonicalName());
@@ -175,13 +180,11 @@ public final class JSONConverterGenerator  {
         return composerFactory;
     }
 
-    private static JClassType getComponentType(JType target){
+    private static JClassType getTypeArg(JType target){
         if (target.isParameterized() != null){
             return target.isParameterized().getTypeArgs()[0];
         }
-        return getComponentType(target.isClassOrInterface().getSuperclass());
+        return getTypeArg(target.isClassOrInterface().getSuperclass());
     }
-
-
 
 }

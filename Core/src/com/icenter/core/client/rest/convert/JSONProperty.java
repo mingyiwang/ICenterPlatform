@@ -7,15 +7,6 @@ import com.icenter.core.client.primitive.Strings;
 
 public final class JSONProperty {
 
-    private boolean isArray            = false;
-    private boolean isClass            = false;
-    private boolean isClassOrInterface = false;
-    private boolean isEnum             = false;
-    private boolean isGenericType      = false;
-    private boolean isInterface        = false;
-    private boolean isParameterized    = false;
-    private boolean isPrimitive        = false;
-    private boolean isWildCard         = false;
     private String setMethod           = Strings.Empty;
     private String getMethod           = Strings.Empty;
     private String name                = Strings.Empty;
@@ -42,87 +33,6 @@ public final class JSONProperty {
         return this;
     }
 
-    private final static JMethod findSetMethod(JField field, JClassType type){
-        JMethod[] methods = type.getMethods();
-        String name = field.getName();
-        for(int i=0 ; i< methods.length; i++){
-            String methodName = methods[i].getName();
-            if (methodName.startsWith("set") && methodName.toLowerCase().contains(name.toLowerCase())){
-                return methods[i];
-            }
-        }
-        return null;
-    }
-
-    private final static JMethod findGetMethod(JField field, JClassType type){
-        JMethod[] methods = type.getMethods();
-        String name = field.getName();
-        for(int i=0 ; i< methods.length; i++){
-            String methodName = methods[i].getName();
-            if ((methodName.startsWith("get") || methodName.startsWith("is")) && methodName.toLowerCase().contains(name.toLowerCase())){
-                return methods[i];
-            }
-        }
-        return null;
-    }
-
-    public boolean isArray() {
-        return isArray;
-    }
-    public void setArray(boolean array) {
-        isArray = array;
-    }
-    public boolean isClass() {
-        return isClass;
-    }
-    public void setClass(boolean aClass) {
-        isClass = aClass;
-    }
-    public boolean isClassOrInterface() {
-        return isClassOrInterface;
-    }
-    public void setClassOrInterface(boolean classOrInterface) {
-        isClassOrInterface = classOrInterface;
-    }
-    public boolean isEnum() {
-        return isEnum;
-    }
-    public void setEnum(boolean anEnum) {
-        isEnum = anEnum;
-    }
-    public boolean isGenericType() {
-        return isGenericType;
-    }
-    public void setGenericType(boolean genericType) {
-        isGenericType = genericType;
-    }
-    public boolean isInterface() {
-        return isInterface;
-    }
-    public void setInterface(boolean anInterface) {
-        isInterface = anInterface;
-    }
-    public boolean isParameterized() {
-        return isParameterized;
-    }
-    public void setParameterized(boolean parameterized) {
-        isParameterized = parameterized;
-    }
-    public boolean isPrimitive() {
-        return isPrimitive;
-    }
-    public void setPrimitive(boolean primitive) {
-        isPrimitive = primitive;
-    }
-
-    public boolean isWildCard() {
-        return isWildCard;
-    }
-
-    public void setWildCard(boolean wildCard) {
-        isWildCard = wildCard;
-    }
-
     public String getSetMethod() {
         return setMethod;
     }
@@ -147,4 +57,28 @@ public final class JSONProperty {
         this.name = name;
     }
 
+
+    private final static JMethod findSetMethod(JField field, JClassType type){
+        JMethod[] methods = type.getMethods();
+        String name = field.getName();
+        for(int i=0 ; i< methods.length; i++){
+            String methodName = methods[i].getName();
+            if (methodName.startsWith("set") && methodName.toLowerCase().equals(name.toLowerCase())){
+                return methods[i];
+            }
+        }
+        return null;
+    }
+
+    private final static JMethod findGetMethod(JField field, JClassType type){
+        JMethod[] methods = type.getMethods();
+        String name = field.getName();
+        for(int i=0 ; i< methods.length; i++){
+            String methodName = methods[i].getName();
+            if ((methodName.startsWith("get") || methodName.startsWith("is")) && methodName.toLowerCase().equals(name.toLowerCase())){
+                return methods[i];
+            }
+        }
+        return null;
+    }
 }
