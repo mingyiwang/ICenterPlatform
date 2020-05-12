@@ -54,12 +54,9 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
         Map<T1,T2> map  = createInstance();
         JSONArray array = value.isArray();
         int size = array.size();
-        IntStream.of(0, size).forEach(i -> {
+        IntStream.of(0, size-1).forEach(i -> {
             JSONObject j = array.get(i).isObject();
-            map.put(
-                getKeyConverter().convertJSONToObject(j.get(KEY)),
-                getValueConverter().convertJSONToObject(j.get(VALUE))
-            );
+            map.put(getKeyConverter().convertJSONToObject(j.get(KEY)), getValueConverter().convertJSONToObject(j.get(VALUE)));
         });
         return map;
     }

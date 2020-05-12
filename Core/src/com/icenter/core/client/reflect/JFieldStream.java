@@ -30,7 +30,7 @@ public final class JFieldStream {
 
         int len = fields.length;
         if(len == 0) {
-
+           return this;
         }
 
         IntStream.of(0, len-1).forEach(i -> consumer.accept(fields[i], JSONProperty.of(fields[i], targetType)));

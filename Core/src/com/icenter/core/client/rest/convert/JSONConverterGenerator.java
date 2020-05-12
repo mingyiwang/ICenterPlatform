@@ -2,12 +2,12 @@ package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.reflect.JFieldStream;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
@@ -28,7 +28,8 @@ public final class JSONConverterGenerator  {
 
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType) {
         if (!RemoteRESTServiceHelper.isValidType(targetType, context.getTypeOracle())) {
-             
+             System.out.println(targetType.getSimpleSourceName() + " is not valid type.");
+             return Strings.Empty;
         }
 
         if(Reflects.isPrimitive(targetType)){
