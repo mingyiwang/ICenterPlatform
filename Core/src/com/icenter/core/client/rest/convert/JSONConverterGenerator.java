@@ -28,7 +28,7 @@ public final class JSONConverterGenerator  {
 
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType) {
         if (!RemoteRESTServiceHelper.isValidType(targetType, context.getTypeOracle())) {
-
+             
         }
 
         if(Reflects.isPrimitive(targetType)){
