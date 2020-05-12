@@ -70,7 +70,9 @@ public final class JSONConverterGenerator  {
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
-            sw.println("@Override public " + JSONConverter.class.getSimpleName()+"<" + componentType.getQualifiedSourceName() + "> getConverter(){ ");
+            System.out.println("@Override public " + JSONConverter.class.getCanonicalName()+"<" + componentType.getQualifiedSourceName() + "> getConverter(){ ");
+
+            sw.println("@Override public " + JSONConverter.class.getCanonicalName()+"<" + componentType.getQualifiedSourceName() + "> getConverter(){ ");
             sw.println("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
             sw.println("}");
             sw.commit(logger);
@@ -86,14 +88,15 @@ public final class JSONConverterGenerator  {
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
         composer.addImport(componentType.getParameterizedQualifiedSourceName());
+        composer.setSuperclass(AbstractListJSONConverter.class.getCanonicalName() + "<" + componentType.getName() + ">");
 
-        composer.setSuperclass(AbstractArrayJSONConverter.class.getCanonicalName() + "<" + componentType.getName() + ">");
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
             return qualifiedSourceName;
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
+            System.out.println("@Override public JSONConverter<" + componentType.getParameterizedQualifiedSourceName() + "> getConverter(){ ");
             sw.println("@Override public JSONConverter<" + componentType.getParameterizedQualifiedSourceName() + "> getConverter(){ ");
             sw.println("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
             sw.println("}");
@@ -127,6 +130,7 @@ public final class JSONConverterGenerator  {
 
             // Generate object to json method
             System.out.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
+
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("if (instance == null) { return JSONNull.getInstance(); }"); //should we handle null value?
             sw.println("JSONObject jsonObject = new JSONObject();");
@@ -137,6 +141,7 @@ public final class JSONConverterGenerator  {
             });
             sw.println("return jsonObject;}");
 
+            System.out.println("return jsonObject;}");
             // Generate Json to object method
             sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
             sw.println("JSONObject jsonObject = value.isObject();");

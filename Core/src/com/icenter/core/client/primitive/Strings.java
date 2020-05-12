@@ -1,6 +1,8 @@
 package com.icenter.core.client.primitive;
 
 import com.icenter.core.client.lambda.Function;
+
+import java.util.Locale;
 import java.util.Objects;
 
 public final class Strings {
@@ -38,5 +40,12 @@ public final class Strings {
         return converter.execute(object);
     }
 
+    public static boolean equalsIgnoreCase(String s1, String s2){
+        if (s1 == null || s2 == null){
+            return false;
+        }
+
+        return s1.toLowerCase(Locale.ROOT).equals(s2.toLowerCase(Locale.ROOT));
+    }
 
 }

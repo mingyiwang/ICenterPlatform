@@ -1,6 +1,5 @@
 package com.icenter.core.client.rest.convert;
 
-import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.lambda.Function;
 
@@ -30,8 +29,5 @@ public abstract class JSONConverter<T> {
         return convertObjectToJSON(object).toString();
     }
 
-    private void check(JType type, JSONValue value){
-        value.isObject().keySet().size();
-    }
 
 }

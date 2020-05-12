@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface TestingService extends RemoteRESTService {
 
-    public void postService(Test test2, List<Test2> test2List, AsyncCallback<String> callback);
+    public void postService(Test test2, AsyncCallback<Test> callback);
 
 }

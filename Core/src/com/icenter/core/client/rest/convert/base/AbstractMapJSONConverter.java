@@ -8,7 +8,6 @@ import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map<T1,T2>> {
 
@@ -54,10 +53,10 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
         Map<T1,T2> map  = createInstance();
         JSONArray array = value.isArray();
         int size = array.size();
-        IntStream.of(0, size-1).forEach(i -> {
+        for(int i=0; i < size; i++){
             JSONObject j = array.get(i).isObject();
             map.put(getKeyConverter().convertJSONToObject(j.get(KEY)), getValueConverter().convertJSONToObject(j.get(VALUE)));
-        });
+        }
         return map;
     }
 

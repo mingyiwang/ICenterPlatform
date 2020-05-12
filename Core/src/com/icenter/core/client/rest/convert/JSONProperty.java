@@ -27,12 +27,6 @@ public final class JSONProperty {
         return property;
     }
 
-    public JSONProperty on(JField field){
-        JMethod setMethod = findSetMethod(field, parent);
-        JMethod getMethod = findGetMethod(field, parent);
-        return this;
-    }
-
     public String getSetMethod() {
         return setMethod;
     }
@@ -57,14 +51,15 @@ public final class JSONProperty {
         this.name = name;
     }
 
-
     private final static JMethod findSetMethod(JField field, JClassType type){
         JMethod[] methods = type.getMethods();
         String name = field.getName();
         for(int i=0 ; i< methods.length; i++){
             String methodName = methods[i].getName();
-            if (methodName.startsWith("set") && methodName.toLowerCase().equals(name.toLowerCase())){
-                return methods[i];
+            if(methodName.startsWith("set")){
+                if (Strings.equalsIgnoreCase(methodName.substring(3),name)){
+                    return methods[i];
+                }
             }
         }
         return null;
@@ -75,10 +70,18 @@ public final class JSONProperty {
         String name = field.getName();
         for(int i=0 ; i< methods.length; i++){
             String methodName = methods[i].getName();
-            if ((methodName.startsWith("get") || methodName.startsWith("is")) && methodName.toLowerCase().equals(name.toLowerCase())){
-                return methods[i];
+            if (methodName.startsWith("get")){
+                if(Strings.equalsIgnoreCase(methodName.substring(3),name)) {
+                    return methods[i];
+                }
+            }
+            if (methodName.startsWith("is")){
+                if (Strings.equalsIgnoreCase(methodName.substring(2), name)){
+                    return methods[i];
+                }
             }
         }
         return null;
     }
+
 }

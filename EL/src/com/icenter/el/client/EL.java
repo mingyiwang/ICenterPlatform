@@ -22,15 +22,15 @@ public class EL implements EntryPoint {
         Button button = new Button("Click me");
         button.addClickHandler(clickEvent -> {
             TestingService service = GWT.create(TestingService.class);
-            service.postService(test,test.getTestListValue(), new AsyncCallback<String>() {
+            service.postService(test,  new AsyncCallback<Test>() {
                 @Override
                 public void onFailure(Throwable throwable) {
 
                 }
 
                 @Override
-                public void onSuccess(String s) {
-                    showMessage(s);
+                public void onSuccess(Test s) {
+                    showMessage(s.getStringValue());
                 }
             });
         });

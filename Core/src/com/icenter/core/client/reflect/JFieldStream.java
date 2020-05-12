@@ -5,7 +5,6 @@ import com.google.gwt.core.ext.typeinfo.JField;
 import com.icenter.core.client.rest.convert.JSONProperty;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.stream.IntStream;
 
 public final class JFieldStream {
 
@@ -33,7 +32,9 @@ public final class JFieldStream {
            return this;
         }
 
-        IntStream.of(0, len-1).forEach(i -> consumer.accept(fields[i], JSONProperty.of(fields[i], targetType)));
+        for(int i =0; i<len; i++){
+            consumer.accept(fields[i], JSONProperty.of(fields[i], targetType));
+        }
         return this;
     }
 
