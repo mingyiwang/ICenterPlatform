@@ -1,9 +1,6 @@
 package com.icenter.core.client.rest.convert.base;
 
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNull;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.json.client.*;
 import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.HashMap;
@@ -31,17 +28,14 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
             return JSONNull.getInstance();
         }
 
-        JSONArray array = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
         CollectionStream.of(object.entrySet()).forEach((i, e) -> {
-            JSONValue key   = getKeyConverter().convertObjectToJSON(e.getKey());
             JSONValue value = getValueConverter().convertObjectToJSON(e.getValue());
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(KEY,   key);
-            jsonObject.put(VALUE, value);
-            array.set(i, jsonObject);
+            JSONValue key = getKeyConverter().convertObjectToJSON(e.getKey());
+            jsonObject.put(key.toString(), value);
         });
 
-        return array;
+        return jsonObject;
     }
 
     @Override
@@ -51,12 +45,13 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
         }
 
         Map<T1,T2> map  = createInstance();
-        JSONArray array = value.isArray();
-        int size = array.size();
-        for(int i=0; i < size; i++){
-            JSONObject j = array.get(i).isObject();
-            map.put(getKeyConverter().convertJSONToObject(j.get(KEY)), getValueConverter().convertJSONToObject(j.get(VALUE)));
-        }
+        JSONObject object = value.isObject();
+        CollectionStream.of(object.keySet()).forEach(s ->
+            map.put(
+                getKeyConverter().convertJSONToObject(new JSONString(s)),
+                getValueConverter().convertJSONToObject(object.get(s))
+            )
+        );
         return map;
     }
 
