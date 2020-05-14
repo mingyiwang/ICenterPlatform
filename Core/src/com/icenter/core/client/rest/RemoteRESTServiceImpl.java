@@ -25,9 +25,8 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         return this.urlFormatter;
     }
 
-    protected final <T> Request send(JSONObject params, JSONConverter<T> converter, AsyncCallback<T> callback) {
-        callback.onSuccess(converter.convertJSONToObject(params.get("test").isObject()));
-
+    protected final <T> Request send(JSONValue params, JSONConverter<T> converter, AsyncCallback<T> callback) {
+        callback.onSuccess(converter.convertJSONToObject(JSONParser.parseStrict(params.isObject().get("test").toString())));
 
 //        RequestBuilder builder = SimpleRequestBuilder.of(RequestBuilder.POST, urlFormatter.execute(getServiceEndpoint()));
 //        builder.setRequestData(params.toString());

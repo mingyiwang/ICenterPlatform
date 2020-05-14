@@ -19,6 +19,9 @@ public class EL implements EntryPoint {
         test.getTestListValue().add(new Test2());
         test.getTestListValue().add(new Test2());
 
+        test.getMapValue().put(new Test2(), 1);
+        test.getMapValue().put(new Test2(), 2);
+
         Button button = new Button("Click me");
         button.addClickHandler(clickEvent -> {
             TestingService service = GWT.create(TestingService.class);
@@ -30,7 +33,8 @@ public class EL implements EntryPoint {
 
                 @Override
                 public void onSuccess(Test s) {
-                    showMessage(s.getStringValue());
+                    Test2 t = s.getMapValue().keySet().iterator().next();
+                    showMessage(t.getStringValue());
                 }
             });
         });

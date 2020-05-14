@@ -1,6 +1,5 @@
 package com.icenter.core.client.rest.convert.base;
 
-import com.google.gwt.dev.util.collect.Lists;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONValue;
@@ -11,11 +10,20 @@ import java.util.List;
 
 public abstract class AbstractArrayJSONConverter<T> extends JSONConverter<T[]> {
 
-    protected abstract JSONConverter<T> getConverter();
+    private JSONConverter<T> converter;
+    protected abstract JSONConverter<T> createConverter();
 
+    public final JSONConverter<T> getConverter(){
+        if(converter == null){
+           converter = createConverter();
+        }
+        return converter;
+    }
+
+    // Array is created during the run time, not allowed to override
     @Override
-    public T[] createInstance() {
-        throw new NotImplementedException(); // Array is created during the run time
+    public final T[] createInstance() {
+        throw new NotImplementedException();
     }
 
     @Override
@@ -25,10 +33,8 @@ public abstract class AbstractArrayJSONConverter<T> extends JSONConverter<T[]> {
         }
 
         JSONArray json = new JSONArray();
-        int index = 0;
-        for (T o : object) {
-             json.set(index, getConverter().convertObjectToJSON(o));
-             index ++;
+        for (int i=0; i<object.length; i++) {
+             json.set(i, getConverter().convertObjectToJSON(object[i]));
         }
         return json;
     }

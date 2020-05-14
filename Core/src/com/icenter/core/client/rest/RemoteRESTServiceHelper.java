@@ -4,12 +4,9 @@ import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.convert.JSONConvertible;
-import com.icenter.core.client.rest.convert.JSONProperty;
-import sun.util.calendar.JulianCalendar;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Stream;
 
 public final class RemoteRESTServiceHelper {
 
@@ -27,9 +24,9 @@ public final class RemoteRESTServiceHelper {
         }
 
         // Check has return type or not
-        boolean valid = isAsyncCallbackClass(parameters[parameters.length - 1].getType(),types);
+        boolean valid = isAsyncCallbackClass(parameters[parameters.length - 1].getType(), types);
         for(int i = 0; i < parameters.length - 1; i++){
-            valid = isValidParam(parameters[i], types);
+            valid = isValidParameter(parameters[i], types);
             if(!valid){
                 break;
             }
@@ -38,12 +35,12 @@ public final class RemoteRESTServiceHelper {
         return valid;
     }
 
-    public static boolean isValidParam(JParameter parameter, TypeOracle types){
+    public static boolean isValidParameter(JParameter parameter, TypeOracle types){
         return isValidType(parameter.getType(), types);
     }
 
     public static boolean isValidType(JType type, TypeOracle types){
-        if (Reflects.isPrimitive(type) || Reflects.isArray(type) || Reflects.isEnum(type)){
+        if (Reflects.isPrimitive(type) || Reflects.isArray(type) || Reflects.isEnum(type) || Reflects.isDate(type,types)){
             return true;
         }
 
@@ -74,7 +71,7 @@ public final class RemoteRESTServiceHelper {
     }
 
     public static JClassType getAsyncReturnType(JMethod method) {
-        return  getAsyncReturnParameter(method).getType().isParameterized().getTypeArgs()[0];
+        return getAsyncReturnParameter(method).getType().isParameterized().getTypeArgs()[0];
     }
 
     public static List<JParameter> getMethodParameters(JMethod method){

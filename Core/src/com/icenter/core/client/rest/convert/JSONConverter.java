@@ -1,33 +1,28 @@
 package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.json.client.JSONValue;
-import com.icenter.core.client.lambda.Function;
 
 public abstract class JSONConverter<T> {
 
-    public final static String Name = JSONConverter.class.getName();
-    private Function<String, String> paramNameFormatter = name -> name;
+    public JSONConverter(){
+    }
 
-    public JSONConverter(){ }
+    /**
+     * Create new object
+     * */
     public abstract T createInstance();
+
+
+    /**
+     * Convert object to related JSONValue object
+     * */
     public abstract JSONValue convertObjectToJSON(T object);
+
+
+    /**
+     * Convert JSONValue to related object
+     * */
     public abstract T convertJSONToObject(JSONValue value);
-
-    public T handle(JSONValue value){
-        return convertJSONToObject(value);
-    }
-
-    public void setParamNameFormatter(Function<String,String> nameFormatter) {
-        this.paramNameFormatter = nameFormatter;
-    }
-
-    public final Function<String, String> getParamNameFormatter() {
-        return this.paramNameFormatter;
-    }
-
-    public final String toJSONString(T object){
-        return convertObjectToJSON(object).toString();
-    }
 
 
 }

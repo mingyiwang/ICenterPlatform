@@ -9,11 +9,20 @@ import java.util.List;
 
 public abstract class AbstractListJSONConverter<T> extends JSONConverter<List<T>> {
 
-    protected abstract JSONConverter<T> getConverter();
+    private JSONConverter<T> converter;
+
+    protected abstract JSONConverter<T> createConverter();
+
+    public final JSONConverter<T> getConverter(){
+        if(converter == null){
+           converter = createConverter();
+        }
+        return converter;
+    }
 
     @Override
     public final List<T> createInstance() {
-        return new ArrayList<T>();
+        return new ArrayList<>();
     }
 
     @Override

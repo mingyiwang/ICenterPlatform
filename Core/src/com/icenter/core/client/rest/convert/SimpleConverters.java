@@ -30,6 +30,7 @@ public final class SimpleConverters {
     public final static int size(){
         return factories.size();
     }
+
     public final static <T extends JSONConverter<?>> T get(String key){
         return (T) factories.get(key);
     }

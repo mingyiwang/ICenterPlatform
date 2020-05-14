@@ -2,7 +2,9 @@ package com.icenter.el.client.transfer;
 
 import com.icenter.core.client.rest.convert.JSONConvertible;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Test implements JSONConvertible {
 
@@ -17,6 +19,7 @@ public class Test implements JSONConvertible {
     private short shortValue   = 0;
     private Test2 testValue    = new Test2();
     private List<Test2> testListValue = new ArrayList<Test2>();
+    private Map<Test2, Integer> mapValue = new HashMap<>();
 
     public int getInteger() {
         return integer;
@@ -104,4 +107,11 @@ public class Test implements JSONConvertible {
         this.testListValue = testListValue;
     }
 
+    public Map<Test2, Integer> getMapValue() {
+        return mapValue;
+    }
+
+    public void setMapValue(Map<Test2, Integer> mapValue) {
+        this.mapValue = mapValue;
+    }
 }
