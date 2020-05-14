@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * JSONConverter Generator class, should not use it directly
+ * **/
 public class RemoteRESTServiceGenerator extends Generator {
 
     public RemoteRESTServiceGenerator() { }
@@ -45,7 +48,54 @@ public class RemoteRESTServiceGenerator extends Generator {
         String remoteServicePackage = target.getPackage().getName();
         String remoteServiceName = target.getName()+"Async"; // Custom rebind service name
         String remoteServiceQualifiedSourceName = remoteServicePackage + "." + remoteServiceName;
+        ClassSourceFileComposerFactory composerFactory = createClassSourceFileComposerFactory(targetTypeName, target, remoteServiceName);
 
+        PrintWriter pw  = context.tryCreate(logger, remoteServicePackage, remoteServiceName);
+        if (pw == null){
+            return remoteServiceQualifiedSourceName;
+        }
+        else {
+            SourceWriter sw = composerFactory.createSourceWriter(context, pw);
+            for (JMethod mt : target.getMethods()) {
+                if(!RemoteRESTServiceHelper.isValidMethod(mt, types)){
+                    logger.log(TreeLogger.Type.INFO,mt.getName() + " is not a supported method.");
+                    continue;
+                }
+
+                List<JParameter> methodParameters = RemoteRESTServiceHelper.getMethodParameters(mt);
+                String params = Joiner.on(',').join(methodParameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
+
+                sw.println("JSONObject params = new JSONObject();");
+                int size = methodParameters.size();
+                for (int i = 0; i < size - 1; i++){
+                     JParameter parameter = methodParameters.get(i);
+                     JType parameterType = parameter.getType();
+                     String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
+                     sw.print("params.put("+"\""+ parameter.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+ parameter.getName()+"));");
+                }
+
+                String converterSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getAsyncReturnType(mt));
+                sw.print("JSONConverter converter = new " + converterSourceName + "();");
+                sw.println("send(params, converter," + RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");
+                sw.println("}");
+            }
+
+            sw.commit(logger);
+            return remoteServiceQualifiedSourceName;
+        }
+    }
+
+//    private String getConverter(SourceWriter sw, TreeLogger logger, GeneratorContext context, JType targetTypeName){
+//        String key = targetTypeName.getParameterizedQualifiedSourceName();
+//        if(SimpleConverters.get(key) == null){
+//           String converter = JSONConverterGenerator.generate(logger, context, targetTypeName);
+//           sw.println("SimpleConverters.add(\"" + key +"\", new " + converter + "());");
+//        }
+//        return "SimpleConverters.get(\""+key+"\")";
+//    }
+
+    private ClassSourceFileComposerFactory createClassSourceFileComposerFactory(String targetTypeName, JClassType target, String remoteServiceName) {
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(target.getPackage().getName(), remoteServiceName);
         composerFactory.addImport(ServiceDefTarget.class.getCanonicalName());
         composerFactory.addImport(IllegalArgumentException.class.getCanonicalName());
@@ -81,48 +131,7 @@ public class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(Map.class.getCanonicalName());
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
-
-        PrintWriter pw  = context.tryCreate(logger, remoteServicePackage, remoteServiceName);
-        if (pw == null){
-            return remoteServiceQualifiedSourceName;
-        }
-        else {
-            SourceWriter sw = composerFactory.createSourceWriter(context, pw);
-            for (JMethod mt : target.getMethods()) {
-                if(!RemoteRESTServiceHelper.isValidMethod(mt, types)){
-                    logger.log(TreeLogger.Type.ERROR,mt.getName() + " is not a supported method.");
-                    continue;
-                }
-
-                List<JParameter> methodParameters = RemoteRESTServiceHelper.getMethodParameters(mt);
-                String params = Joiner.on(',').join(methodParameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
-                sw.println("JSONObject params = new JSONObject();");
-
-                int size = methodParameters.size();
-                for(int i = 0; i < size - 1; i++){
-                    JParameter param = methodParameters.get(i);
-                    JType parameterType = param.getType();
-
-                    if (!RemoteRESTServiceHelper.isValidParameter(param, types)){
-                         logger.log(TreeLogger.Type.ERROR,param.getName() + " is not a supported parameter type.");
-                         continue;
-                    }
-
-                    String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
-                    sw.print("params.put("+"\""+param.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+param.getName()+"));");
-                }
-
-                String converterSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getAsyncReturnType(mt));
-                sw.print("JSONConverter converter = new " + converterSourceName + "();");
-                System.out.println("JSONConverter converter = new " + converterSourceName + "();");
-                sw.println("send(params, converter," + RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");
-                sw.println("}");
-            }
-
-            sw.commit(logger);
-            return remoteServiceQualifiedSourceName;
-        }
+        return composerFactory;
     }
 
 }

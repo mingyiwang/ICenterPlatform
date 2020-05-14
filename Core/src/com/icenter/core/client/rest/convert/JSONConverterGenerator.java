@@ -127,7 +127,7 @@ public final class JSONConverterGenerator  {
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
         composer.addImport(componentType.getParameterizedQualifiedSourceName());
-        composer.setSuperclass(AbstractListJSONConverter.class.getCanonicalName() + "<" + componentType.getName() + ">");
+        composer.setSuperclass(AbstractListJSONConverter.class.getCanonicalName() + "<" + componentType.getParameterizedQualifiedSourceName() + ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
