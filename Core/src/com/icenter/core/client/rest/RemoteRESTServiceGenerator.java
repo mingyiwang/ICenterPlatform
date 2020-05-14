@@ -25,7 +25,9 @@ import java.util.Set;
 /**
  * JSONConverter Generator class, should not use it directly
  * **/
-public class RemoteRESTServiceGenerator extends Generator {
+public final class RemoteRESTServiceGenerator extends Generator {
+
+    private final static String ServiceSuffix = "Async";
 
     public RemoteRESTServiceGenerator() { }
 
@@ -46,7 +48,7 @@ public class RemoteRESTServiceGenerator extends Generator {
         }
 
         String remoteServicePackage = target.getPackage().getName();
-        String remoteServiceName = target.getName()+"Async"; // Custom rebind service name
+        String remoteServiceName = target.getName() + ServiceSuffix; // Custom rebind service name
         String remoteServiceQualifiedSourceName = remoteServicePackage + "." + remoteServiceName;
         ClassSourceFileComposerFactory composerFactory = createClassSourceFileComposerFactory(targetTypeName, target, remoteServiceName);
 
@@ -59,11 +61,12 @@ public class RemoteRESTServiceGenerator extends Generator {
             for (JMethod mt : target.getMethods()) {
                 if(!RemoteRESTServiceHelper.isValidMethod(mt, types)){
                     logger.log(TreeLogger.Type.INFO,mt.getName() + " is not a supported method.");
-                    continue;
+                    break;
                 }
 
                 List<JParameter> methodParameters = RemoteRESTServiceHelper.getMethodParameters(mt);
                 String params = Joiner.on(',').join(methodParameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                System.out.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
                 sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
 
                 sw.println("JSONObject params = new JSONObject();");
@@ -80,7 +83,6 @@ public class RemoteRESTServiceGenerator extends Generator {
                 sw.println("send(params, converter," + RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");
                 sw.println("}");
             }
-
             sw.commit(logger);
             return remoteServiceQualifiedSourceName;
         }
