@@ -17,6 +17,7 @@ public class Test implements JSONConvertible {
     private char charValue     = 'a';
     private float floatValue   = 1f;
     private short shortValue   = 0;
+    private Integer[] emptyValue = new Integer[2];
     private Test2 testValue    = new Test2();
     private List<Test2> testListValue = new ArrayList<Test2>();
     private Map<Test2, Integer> mapValue = new HashMap<>();
@@ -113,5 +114,13 @@ public class Test implements JSONConvertible {
 
     public void setMapValue(Map<Test2, Integer> mapValue) {
         this.mapValue = mapValue;
+    }
+
+    public Integer[] getEmptyValue() {
+        return emptyValue;
+    }
+
+    public void setEmptyValue(Integer[] emptyValue) {
+        this.emptyValue = emptyValue;
     }
 }

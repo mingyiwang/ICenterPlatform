@@ -2,7 +2,7 @@ package com.icenter.el.client.rest.transfer;
 
 import com.icenter.core.client.rest.convert.JSONConvertible;
 
-public class Test2 implements JSONConvertible {
+public class Test2  implements JSONConvertible {
 
     private int integer = 0;
     private boolean booleanValue = false;

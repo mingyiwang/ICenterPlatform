@@ -11,18 +11,20 @@ import java.util.*;
 
 public final class RemoteRESTServiceHelper {
 
-
     public final static void validateMethod(TreeLogger logger, TypeOracle types, JMethod method) throws UnableToCompleteException {
         if(method.getReturnType() != JPrimitiveType.VOID){
            logger.log(TreeLogger.Type.ERROR, method.getName() + " should not have return type.");
            throw new UnableToCompleteException();
         }
 
-        // Method must have return type
         JParameter[] parameters = method.getParameters();
         if(parameters.length == 0){
            logger.log(TreeLogger.Type.ERROR, method.getName() + " should have return type.");
            throw new UnableToCompleteException();
+        }
+
+        for(int i = 0; i < parameters.length - 1; i++){
+            validateType(logger, types, parameters[i].getType());
         }
 
         boolean valid = isAsyncCallbackClass(parameters[parameters.length - 1].getType(), types);
@@ -31,80 +33,81 @@ public final class RemoteRESTServiceHelper {
             throw new UnableToCompleteException();
         }
 
-        for(int i = 0; i < parameters.length - 1; i++){
-            valid = isValidParameter(parameters[i], types);
-            if(!valid){
-               logger.log(TreeLogger.Type.ERROR, parameters[i].getName() + " is not supported variable type.");
-               throw new UnableToCompleteException();
-            }
-        }
-
+        validateType(logger, types, getAsyncReturnType(method));
     }
 
-    public static boolean isValidMethod(JMethod method, TypeOracle types){
-
-        // Return type must be in the last parameter
-        if(method.getReturnType() != JPrimitiveType.VOID){
-           return false;
-        }
-
-        // Method must have return type
-        JParameter[] parameters = method.getParameters();
-        if(parameters.length == 0){
-           return false;
-        }
-
-        // Check has return type or not
-        boolean valid = isAsyncCallbackClass(parameters[parameters.length - 1].getType(), types);
-        for(int i = 0; i < parameters.length - 1; i++){
-            valid = isValidParameter(parameters[i], types);
-            if(!valid){
-                break;
-            }
-        }
-
-        return valid;
-    }
-
-    public static boolean isValidParameter(JParameter parameter, TypeOracle types){
-        return isValidType(parameter.getType(), types);
-    }
-
-    public static void validateType(TreeLogger logger, TypeOracle types, JType type) throws UnableToCompleteException {
-        boolean valid = isValidType(type, types);
-        if(!valid){
-            logger.log(TreeLogger.Type.ERROR, type.getParameterizedQualifiedSourceName() + " is not supported type.");
+    public final static void validateType(TreeLogger logger, TypeOracle types, JType type) throws UnableToCompleteException {
+        if (type.isWildcard() != null || type.isAnnotation() != null|| type.isTypeParameter() != null|| type.isRawType() != null){
+            logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName() + " is not supported.");
             throw new UnableToCompleteException();
         }
-    }
 
-    public static boolean isValidType(JType type, TypeOracle types){
         if (Reflects.isPrimitive(type) || Reflects.isEnum(type) || Reflects.isDate(type,types)){
-            return true;
+            return;
         }
+        else if (Reflects.isArray(type)){
+            JType componentType = type.isArray().getComponentType();
+            int rank = type.isArray().getRank();
+            if (rank > 1) {
+                logger.log(TreeLogger.Type.ERROR, "Multi-dimension Array of ["+ type.getQualifiedSourceName() + "] is not supported.");
+                throw new UnableToCompleteException();
+            }
 
-        JClassType classType = type.isClassOrInterface();
-        if (classType == null) {
-            return false;
+            validateType(logger,types,componentType);
         }
+        else if (Reflects.isList(type, types)){
+            if (type.isClassOrInterface().isParameterized() == null){
+                logger.log(TreeLogger.Type.ERROR, "Non Generic List is not supported.");
+                throw new UnableToCompleteException();
+            }
 
-        if (Reflects.isList(type, types) || Reflects.isMap(type,types) || Reflects.isArray(type)){
-            return true;
+            JClassType[] typeArgs = type.isClassOrInterface().isParameterized().getTypeArgs();
+            if(typeArgs == null || typeArgs.length == 0){
+               logger.log(TreeLogger.Type.ERROR, "Non Generic List is not supported.");
+               throw new UnableToCompleteException();
+            }
+            validateType(logger, types, typeArgs[0]);
         }
+        else if (Reflects.isMap(type,types)){
+            if (type.isClassOrInterface().isParameterized() == null){
+                logger.log(TreeLogger.Type.ERROR, "Non Generic Map is not supported.");
+                throw new UnableToCompleteException();
+            }
 
-        // classType.getConstructors(); should have default constructor?
-        if(!classType.isDefaultInstantiable()){
-            return false;
+            JClassType[] typeArgs = type.isClassOrInterface().isParameterized().getTypeArgs();
+            if (typeArgs == null || typeArgs.length != 2){
+                logger.log(TreeLogger.Type.ERROR, "Non Generic Map is not supported.");
+                throw new UnableToCompleteException();
+            }
+
+            JClassType keyType   = typeArgs[0];
+            JClassType valueType = typeArgs[1];
+
+            validateType(logger, types, keyType);
+            validateType(logger, types, valueType);
         }
+        else if (type.isClassOrInterface() != null){
+            JClassType classType = type.isClassOrInterface();
+            if(!classType.isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
+            && !classType.isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))){
+                logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName()+ " is Non JSONConvertible Class.");
+                throw new UnableToCompleteException();
+            }
 
-        JField[] fields = classType.getFields();
-        for (JField f : fields) {
-             isValidType(f.getType(), types);
+            if(!classType.isDefaultInstantiable()) {
+                logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName()+ " does not have default constructor.");
+                throw new UnableToCompleteException();
+            }
+
+            JField[] fields = classType.getFields();
+            for (JField f : fields) {
+                 validateType(logger, types, f.getType());
+            }
         }
-
-        return classType.isAssignableTo(types.findType(Serializable.class.getCanonicalName()))
-            || classType.isAssignableTo(types.findType(JSONConvertible.class.getCanonicalName()))
-            ;
+        else {
+            logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName()+ " is not supported.");
+            throw new UnableToCompleteException();
+        }
     }
 
     public static boolean isAsyncCallbackClass(JType type, TypeOracle types){

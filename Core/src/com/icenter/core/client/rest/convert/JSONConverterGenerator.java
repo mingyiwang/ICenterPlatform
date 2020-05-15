@@ -58,14 +58,17 @@ public final class JSONConverterGenerator  {
 
     private final static String generateArray(TreeLogger logger, GeneratorContext context, JArrayType targetType)  {
         JType componentType = targetType.getComponentType();
+        String typeQualifiedName = componentType.isPrimitive() != null
+                                 ? componentType.isPrimitive().getQualifiedBoxedSourceName()
+                                 : componentType.getQualifiedSourceName();
 
         String sourceName = componentType.getSimpleSourceName() + "Array" + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;
 
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(AbstractArrayJSONConverter.class.getCanonicalName());
-        composer.addImport(componentType.getQualifiedSourceName());
-        composer.setSuperclass(AbstractArrayJSONConverter.class.getCanonicalName()+"<" + componentType.getQualifiedSourceName() + ">");
+        composer.addImport(typeQualifiedName);
+        composer.setSuperclass(AbstractArrayJSONConverter.class.getCanonicalName()+"<" + typeQualifiedName + ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
@@ -73,9 +76,8 @@ public final class JSONConverterGenerator  {
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
-            System.out.println("@Override public " + JSONConverter.class.getCanonicalName()+"<" + componentType.getQualifiedSourceName() + "> createConverter(){ ");
 
-            sw.println("@Override public " + JSONConverter.class.getCanonicalName()+"<" + componentType.getQualifiedSourceName() + "> createConverter(){ ");
+            sw.println("@Override public " + JSONConverter.class.getCanonicalName()+"<" + typeQualifiedName + "> createConverter(){ ");
             sw.println("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
             sw.println("}");
             sw.commit(logger);

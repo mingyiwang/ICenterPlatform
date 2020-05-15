@@ -4,7 +4,6 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.rest.convert.JSONConverter;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public abstract class AbstractArrayJSONConverter<T> extends JSONConverter<T[]> {
     // Array is created during the run time, not allowed to override
     @Override
     public final T[] createInstance() {
-        throw new NotImplementedException();
+        return null;
     }
 
     @Override

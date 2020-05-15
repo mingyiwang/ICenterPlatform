@@ -71,9 +71,6 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 for (int i = 0; i < size - 1; i++){
                      JParameter parameter = methodParameters.get(i);
                      JType parameterType = parameter.getType();
-
-                     RemoteRESTServiceHelper.validateType(logger, types, parameterType);
-
                      String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
                      sw.print("params.put("+"\""+ parameter.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+ parameter.getName()+"));");
                 }
@@ -87,15 +84,6 @@ public final class RemoteRESTServiceGenerator extends Generator {
             return remoteServiceQualifiedSourceName;
         }
     }
-
-//    private String getConverter(SourceWriter sw, TreeLogger logger, GeneratorContext context, JType targetTypeName){
-//        String key = targetTypeName.getParameterizedQualifiedSourceName();
-//        if(SimpleConverters.get(key) == null){
-//           String converter = JSONConverterGenerator.generate(logger, context, targetTypeName);
-//           sw.println("SimpleConverters.add(\"" + key +"\", new " + converter + "());");
-//        }
-//        return "SimpleConverters.get(\""+key+"\")";
-//    }
 
     private ClassSourceFileComposerFactory createClassSourceFileComposerFactory(String targetTypeName, JClassType target, String remoteServiceName) {
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(target.getPackage().getName(), remoteServiceName);
