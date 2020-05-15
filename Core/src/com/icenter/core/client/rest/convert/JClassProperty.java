@@ -5,50 +5,48 @@ import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.icenter.core.client.primitive.Strings;
 
-public final class JSONProperty {
+public final class JClassProperty {
 
-    private String setMethod           = Strings.Empty;
-    private String getMethod           = Strings.Empty;
-    private String name                = Strings.Empty;
-    private JClassType parent;
+    private String setMethod  = Strings.Empty;
+    private String getMethod  = Strings.Empty;
+    private String name       = Strings.Empty;
 
-    private JSONProperty(JClassType parent){
-        this.parent = parent;
-    }
+    private JClassProperty(){}
 
-    public final static JSONProperty of(JField field, JClassType targetType){
+    public final static JClassProperty of(JField field, JClassType targetType){
         JMethod setMethod = findSetMethod(field, targetType);
         JMethod getMethod = findGetMethod(field, targetType);
 
-        JSONProperty property =  new JSONProperty(targetType);
-        property.setName(field.getName());
-        property.setSetMethod(setMethod == null ? Strings.Empty : setMethod.getName());
-        property.setGetMethod(getMethod == null ? Strings.Empty : getMethod.getName());
-        return property;
+        return new JClassProperty().setName(field.getName())
+                                   .setSetMethod(setMethod == null ? Strings.Empty : setMethod.getName())
+                                   .setGetMethod(getMethod == null ? Strings.Empty : getMethod.getName());
     }
 
     public String getSetMethod() {
-        return setMethod;
+        return this.setMethod;
     }
 
-    public void setSetMethod(String setMethod) {
+    public JClassProperty setSetMethod(String setMethod) {
         this.setMethod = setMethod;
+        return this;
     }
 
     public String getGetMethod() {
-        return getMethod;
+        return this.getMethod;
     }
 
-    public void setGetMethod(String getMethod) {
+    public JClassProperty setGetMethod(String getMethod) {
         this.getMethod = getMethod;
+        return this;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public void setName(String name) {
+    public JClassProperty setName(String name) {
         this.name = name;
+        return this;
     }
 
     private final static JMethod findSetMethod(JField field, JClassType type){

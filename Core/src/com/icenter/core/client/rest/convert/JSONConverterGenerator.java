@@ -15,8 +15,10 @@ import com.icenter.core.client.rest.RemoteRESTServiceHelper;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
 import com.icenter.core.client.rest.convert.base.*;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
+
+import static com.icenter.core.client.reflect.JFieldStream.of;
 
 /***
  * JSONConvertible Object Converter, used to generates object converters,
@@ -168,11 +170,10 @@ public final class JSONConverterGenerator  {
 
 
             // Generate object to json method
-
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("if (instance == null) { return JSONNull.getInstance(); }"); //should we handle null value?
             sw.println("JSONObject jsonObject = new JSONObject();");
-            JFieldStream.of(targetType.isClassOrInterface()).forEach((f, p)-> {
+            forEach(targetType.isClassOrInterface(),(f, p) -> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
                 sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
             });
@@ -183,7 +184,7 @@ public final class JSONConverterGenerator  {
             sw.println("JSONObject jsonObject = value.isObject();");
             sw.println(targetTypeQualifiedName + " instance = createInstance();");
 
-            JFieldStream.of(targetType.isClassOrInterface()).forEach((f, p)-> {
+            forEach(targetType.isClassOrInterface(),(f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
                 sw.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
             });
@@ -205,7 +206,7 @@ public final class JSONConverterGenerator  {
         composerFactory.addImport(JSONNumber.class.getCanonicalName());
         composerFactory.addImport(JSONObject.class.getCanonicalName());
         composerFactory.addImport(JSONString.class.getCanonicalName());
-        composerFactory.addImport(JSONProperty.class.getCanonicalName());
+        composerFactory.addImport(JClassProperty.class.getCanonicalName());
         composerFactory.addImport(AsyncCallback.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
@@ -223,6 +224,8 @@ public final class JSONConverterGenerator  {
         composerFactory.addImport(SimpleConverters.class.getCanonicalName());
         composerFactory.addImport(List.class.getCanonicalName());
         composerFactory.addImport(ArrayList.class.getCanonicalName());
+        composerFactory.addImport(Map.class.getCanonicalName());
+        composerFactory.addImport(HashMap.class.getCanonicalName());
         return composerFactory;
     }
 
@@ -232,6 +235,21 @@ public final class JSONConverterGenerator  {
 
     private static JClassType getSecondTypeArg(JType target){
         return target.isParameterized().getTypeArgs()[1];
+    }
+
+    private static void forEach(JClassType classType, BiConsumer<JField, JClassProperty> consumer){
+        Objects.requireNonNull(consumer);
+        Objects.requireNonNull(classType);
+
+        JField[] fields = classType.getFields();
+        int len = fields.length;
+        if(len == 0) {
+           return ;
+        }
+
+        for(int i =0; i<len; i++){
+            consumer.accept(fields[i], JClassProperty.of(fields[i], classType));
+        }
     }
 
 }
