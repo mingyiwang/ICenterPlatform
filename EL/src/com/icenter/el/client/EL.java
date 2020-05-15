@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.icenter.core.client.json.JSON;
 import com.icenter.el.client.rest.Services;
 import com.icenter.el.client.rest.transfer.Test;
 import com.icenter.el.client.rest.transfer.Test2;
