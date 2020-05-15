@@ -1,23 +1,29 @@
-package com.icenter.el.client.transfer;
+package com.icenter.el.client.rest.transfer;
 
 import com.icenter.core.client.rest.convert.JSONConvertible;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Test2 implements JSONConvertible {
+public class Test implements JSONConvertible {
 
     private int integer = 0;
     private boolean booleanValue = false;
     private String stringValue = "Empty";
     private double doubleValue = 0d;
-    private long longValue = 0l;
-    private byte byteValue = 1;
-    private char charValue = 'a';
-    private float floatValue = 1f;
-    private short shortValue = 0;
+    private long longValue     = 0l;
+    private byte byteValue     = 1;
+    private char charValue     = 'a';
+    private float floatValue   = 1f;
+    private short shortValue   = 0;
+    private Test2 testValue    = new Test2();
+    private List<Test2> testListValue = new ArrayList<Test2>();
+    private Map<Test2, Integer> mapValue = new HashMap<>();
 
     public int getInteger() {
         return integer;
     }
-
     public void setInteger(int integer) {
         this.integer = integer;
     }
@@ -25,7 +31,6 @@ public class Test2 implements JSONConvertible {
     public boolean isBooleanValue() {
         return booleanValue;
     }
-
     public void setBooleanValue(boolean booleanValue) {
         this.booleanValue = booleanValue;
     }
@@ -84,5 +89,29 @@ public class Test2 implements JSONConvertible {
 
     public void setShortValue(short shortValue) {
         this.shortValue = shortValue;
+    }
+
+    public Test2 getTestValue() {
+        return testValue;
+    }
+
+    public void setTestValue(Test2 testValue) {
+        this.testValue = testValue;
+    }
+
+    public List<Test2> getTestListValue() {
+        return testListValue;
+    }
+
+    public void setTestListValue(List<Test2> testListValue) {
+        this.testListValue = testListValue;
+    }
+
+    public Map<Test2, Integer> getMapValue() {
+        return mapValue;
+    }
+
+    public void setMapValue(Map<Test2, Integer> mapValue) {
+        this.mapValue = mapValue;
     }
 }

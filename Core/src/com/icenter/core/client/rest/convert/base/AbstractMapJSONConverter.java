@@ -9,13 +9,13 @@ import static com.icenter.core.client.primitive.CollectionStream.of;
 
 public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map<T1,T2>> {
 
-    private JSONConverter<T1> keyConverter;
     private JSONConverter<T2> valueConverter;
+    private JSONConverter<T1> keyConverter;
 
     protected abstract JSONConverter<T1> createKeyConverter();
     protected abstract JSONConverter<T2> createValueConverter();
 
-    public JSONConverter<T1> getKeyConverter(){
+    public final JSONConverter<T1> getKeyConverter(){
         if(keyConverter == null){
            keyConverter = createKeyConverter();
         }
@@ -42,10 +42,10 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
         }
 
         JSONObject jsonObject = new JSONObject();
-        of(object.entrySet()).forEach((i, e) -> {
-           JSONValue key = getKeyConverter().convertObjectToJSON(e.getKey());
-           JSONValue value = getValueConverter().convertObjectToJSON(e.getValue());
-           jsonObject.put(key.toString(), value);
+        of (object.entrySet()).forEach((i, e) -> {
+            JSONValue value = getValueConverter().convertObjectToJSON(e.getValue());
+            JSONValue key = getKeyConverter().convertObjectToJSON(e.getKey());
+            jsonObject.put(key.toString(), value);
         });
 
         return jsonObject;
@@ -57,16 +57,16 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
             return null;
         }
 
-        Map<T1, T2> map = createInstance();
         JSONObject object = value.isObject();
-        of(object.keySet())
+        Map<T1, T2> map = createInstance();
+        of (object.keySet())
            .forEach(s -> map.put(
              getKeyConverter().convertJSONToObject(JSONParser.parseStrict(s)),
              getValueConverter().convertJSONToObject(object.get(s)))
-        );
+           )
+        ;
 
         return map;
     }
-
 
 }

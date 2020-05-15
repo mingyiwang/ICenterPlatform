@@ -2,23 +2,21 @@ package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.typeinfo.*;
+import com.google.gwt.core.ext.typeinfo.JArrayType;
+import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JField;
+import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
-import com.icenter.core.client.primitive.Strings;
-import com.icenter.core.client.reflect.JFieldStream;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
-import com.icenter.core.client.rest.RemoteRESTServiceHelper;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
 import com.icenter.core.client.rest.convert.base.*;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.function.BiConsumer;
-
-import static com.icenter.core.client.reflect.JFieldStream.of;
 
 /***
  * JSONConvertible Object Converter, used to generates object converters,
@@ -33,11 +31,6 @@ public final class JSONConverterGenerator  {
      * Returns newly generated JSONConverter class based the targetType.
      * */
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType) {
-        if (!RemoteRESTServiceHelper.isValidType(targetType, context.getTypeOracle())) {
-             System.out.println(targetType.getSimpleSourceName() + " is not valid type.");
-             return Strings.Empty;
-        }
-
         if(Reflects.isPrimitive(targetType)){
            return generatePrimitive(logger,context, targetType);
         }
@@ -90,7 +83,7 @@ public final class JSONConverterGenerator  {
         return qualifiedSourceName;
     }
 
-    private final static String generateMap(TreeLogger logger, GeneratorContext context, JClassType targetType) {
+    private final static String generateMap(TreeLogger logger, GeneratorContext context, JClassType targetType){
         JClassType keyType = getTypeArg(targetType);
         JClassType valueType = getSecondTypeArg(targetType);
 
@@ -121,7 +114,7 @@ public final class JSONConverterGenerator  {
         return qualifiedSourceName;
     }
 
-    private final static String generateList(TreeLogger logger, GeneratorContext context, JClassType targetType) {
+    private final static String generateList(TreeLogger logger, GeneratorContext context, JClassType targetType){
         JClassType componentType = getTypeArg(targetType);
         String sourceName = componentType.getName() +"List" + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;

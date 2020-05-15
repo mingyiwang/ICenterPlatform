@@ -7,32 +7,32 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" exported="">
+      <library name="gwt-user.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../libs/gwt-user.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="gwt-dev.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../libs/gwt-dev.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module-library">
-          <library name="gwt-user.jar">
-            <CLASSES>
-              <root url="jar://$MODULE_DIR$/../libs/gwt-user.jar!/" />
-            </CLASSES>
-            <JAVADOC />
-            <SOURCES />
-          </library>
-      </orderEntry>
-     <orderEntry type="module-library">
-          <library name="gwt-dev.jar">
-            <CLASSES>
-              <root url="jar://$MODULE_DIR$/../libs/gwt-dev.jar!/" />
-            </CLASSES>
-            <JAVADOC />
-            <SOURCES />
-          </library>
-        </orderEntry>
-        <orderEntry type="module-library">
-          <library name="validation-api-1.0.0.GA.jar">
-            <CLASSES>
-              <root url="jar://$MODULE_DIR$/../libs/validation-api-1.0.0.GA.jar!/" />
-            </CLASSES>
-            <JAVADOC />
-            <SOURCES />
-          </library>
-        </orderEntry>
+      <library name="validation-api-1.0.0.GA.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../libs/validation-api-1.0.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

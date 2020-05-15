@@ -1,13 +1,13 @@
 package com.icenter.el.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.icenter.el.client.transfer.Test;
-import com.icenter.el.client.transfer.Test2;
+import com.icenter.el.client.rest.Services;
+import com.icenter.el.client.rest.transfer.Test;
+import com.icenter.el.client.rest.transfer.Test2;
 
 public class EL implements EntryPoint {
 
@@ -24,9 +24,7 @@ public class EL implements EntryPoint {
 
         Button button = new Button("Click me");
         button.addClickHandler(clickEvent -> {
-            TestingService service = GWT.create(TestingService.class);
-
-            service.postService(test,  new AsyncCallback<Test>() {
+            Services.Testing.postService("", test,  new AsyncCallback<Test>() {
                 @Override
                 public void onFailure(Throwable throwable) {
 

@@ -37,7 +37,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
                            String targetTypeName) throws UnableToCompleteException {
 
         TypeOracle types  = context.getTypeOracle();
-        JClassType target = types.findType(targetTypeName);
+        JClassType target = types.findType(targetTypeName); // we knows that service must be class type
 
         if(target == null) {
            throw new UnableToCompleteException();
@@ -48,7 +48,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
         }
 
         String remoteServicePackage = target.getPackage().getName();
-        String remoteServiceName = target.getName() + ServiceSuffix; // Custom rebind service name
+        String remoteServiceName = target.getName() + ServiceSuffix; // Custom rebind service class name
         String remoteServiceQualifiedSourceName = remoteServicePackage + "." + remoteServiceName;
         ClassSourceFileComposerFactory composerFactory = createClassSourceFileComposerFactory(targetTypeName, target, remoteServiceName);
 
@@ -59,14 +59,11 @@ public final class RemoteRESTServiceGenerator extends Generator {
         else {
             SourceWriter sw = composerFactory.createSourceWriter(context, pw);
             for (JMethod mt : target.getMethods()) {
-                if(!RemoteRESTServiceHelper.isValidMethod(mt, types)){
-                    logger.log(TreeLogger.Type.INFO,mt.getName() + " is not a supported method.");
-                    break;
-                }
+
+                RemoteRESTServiceHelper.validateMethod(logger, types, mt);
 
                 List<JParameter> methodParameters = RemoteRESTServiceHelper.getMethodParameters(mt);
                 String params = Joiner.on(',').join(methodParameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                System.out.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
                 sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
 
                 sw.println("JSONObject params = new JSONObject();");
@@ -74,6 +71,9 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 for (int i = 0; i < size - 1; i++){
                      JParameter parameter = methodParameters.get(i);
                      JType parameterType = parameter.getType();
+
+                     RemoteRESTServiceHelper.validateType(logger, types, parameterType);
+
                      String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
                      sw.print("params.put("+"\""+ parameter.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+ parameter.getName()+"));");
                 }

@@ -1,4 +1,4 @@
-package com.icenter.el.client.transfer;
+package com.icenter.el.client.rest.transfer;
 
 import java.util.List;
 import java.util.Map;
