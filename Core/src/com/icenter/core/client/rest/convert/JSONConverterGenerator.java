@@ -168,35 +168,27 @@ public final class JSONConverterGenerator  {
 
 
             // Generate object to json method
-            System.out.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
 
             sw.println("@Override public JSONValue convertObjectToJSON(" + targetTypeQualifiedName +" instance){ ");
             sw.println("if (instance == null) { return JSONNull.getInstance(); }"); //should we handle null value?
             sw.println("JSONObject jsonObject = new JSONObject();");
             JFieldStream.of(targetType.isClassOrInterface()).forEach((f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
-                System.out.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
                 sw.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
             });
             sw.println("return jsonObject;}");
 
-            System.out.println("return jsonObject;}");
             // Generate Json to object method
-            System.out.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
             sw.println("@Override public " + targetTypeQualifiedName + " convertJSONToObject(JSONValue value){ ");
             sw.println("JSONObject jsonObject = value.isObject();");
-            System.out.println("JSONObject jsonObject = value.isObject();");
             sw.println(targetTypeQualifiedName + " instance = createInstance();");
-            System.out.println(targetTypeQualifiedName + " instance = createInstance();");
 
             JFieldStream.of(targetType.isClassOrInterface()).forEach((f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
                 sw.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
-                System.out.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
             });
 
             sw.println("return instance;}");
-            System.out.println("return instance;}");
             sw.commit(logger);
         }
 
