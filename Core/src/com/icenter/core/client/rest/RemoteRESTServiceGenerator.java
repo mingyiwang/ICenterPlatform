@@ -59,20 +59,19 @@ public final class RemoteRESTServiceGenerator extends Generator {
         }
         else {
             SourceWriter sw = composerFactory.createSourceWriter(context, pw);
-            for (JMethod mt : target.getMethods()) {
+            for (JMethod method : target.getMethods()) {
 
                 /*
                 * Recursive Validator used to validates method and variables.
                 * **/
-                RemoteRESTServiceHelper.validateMethod(logger, types, mt);
+                RemoteRESTServiceHelper.validateMethod(logger, types, method);
 
-                List<JParameter> mParams = RemoteRESTServiceHelper.getMethodParameters(mt);
-                String paramsText = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                sw.println("@Override public void "+ mt.getName() + "(" + paramsText + "){ ");
+                List<JParameter> mParams = RemoteRESTServiceHelper.getMethodParameters(method);
+                String mParamsSyntext = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                sw.println("@Override public void "+ method.getName() + "(" + mParamsSyntext + "){ ");
                 sw.indentln("JSONObject params = new JSONObject();");
 
-                int size = mParams.size();
-
+                final int size = mParams.size();
                 CollectionStream.of(mParams).forEach((i, parameter)-> {
                     if(i != size -1){
                         String parameterName = parameter.getName();
@@ -81,9 +80,9 @@ public final class RemoteRESTServiceGenerator extends Generator {
                     }
                 });
 
-                String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(mt));
+                String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(method));
                 sw.print("JSONConverter converter = new " + converterQualifiedSourceName + "();");
-                sw.println("send(params, converter," + RemoteRESTServiceHelper.getReturnParameter(mt).getName() + ");");
+                sw.println("send(\"" + method.getName() + "\",params, converter," + RemoteRESTServiceHelper.getReturnParameter(method).getName() + ");");
                 sw.println("}");
             }
             sw.commit(logger);

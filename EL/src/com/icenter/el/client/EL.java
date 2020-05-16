@@ -25,6 +25,18 @@ public class EL implements EntryPoint {
 
         Button button = new Button("Click me");
         button.addClickHandler(clickEvent -> {
+            Services.LogIn.logIn("mingyi", "wang", new AsyncCallback<String>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+
+                }
+
+                @Override
+                public void onSuccess(String s) {
+
+                }
+            });
+
             Services.Testing.postService("", test,  new AsyncCallback<Test>() {
                 @Override
                 public void onFailure(Throwable throwable) {
