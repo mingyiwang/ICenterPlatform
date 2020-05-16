@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import static com.icenter.core.client.primitive.CollectionStream.of;
 
-
 public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map<T1,T2>> {
 
     private JSONConverter<T2> valueConverter;

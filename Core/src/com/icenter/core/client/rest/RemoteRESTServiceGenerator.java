@@ -114,7 +114,6 @@ public final class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(LongJSONConverter.class.getCanonicalName());
         composerFactory.addImport(ShortJSONConverter.class.getCanonicalName());
         composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(SimpleConverters.class.getCanonicalName());
         composerFactory.addImport(List.class.getCanonicalName());
         composerFactory.addImport(ArrayList.class.getCanonicalName());
         composerFactory.addImport(Set.class.getCanonicalName());

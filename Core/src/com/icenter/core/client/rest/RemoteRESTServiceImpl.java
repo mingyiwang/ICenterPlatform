@@ -7,33 +7,54 @@ import com.icenter.core.client.http.SimpleRequestBuilder;
 import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
+import java.util.Objects;
+
 public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
 
-    private String serviceEntryPoint = Strings.Empty;
+    private String serviceEndPoint = Strings.Empty;
 
     @Override
-    public final String getServiceEntryPoint() {
-        return this.serviceEntryPoint;
+    public final String getServiceEndPoint() {
+        return this.serviceEndPoint;
     }
 
-    public final void setServiceEntryPoint(String entryPoint){
-        this.serviceEntryPoint = entryPoint;
+    @Override
+    public final void setServiceEndPoint(String endPoint){
+        this.serviceEndPoint = endPoint;
     }
 
-    protected final <T> Request send(JSONValue params, JSONConverter<T> converter, AsyncCallback<T> callback) {
-        RequestBuilder builder = SimpleRequestBuilder.of(RequestBuilder.POST, getServiceEntryPoint());
+    protected final <T> void send(JSONValue params, JSONConverter<T> converter, AsyncCallback<T> callback) {
+        Objects.requireNonNull(converter);
+        Objects.requireNonNull(callback);
+
+        RequestBuilder.Method httpMethod = params == null ? RequestBuilder.GET : RequestBuilder.POST;
+        RequestBuilder builder = new RequestBuilder(httpMethod, getServiceEndPoint());
         builder.setRequestData(params.toString());
+
         try {
-            return builder.sendRequest(params.toString(), new RequestCallback() {
+             builder.sendRequest(params.toString(), new RequestCallback() {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
-                    // 1. check response is ok or not
-                    // 2. check response is null or not
+                    Objects.requireNonNull(response);
+
+                    if (response.getStatusCode() != Response.SC_OK){
+                        //1. response is json
+                        //2. unexpected error message
+                        response.getText();
+                        return;
+                    }
+
                     // 3. check response text is valid json or not
                     // 4. check response is error or not
-
-                    JSONValue resp = JSONParser.parseStrict(response.getText());
-                    callback.onSuccess(converter.convertJSONToObject(resp));
+                    try {
+                        callback.onSuccess(converter.convertJSONToObject(JSONParser.parseStrict(response.getText())));
+                    }
+                    catch(JSONException jsonError){
+                        // handle error
+                    }
+                    catch(Exception error){
+                        // handle error
+                    }
                 }
 
                 @Override
@@ -45,8 +66,6 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         catch (RequestException error) {
             callback.onFailure(error);
         }
-
-        return null;
     }
 
 }

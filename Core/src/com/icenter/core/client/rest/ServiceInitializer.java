@@ -5,7 +5,7 @@ import com.google.gwt.user.client.Window;
 public final class ServiceInitializer {
 
     public final static <T extends RemoteRESTService> T init(T service, String endpoint){
-        service.setServiceEntryPoint(getServiceRootURL() + endpoint);
+        service.setServiceEndPoint(getServiceRootURL() + endpoint);
         return service;
     }
 

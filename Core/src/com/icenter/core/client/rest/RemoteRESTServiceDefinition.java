@@ -2,9 +2,9 @@ package com.icenter.core.client.rest;
 
 public interface RemoteRESTServiceDefinition {
 
-    String getServiceEntryPoint();
+    String getServiceEndPoint();
 
 
-    void setServiceEntryPoint(String entryPoint);
+    void setServiceEndPoint(String entryPoint);
 
 }

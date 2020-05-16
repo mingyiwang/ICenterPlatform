@@ -1,7 +1,7 @@
 package com.icenter.core.client.primitive;
 
+import com.icenter.core.client.Checks;
 import com.icenter.core.client.lambda.Function;
-
 import java.util.Locale;
 import java.util.Objects;
 
@@ -44,8 +44,14 @@ public final class Strings {
         if (s1 == null || s2 == null){
             return false;
         }
-
         return s1.toLowerCase(Locale.ROOT).equals(s2.toLowerCase(Locale.ROOT));
+    }
+
+    public static String formatMethodName(String name){
+        Checks.requireNotEmpty(name);
+        char[] copies = name.toCharArray();
+        copies[0] = Character.toUpperCase(name.charAt(0));
+        return String.valueOf(copies);
     }
 
 }

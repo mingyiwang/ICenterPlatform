@@ -3,7 +3,9 @@ package com.icenter.core.client.rest.convert;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
 import com.google.gwt.core.ext.typeinfo.JMethod;
+import com.google.gwt.core.ext.typeinfo.JType;
 import com.icenter.core.client.primitive.Strings;
+import com.icenter.core.client.reflect.Reflects;
 
 public final class JClassProperty {
 
@@ -16,7 +18,6 @@ public final class JClassProperty {
     public final static JClassProperty of(JField field, JClassType targetType){
         JMethod setMethod = findSetMethod(field, targetType);
         JMethod getMethod = findGetMethod(field, targetType);
-
         return new JClassProperty().setName(field.getName())
                                    .setSetMethod(setMethod == null ? Strings.Empty : setMethod.getName())
                                    .setGetMethod(getMethod == null ? Strings.Empty : getMethod.getName());
@@ -50,36 +51,14 @@ public final class JClassProperty {
     }
 
     private final static JMethod findSetMethod(JField field, JClassType type){
-        JMethod[] methods = type.getMethods();
-        String name = field.getName();
-        for(int i=0 ; i< methods.length; i++){
-            String methodName = methods[i].getName();
-            if(methodName.startsWith("set")){
-                if (Strings.equalsIgnoreCase(methodName.substring(3),name)){
-                    return methods[i];
-                }
-            }
-        }
-        return null;
+        return type.findMethod("set" + Strings.formatMethodName(field.getName()), new JType[]{field.getType()});
     }
 
     private final static JMethod findGetMethod(JField field, JClassType type){
-        JMethod[] methods = type.getMethods();
-        String name = field.getName();
-        for(int i=0 ; i< methods.length; i++){
-            String methodName = methods[i].getName();
-            if (methodName.startsWith("get")){
-                if(Strings.equalsIgnoreCase(methodName.substring(3),name)) {
-                    return methods[i];
-                }
-            }
-            if (methodName.startsWith("is")){
-                if (Strings.equalsIgnoreCase(methodName.substring(2), name)){
-                    return methods[i];
-                }
-            }
-        }
-        return null;
+        return Reflects.isBoolean(field.getType())
+             ? type.findMethod("is"  + Strings.formatMethodName(field.getName()), new JType[0])
+             : type.findMethod("get" + Strings.formatMethodName(field.getName()), new JType[0])
+             ;
     }
 
 }

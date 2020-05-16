@@ -18,22 +18,19 @@ public final class RemoteRESTServiceHelper {
         }
 
         JParameter[] parameters = method.getParameters();
-        if(parameters.length == 0){
-           logger.log(TreeLogger.Type.ERROR, method.getName() + " should have return type.");
-           throw new UnableToCompleteException();
-        }
-
-        for(int i = 0; i < parameters.length - 1; i++){
-            validateType(logger, types, parameters[i].getType());
-        }
-
-        boolean valid = isAsyncCallbackClass(parameters[parameters.length - 1].getType(), types);
-        if(!valid){
+        int length = parameters.length;
+        if (length == 0){
             logger.log(TreeLogger.Type.ERROR, method.getName() + " should have return type.");
             throw new UnableToCompleteException();
         }
 
-        validateType(logger, types, getAsyncReturnType(method));
+        // Validates Parameters
+        for(int i = 0; i < length - 1; i++){
+            validateType(logger, types, parameters[i].getType());
+        }
+
+        // Validates return type
+        validateReturnType(logger, types, parameters[length - 1].getType());
     }
 
     public final static void validateType(TreeLogger logger, TypeOracle types, JType type) throws UnableToCompleteException {
@@ -53,7 +50,7 @@ public final class RemoteRESTServiceHelper {
                 throw new UnableToCompleteException();
             }
 
-            validateType(logger,types,componentType);
+            validateType(logger, types, componentType);
         }
         else if (Reflects.isList(type, types)){
             if (type.isClassOrInterface().isParameterized() == null){
@@ -80,11 +77,8 @@ public final class RemoteRESTServiceHelper {
                 throw new UnableToCompleteException();
             }
 
-            JClassType keyType   = typeArgs[0];
-            JClassType valueType = typeArgs[1];
-
-            validateType(logger, types, keyType);
-            validateType(logger, types, valueType);
+            validateType(logger, types, typeArgs[0]);
+            validateType(logger, types, typeArgs[1]);
         }
         else if (type.isClassOrInterface() != null){
             JClassType classType = type.isClassOrInterface();
@@ -108,6 +102,31 @@ public final class RemoteRESTServiceHelper {
             logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName()+ " is not supported.");
             throw new UnableToCompleteException();
         }
+    }
+
+    public static void validateReturnType(TreeLogger logger, TypeOracle types, JType type) throws UnableToCompleteException{
+        if(type.isClassOrInterface() == null){
+           logger.log(TreeLogger.Type.ERROR, "Null return type is not supported.");
+           throw new UnableToCompleteException();
+        }
+
+        if(!type.isClassOrInterface().isAssignableTo(types.findType(AsyncCallback.class.getCanonicalName()))){
+           logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName()+ " must extends AsyncCallback Class.");
+           throw new UnableToCompleteException();
+        }
+
+        if(type.isClassOrInterface().isParameterized() == null){
+           logger.log(TreeLogger.Type.ERROR, "Non generic Async return type is not supported.");
+           throw new UnableToCompleteException();
+        }
+
+        if(type.isClassOrInterface().isParameterized().getTypeArgs() == null
+        || type.isClassOrInterface().isParameterized().getTypeArgs().length == 0){
+            logger.log(TreeLogger.Type.ERROR, "Non generic Async return type is not supported.");
+            throw new UnableToCompleteException();
+        }
+
+        validateType(logger, types, type.isClassOrInterface().isParameterized().getTypeArgs()[0]);
     }
 
     public static boolean isAsyncCallbackClass(JType type, TypeOracle types){

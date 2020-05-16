@@ -16,4 +16,9 @@ public final class Checks {
 
     }
 
+    public static void requireNotEmpty(String value){
+        if(value == null || value.isEmpty()){
+
+        }
+    }
 }

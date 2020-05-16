@@ -1,5 +1,6 @@
 package com.icenter.core.client.reflect;
 
+import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import java.util.Date;
@@ -9,7 +10,7 @@ import java.util.Map;
 public final class Reflects {
 
     public final static boolean isPrimitive(JType type){
-        if(type.isPrimitive() != null){
+        if (type.isPrimitive() != null){
            return true;
         }
 
@@ -24,6 +25,13 @@ public final class Reflects {
             || Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName())
             || Short.class.getCanonicalName().equals(type.getQualifiedSourceName())
             ;
+    }
+
+    public final static boolean isBoolean(JType type){
+        if (type.isPrimitive() != null && type.isPrimitive() == JPrimitiveType.BOOLEAN){
+            return true;
+        }
+        return Boolean.class.getCanonicalName().equals(type.getQualifiedSourceName());
     }
 
     public final static boolean isArray(JType type){
