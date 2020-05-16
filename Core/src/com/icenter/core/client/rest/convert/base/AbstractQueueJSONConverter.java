@@ -13,6 +13,9 @@ public class AbstractQueueJSONConverter<T> extends JSONConverter<Queue<T>> {
 
     @Override
     public JSONValue convertObjectToJSON(Queue<T> object) {
+        while(object.peek() != null){
+
+        }
         return null;
     }
 

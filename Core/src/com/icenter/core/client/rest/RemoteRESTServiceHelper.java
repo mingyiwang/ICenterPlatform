@@ -58,7 +58,7 @@ public final class RemoteRESTServiceHelper {
             JType componentType = type.isArray().getComponentType();
             int rank = type.isArray().getRank();
             if (rank > 1) {
-                logger.log(TreeLogger.Type.ERROR, "Multi-dimension Array of ["+ type.getQualifiedSourceName() + "] is not supported.");
+                logger.log(TreeLogger.Type.ERROR, "Multi-dimension Array ["+ type.getQualifiedSourceName() + "] is not supported.");
                 throw new UnableToCompleteException();
             }
 
@@ -75,6 +75,12 @@ public final class RemoteRESTServiceHelper {
                logger.log(TreeLogger.Type.ERROR, "Non Generic List is not supported.");
                throw new UnableToCompleteException();
             }
+
+            if(Reflects.isList(typeArgs[0], types)){
+               logger.log(TreeLogger.Type.ERROR, "Nested List is not supported.");
+               throw new UnableToCompleteException();
+            }
+
             validateType(logger, types, typeArgs[0]);
         }
         else if (Reflects.isMap(type,types)){
@@ -87,6 +93,12 @@ public final class RemoteRESTServiceHelper {
             if (typeArgs == null || typeArgs.length != 2){
                 logger.log(TreeLogger.Type.ERROR, "Non Generic Map is not supported.");
                 throw new UnableToCompleteException();
+            }
+
+            if(Reflects.isList(typeArgs[0], types) || Reflects.isArray(typeArgs[0]) || Reflects.isMap(typeArgs[0], types)
+            || typeArgs[0].isGenericType() != null){
+               logger.log(TreeLogger.Type.ERROR, "Nest Generic Key is not supported.");
+               throw new UnableToCompleteException();
             }
 
             validateType(logger, types, typeArgs[0]);
@@ -128,17 +140,17 @@ public final class RemoteRESTServiceHelper {
         }
 
         if(type.isClassOrInterface().isParameterized() == null){
+           logger.log(TreeLogger.Type.ERROR, "Non Generic Async return type is not supported.");
+           throw new UnableToCompleteException();
+        }
+
+        JType[] typeArgs = type.isClassOrInterface().isParameterized().getTypeArgs();
+        if(typeArgs == null || typeArgs.length == 0){
            logger.log(TreeLogger.Type.ERROR, "Non generic Async return type is not supported.");
            throw new UnableToCompleteException();
         }
 
-        if(type.isClassOrInterface().isParameterized().getTypeArgs() == null
-        || type.isClassOrInterface().isParameterized().getTypeArgs().length == 0){
-            logger.log(TreeLogger.Type.ERROR, "Non generic Async return type is not supported.");
-            throw new UnableToCompleteException();
-        }
-
-        validateType(logger, types, type.isClassOrInterface().isParameterized().getTypeArgs()[0]);
+        validateType(logger, types, typeArgs[0]);
     }
 
     public static JParameter getReturnParameter(JMethod method){

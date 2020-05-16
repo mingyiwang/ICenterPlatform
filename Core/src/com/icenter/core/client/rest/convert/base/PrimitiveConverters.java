@@ -7,6 +7,7 @@ public final class PrimitiveConverters {
     private final static HashMap<String, String> primitive_type_to_convert_map = new HashMap<>();
 
     static {
+        primitive_type_to_convert_map.put(String.class.getCanonicalName(),    StringJSONConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Boolean.class.getCanonicalName(),   BooleanJSONConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Byte.class.getCanonicalName(),      ByteJSONConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Character.class.getCanonicalName(), CharacterJSONConverter.class.getCanonicalName());
@@ -15,7 +16,6 @@ public final class PrimitiveConverters {
         primitive_type_to_convert_map.put(Integer.class.getCanonicalName(),   IntegerJSONConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Long.class.getCanonicalName(),      LongJSONConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Short.class.getCanonicalName(),     ShortJSONConverter.class.getCanonicalName());
-        primitive_type_to_convert_map.put(String.class.getCanonicalName(),    StringJSONConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(boolean[].class.getCanonicalName(), PrimitiveBooleanArrayConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(byte[].class.getCanonicalName(),    PrimitiveByteArrayConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(char[].class.getCanonicalName(),    PrimitiveCharArrayConverter.class.getCanonicalName());

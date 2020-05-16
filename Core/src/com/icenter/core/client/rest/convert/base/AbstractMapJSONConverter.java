@@ -1,15 +1,14 @@
 package com.icenter.core.client.rest.convert.base;
 
 import com.google.gwt.json.client.*;
-import com.icenter.core.client.json.JsonUtils;
+import com.icenter.core.client.json.JSON;
+import com.icenter.core.client.json.JSONParseResult;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.icenter.core.client.primitive.CollectionStream.of;
-
-public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map<T1,T2>> {
+public abstract class AbstractMapJSONConverter<T1,T2> extends JSONConverter<Map<T1,T2>> {
 
     private JSONConverter<T2> valueConverter;
     private JSONConverter<T1> keyConverter;
@@ -43,9 +42,9 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
         }
 
         JSONObject jsonObject = new JSONObject();
-        for (Map.Entry<T1, T2> entry : object.entrySet()){
-            JSONValue value = getValueConverter().convertObjectToJSON(entry.getValue());
+        for(Map.Entry<T1, T2> entry : object.entrySet()){
             JSONValue key = getKeyConverter().convertObjectToJSON(entry.getKey());
+            JSONValue value = getValueConverter().convertObjectToJSON(entry.getValue());
             jsonObject.put(key.toString(), value);
         }
 
@@ -61,12 +60,17 @@ public abstract class AbstractMapJSONConverter<T1, T2> extends JSONConverter<Map
         JSONObject object = value.isObject();
         Map<T1, T2> map = createInstance();
         Set<String> keys = object.keySet();
-        for (String key : keys){
-            T1 t1 = getKeyConverter().convertJSONToObject(JSONParser.parseStrict(key));
-            T2 t2 = getValueConverter().convertJSONToObject(object.get(key));
-            map.put(t1, t2);
+        for(String key : keys){
+            JSONParseResult result = JSON.parseStrict(key);
+            if(result.isSucceed()){
+               T1 t1 = getKeyConverter().convertJSONToObject(result.getResult());
+               T2 t2 = getValueConverter().convertJSONToObject(object.get(key));
+               map.put(t1, t2);
+            }
+            else {
+                // log?
+            }
         }
-
         return map;
     }
 
