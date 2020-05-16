@@ -11,6 +11,18 @@ import java.util.*;
 
 public final class RemoteRESTServiceHelper {
 
+    public final static void validateService(TreeLogger logger, TypeOracle types, JClassType service) throws UnableToCompleteException{
+        if(service == null) {
+           logger.log(TreeLogger.Type.ERROR, "Service can not be null.");
+           throw new UnableToCompleteException();
+        }
+
+        if(!service.isAssignableTo(types.findType(RemoteRESTService.class.getCanonicalName()))){
+            logger.log(TreeLogger.Type.ERROR, service.getName() + "should be RemoteRESTService.");
+            throw new UnableToCompleteException();
+        }
+    }
+
     public final static void validateMethod(TreeLogger logger, TypeOracle types, JMethod method) throws UnableToCompleteException {
         if(method.getReturnType() != JPrimitiveType.VOID){
            logger.log(TreeLogger.Type.ERROR, method.getName() + " should not have return type.");

@@ -35,23 +35,15 @@ public final class RemoteRESTServiceGenerator extends Generator {
 
         TypeOracle types = context.getTypeOracle();
 
-        // we knows that target type is a service interface.
-        JClassType target = types.findType(targetTypeName);
+        // we always knows that service type is a interface.
+        JClassType service = types.findType(targetTypeName);
 
-        if(target == null) {
-           logger.log(TreeLogger.Type.ERROR, "Service Type can not be null.");
-           throw new UnableToCompleteException();
-        }
+        RemoteRESTServiceHelper.validateService(logger, context.getTypeOracle(), service);
 
-        if(!target.isAssignableTo(types.findType(RemoteRESTService.class.getCanonicalName()))){
-            logger.log(TreeLogger.Type.ERROR, targetTypeName + "is not RemoteRESTService Type.");
-            throw new UnableToCompleteException();
-        }
-
-        String remoteServicePackage = target.getPackage().getName();
-        String remoteServiceName = target.getName() + ServiceSuffix; // Custom rebind service class name
+        String remoteServicePackage = service.getPackage().getName();
+        String remoteServiceName = service.getName() + ServiceSuffix; // Custom rebind service class name
         String remoteServiceQualifiedSourceName = remoteServicePackage + "." + remoteServiceName;
-        ClassSourceFileComposerFactory composerFactory = createServiceSourceFileComposerFactory(targetTypeName, target, remoteServiceName);
+        ClassSourceFileComposerFactory composerFactory = createServiceSourceFileComposerFactory(targetTypeName, service, remoteServiceName);
 
         PrintWriter pw  = context.tryCreate(logger, remoteServicePackage, remoteServiceName);
         if (pw == null){
@@ -59,7 +51,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
         }
         else {
             SourceWriter sw = composerFactory.createSourceWriter(context, pw);
-            for (JMethod method : target.getMethods()) {
+            for (JMethod method : service.getMethods()) {
 
                 /*
                 * Recursive Validator used to validates method and variables.

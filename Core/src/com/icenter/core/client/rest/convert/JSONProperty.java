@@ -66,7 +66,6 @@ public final class JSONProperty {
     }
 
     private final static String formatMethodName(String name){
-        Checks.requireNotEmpty(name);
         char[] copies = name.toCharArray();
         copies[0] = Character.toUpperCase(copies[0]);
         return String.valueOf(copies);

@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 
 /***
  * JSONConvertible Object Converter, used to generates object converters,
- * shouldn't use it directly not responsible for any cost of direct use.
+ * shouldn't use it directly. It does't do any validation against Variables.
  */
 public final class JSONConverterGenerator  {
 
@@ -33,17 +33,13 @@ public final class JSONConverterGenerator  {
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType) {
         if(Reflects.isPrimitive(targetType)){
            return generatePrimitive(logger, context, targetType);
-        }
-        else if(Reflects.isArray(targetType)){
+        } else if(Reflects.isArray(targetType)){
            return generateArray(logger, context,targetType.isArray());
-        }
-        else if(Reflects.isList(targetType,context.getTypeOracle())){
+        } else if(Reflects.isList(targetType,context.getTypeOracle())){
            return generateList(logger, context, targetType.isClassOrInterface());
-        }
-        else if(Reflects.isMap(targetType, context.getTypeOracle())){
+        } else if(Reflects.isMap(targetType, context.getTypeOracle())){
            return generateMap(logger,  context, targetType.isClassOrInterface());
-        }
-        else {
+        } else {
            return generateClass(logger, context, targetType.isClassOrInterface());
         }
     }
@@ -137,7 +133,6 @@ public final class JSONConverterGenerator  {
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
-            System.out.println("@Override public JSONConverter<" + componentType.getQualifiedSourceName() + "> createConverter(){ ");
             sw.println("@Override public JSONConverter<" + componentType.getQualifiedSourceName() + "> createConverter(){ ");
             sw.indentln("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
             sw.println("}");
@@ -244,8 +239,8 @@ public final class JSONConverterGenerator  {
         }
     }
 
-    //Todo: Use java convention to create class name.
-    private static String getSourceNameSignature(JType type){
+    // Todo: Use java convention to create class name.
+    private final static String getConverterSourceName(JType type){
 
         return JSONConverter.class.getCanonicalName();
     }
