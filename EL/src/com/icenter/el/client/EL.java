@@ -35,7 +35,8 @@ public class EL implements EntryPoint {
                 @Override
                 public void onSuccess(Test s) {
                     Test2 t = s.getMapValue().keySet().iterator().next();
-                    showMessage(t.getStringValue());
+
+
                 }
             });
         });
