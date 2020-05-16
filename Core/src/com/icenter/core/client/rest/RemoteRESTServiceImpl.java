@@ -3,7 +3,6 @@ package com.icenter.core.client.rest;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.icenter.core.client.http.SimpleRequestBuilder;
 import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.JSONConverter;
 

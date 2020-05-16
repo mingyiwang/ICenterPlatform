@@ -4,8 +4,7 @@ import com.google.gwt.json.client.JSONValue;
 
 public abstract class JSONConverter<T> {
 
-    public JSONConverter(){
-    }
+    public JSONConverter(){ }
 
     /**
      * Create new object

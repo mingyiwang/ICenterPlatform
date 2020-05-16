@@ -17,11 +17,19 @@ public class Test implements JSONConvertible {
     private char charValue     = 'a';
     private float floatValue   = 1f;
     private short shortValue   = 0;
+    private Test2 testValue;
+    private List<Test2> testListValue;
+    private Map<Test2, Integer> mapValue;
+    private Map<String, String> mapStringValue;
     private Integer[] emptyValue = new Integer[2];
-    private Test2 testValue    = new Test2();
-    private List<Test2> testListValue = new ArrayList<Test2>();
-    private Map<Test2, Integer> mapValue = new HashMap<>();
     private int[] testInt = new int[0];
+    private double[] testDouble;
+    private boolean[] testBoolean;
+    private float[] testFloat;
+    private long[] testLong;
+    private short[] testShort;
+    private byte[] testByte;
+    private String[] testString;
 
     public int getInteger() {
         return integer;
@@ -132,4 +140,70 @@ public class Test implements JSONConvertible {
     public void setTestInt(int[] testInt) {
         this.testInt = testInt;
     }
+
+    public double[] getTestDouble() {
+        return testDouble;
+    }
+
+    public void setTestDouble(double[] testDouble) {
+        this.testDouble = testDouble;
+    }
+
+    public boolean[] getTestBoolean() {
+        return testBoolean;
+    }
+
+    public void setTestBoolean(boolean[] testBoolean) {
+        this.testBoolean = testBoolean;
+    }
+
+    public float[] getTestFloat() {
+        return testFloat;
+    }
+
+    public void setTestFloat(float[] testFloat) {
+        this.testFloat = testFloat;
+    }
+
+    public long[] getTestLong() {
+        return testLong;
+    }
+
+    public void setTestLong(long[] testLong) {
+        this.testLong = testLong;
+    }
+
+    public short[] getTestShort() {
+        return testShort;
+    }
+
+    public void setTestShort(short[] testShort) {
+        this.testShort = testShort;
+    }
+
+    public byte[] getTestByte() {
+        return testByte;
+    }
+
+    public void setTestByte(byte[] testByte) {
+        this.testByte = testByte;
+    }
+
+    public String[] getTestString() {
+        return testString;
+    }
+
+    public void setTestString(String[] testString) {
+        this.testString = testString;
+    }
+
+    public Map<String, String> getMapStringValue() {
+        return mapStringValue;
+    }
+
+    public void setMapStringValue(Map<String, String> mapStringValue) {
+        this.mapStringValue = mapStringValue;
+    }
+
+
 }

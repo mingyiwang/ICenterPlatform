@@ -2,7 +2,10 @@ package com.icenter.core.client.rest.convert;
 
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.typeinfo.*;
+import com.google.gwt.core.ext.typeinfo.JArrayType;
+import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JField;
+import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
@@ -58,6 +61,7 @@ public final class JSONConverterGenerator  {
                                  ? componentType.isPrimitive().getQualifiedBoxedSourceName()
                                  : componentType.getQualifiedSourceName();
 
+        // Primitive arrays: int[], double[] etc.
         if (componentType.isPrimitive() != null ) {
             return PrimitiveConverters.of(targetType.getParameterizedQualifiedSourceName());
         }
@@ -76,7 +80,6 @@ public final class JSONConverterGenerator  {
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
-
             sw.println("@Override public " + JSONConverter.class.getCanonicalName()+"<" + componentTypeQualifiedName + "> createConverter(){ ");
             sw.indentln("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
             sw.println("}");
@@ -171,7 +174,7 @@ public final class JSONConverterGenerator  {
             sw.println("JSONObject jsonObject = new JSONObject();");
             forEach(targetType.isClassOrInterface(),(f, p) -> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
-                System.out.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
+                //System.out.println("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
                 sw.indentln("jsonObject.put("+"\""+f.getName()+"\"" + "," + "new " + converterSourceName +"().convertObjectToJSON("+ "instance."+p.getGetMethod()+"()));");
             });
             sw.println("return jsonObject;}");
@@ -183,7 +186,7 @@ public final class JSONConverterGenerator  {
 
             forEach(targetType.isClassOrInterface(),(f, p)-> {
                 String converterSourceName = JSONConverterGenerator.generate(logger, context, f.getType());
-                System.out.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
+                //System.out.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
                 sw.println("instance." + p.getSetMethod() + "(new " + converterSourceName +"().convertJSONToObject("+ "jsonObject.get("+"\""+f.getName()+"\""+")));");
             });
 
@@ -204,7 +207,7 @@ public final class JSONConverterGenerator  {
         composerFactory.addImport(JSONNumber.class.getCanonicalName());
         composerFactory.addImport(JSONObject.class.getCanonicalName());
         composerFactory.addImport(JSONString.class.getCanonicalName());
-        composerFactory.addImport(JClassProperty.class.getCanonicalName());
+        composerFactory.addImport(JSONProperty.class.getCanonicalName());
         composerFactory.addImport(AsyncCallback.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
@@ -226,15 +229,7 @@ public final class JSONConverterGenerator  {
         return composerFactory;
     }
 
-    private static JClassType getTypeArg(JType target){
-        return target.isParameterized().getTypeArgs()[0];
-    }
-
-    private static JClassType getSecondTypeArg(JType target){
-        return target.isParameterized().getTypeArgs()[1];
-    }
-
-    private static void forEach(JClassType classType, BiConsumer<JField, JClassProperty> consumer){
+    private final static void forEach(JClassType classType, BiConsumer<JField, JSONProperty> consumer){
         Objects.requireNonNull(consumer);
         Objects.requireNonNull(classType);
 
@@ -245,8 +240,14 @@ public final class JSONConverterGenerator  {
         }
 
         for(int i =0; i<len; i++){
-            consumer.accept(fields[i], JClassProperty.of(fields[i], classType));
+            consumer.accept(fields[i], JSONProperty.of(fields[i], classType));
         }
+    }
+
+    //Todo: Use java convention to create class name.
+    private static String getSourceNameSignature(JType type){
+
+        return JSONConverter.class.getCanonicalName();
     }
 
 }

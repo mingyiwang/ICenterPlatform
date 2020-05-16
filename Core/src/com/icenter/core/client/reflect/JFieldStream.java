@@ -2,7 +2,7 @@ package com.icenter.core.client.reflect;
 
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JField;
-import com.icenter.core.client.rest.convert.JClassProperty;
+import com.icenter.core.client.rest.convert.JSONProperty;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
@@ -24,7 +24,7 @@ public final class JFieldStream {
         return new JFieldStream(targetType);
     }
 
-    public JFieldStream forEach(BiConsumer<JField, JClassProperty> consumer){
+    public JFieldStream forEach(BiConsumer<JField, JSONProperty> consumer){
         Objects.requireNonNull(consumer);
 
         int len = fields.length;
@@ -33,7 +33,7 @@ public final class JFieldStream {
         }
 
         for(int i =0; i<len; i++){
-            consumer.accept(fields[i], JClassProperty.of(fields[i], targetType));
+            consumer.accept(fields[i], JSONProperty.of(fields[i], targetType));
         }
         return this;
     }

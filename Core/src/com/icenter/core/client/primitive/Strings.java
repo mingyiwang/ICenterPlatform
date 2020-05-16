@@ -46,12 +46,4 @@ public final class Strings {
         }
         return s1.toLowerCase(Locale.ROOT).equals(s2.toLowerCase(Locale.ROOT));
     }
-
-    public static String formatMethodName(String name){
-        Checks.requireNotEmpty(name);
-        char[] copies = name.toCharArray();
-        copies[0] = Character.toUpperCase(copies[0]);
-        return String.valueOf(copies);
-    }
-
 }

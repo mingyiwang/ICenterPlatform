@@ -13,7 +13,6 @@ public final class Reflects {
         if (type.isPrimitive() != null){
            return true;
         }
-
         return String.class.getCanonicalName().equals(type.getQualifiedSourceName())
             || Character.class.getCanonicalName().equals(type.getQualifiedSourceName())
             || Byte.class.getCanonicalName().equals(type.getQualifiedSourceName())

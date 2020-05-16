@@ -26,7 +26,7 @@ public final class ArrayStream<T> {
 
     public ArrayStream<T> forEach(IntAction<T> action){
         Objects.requireNonNull(action);
-        for(int i=0; i< elements.length; i++){
+        for(int i = 0; i< elements.length; i++){
             action.run(i, elements[i]);
         }
         return this;

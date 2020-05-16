@@ -9,9 +9,9 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.primitive.Joiner;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
@@ -72,12 +72,14 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 sw.indentln("JSONObject params = new JSONObject();");
 
                 int size = mParams.size();
-                for (int i = 0; i < size - 1; i++){
-                     JParameter parameter = mParams.get(i);
-                     String parameterName = parameter.getName();
-                     String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, parameter.getType());
-                     sw.print("params.put("+"\"" + parameterName + "\""+"," + "new " + converterQualifiedSourceName + "().convertObjectToJSON(" + parameterName + "));");
-                }
+
+                CollectionStream.of(mParams).forEach((i, parameter)-> {
+                    if(i != size -1){
+                        String parameterName = parameter.getName();
+                        String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, parameter.getType());
+                        sw.print("params.put("+"\"" + parameterName + "\""+"," + "new " + converterQualifiedSourceName + "().convertObjectToJSON(" + parameterName + "));");
+                    }
+                });
 
                 String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(mt));
                 sw.print("JSONConverter converter = new " + converterQualifiedSourceName + "();");
@@ -102,7 +104,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(JSONNumber.class.getCanonicalName());
         composerFactory.addImport(JSONObject.class.getCanonicalName());
         composerFactory.addImport(JSONString.class.getCanonicalName());
-        composerFactory.addImport(JClassProperty.class.getCanonicalName());
+        composerFactory.addImport(JSONProperty.class.getCanonicalName());
         composerFactory.addImport(AsyncCallback.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
