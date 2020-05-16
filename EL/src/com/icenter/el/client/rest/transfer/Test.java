@@ -21,6 +21,7 @@ public class Test implements JSONConvertible {
     private Test2 testValue    = new Test2();
     private List<Test2> testListValue = new ArrayList<Test2>();
     private Map<Test2, Integer> mapValue = new HashMap<>();
+    private int[] testInt = new int[0];
 
     public int getInteger() {
         return integer;
@@ -122,5 +123,13 @@ public class Test implements JSONConvertible {
 
     public void setEmptyValue(Integer[] emptyValue) {
         this.emptyValue = emptyValue;
+    }
+
+    public int[] getTestInt() {
+        return testInt;
+    }
+
+    public void setTestInt(int[] testInt) {
+        this.testInt = testInt;
     }
 }

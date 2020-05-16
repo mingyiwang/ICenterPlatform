@@ -16,6 +16,7 @@ public final class PrimitiveConverters {
         type_to_convert_map.put(Long.class.getCanonicalName(),      LongJSONConverter.class.getCanonicalName());
         type_to_convert_map.put(Short.class.getCanonicalName(),     ShortJSONConverter.class.getCanonicalName());
         type_to_convert_map.put(String.class.getCanonicalName(),    StringJSONConverter.class.getCanonicalName());
+        type_to_convert_map.put(Integer.class.getCanonicalName()+"[]", PrimitiveIntArrayConverter.class.getCanonicalName());
     }
 
     public final static String of(String typeName){

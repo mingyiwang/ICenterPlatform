@@ -58,6 +58,10 @@ public final class JSONConverterGenerator  {
                                  ? componentType.isPrimitive().getQualifiedBoxedSourceName()
                                  : componentType.getQualifiedSourceName();
 
+        if (componentType.isPrimitive() != null ) {
+            return PrimitiveConverters.of(componentTypeQualifiedName + "[]");
+        }
+
         String sourceName = componentType.getSimpleSourceName() + "Array" + JSONConverter.class.getSimpleName();
         String qualifiedConverterSourceName = packagePath + "." + sourceName;
 
