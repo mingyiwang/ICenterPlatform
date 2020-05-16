@@ -17,10 +17,7 @@ import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.base.*;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * JSONConverter Generator class, should not use it directly
@@ -36,21 +33,25 @@ public final class RemoteRESTServiceGenerator extends Generator {
                            GeneratorContext context,
                            String targetTypeName) throws UnableToCompleteException {
 
-        TypeOracle types  = context.getTypeOracle();
-        JClassType target = types.findType(targetTypeName); // we knows that service must be class type
+        TypeOracle types = context.getTypeOracle();
+
+        // we knows that target type is a service interface.
+        JClassType target = types.findType(targetTypeName);
 
         if(target == null) {
+           logger.log(TreeLogger.Type.ERROR, "Service Type can not be null.");
            throw new UnableToCompleteException();
         }
 
         if(!target.isAssignableTo(types.findType(RemoteRESTService.class.getCanonicalName()))){
+            logger.log(TreeLogger.Type.ERROR, targetTypeName + "is not RemoteRESTService Type.");
             throw new UnableToCompleteException();
         }
 
         String remoteServicePackage = target.getPackage().getName();
         String remoteServiceName = target.getName() + ServiceSuffix; // Custom rebind service class name
         String remoteServiceQualifiedSourceName = remoteServicePackage + "." + remoteServiceName;
-        ClassSourceFileComposerFactory composerFactory = createClassSourceFileComposerFactory(targetTypeName, target, remoteServiceName);
+        ClassSourceFileComposerFactory composerFactory = createServiceSourceFileComposerFactory(targetTypeName, target, remoteServiceName);
 
         PrintWriter pw  = context.tryCreate(logger, remoteServicePackage, remoteServiceName);
         if (pw == null){
@@ -60,24 +61,27 @@ public final class RemoteRESTServiceGenerator extends Generator {
             SourceWriter sw = composerFactory.createSourceWriter(context, pw);
             for (JMethod mt : target.getMethods()) {
 
+                /*
+                * Recursive Validator used to validates method and variables.
+                * **/
                 RemoteRESTServiceHelper.validateMethod(logger, types, mt);
 
-                List<JParameter> methodParameters = RemoteRESTServiceHelper.getMethodParameters(mt);
-                String params = Joiner.on(',').join(methodParameters, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                sw.println("@Override public void "+ mt.getName() + "(" + params + "){ ");
+                List<JParameter> mParams = RemoteRESTServiceHelper.getMethodParameters(mt);
+                String paramsText = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                sw.println("@Override public void "+ mt.getName() + "(" + paramsText + "){ ");
+                sw.indentln("JSONObject params = new JSONObject();");
 
-                sw.println("JSONObject params = new JSONObject();");
-                int size = methodParameters.size();
+                int size = mParams.size();
                 for (int i = 0; i < size - 1; i++){
-                     JParameter parameter = methodParameters.get(i);
-                     JType parameterType = parameter.getType();
-                     String converterSourceName = JSONConverterGenerator.generate(logger, context, parameterType);
-                     sw.print("params.put("+"\""+ parameter.getName()+"\""+"," + "new " + converterSourceName + "().convertObjectToJSON("+ parameter.getName()+"));");
+                     JParameter parameter = mParams.get(i);
+                     String parameterName = parameter.getName();
+                     String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, parameter.getType());
+                     sw.print("params.put("+"\"" + parameterName + "\""+"," + "new " + converterQualifiedSourceName + "().convertObjectToJSON(" + parameterName + "));");
                 }
 
-                String converterSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getAsyncReturnType(mt));
-                sw.print("JSONConverter converter = new " + converterSourceName + "();");
-                sw.println("send(params, converter," + RemoteRESTServiceHelper.getAsyncReturnParameter(mt).getName() + ");");
+                String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(mt));
+                sw.print("JSONConverter converter = new " + converterQualifiedSourceName + "();");
+                sw.println("send(params, converter," + RemoteRESTServiceHelper.getReturnParameter(mt).getName() + ");");
                 sw.println("}");
             }
             sw.commit(logger);
@@ -85,9 +89,8 @@ public final class RemoteRESTServiceGenerator extends Generator {
         }
     }
 
-    private ClassSourceFileComposerFactory createClassSourceFileComposerFactory(String targetTypeName, JClassType target, String remoteServiceName) {
+    private ClassSourceFileComposerFactory createServiceSourceFileComposerFactory(String targetTypeName, JClassType target, String remoteServiceName) {
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(target.getPackage().getName(), remoteServiceName);
-        composerFactory.addImport(ServiceDefTarget.class.getCanonicalName());
         composerFactory.addImport(IllegalArgumentException.class.getCanonicalName());
         composerFactory.addImport(RequestBuilder.class.getCanonicalName());
         composerFactory.addImport(RequestException.class.getCanonicalName());
@@ -117,7 +120,9 @@ public final class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(List.class.getCanonicalName());
         composerFactory.addImport(ArrayList.class.getCanonicalName());
         composerFactory.addImport(Set.class.getCanonicalName());
+        composerFactory.addImport(HashSet.class.getCanonicalName());
         composerFactory.addImport(Map.class.getCanonicalName());
+        composerFactory.addImport(HashMap.class.getCanonicalName());
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
         return composerFactory;

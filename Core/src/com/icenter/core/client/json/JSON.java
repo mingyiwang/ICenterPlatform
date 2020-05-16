@@ -8,25 +8,32 @@ import com.google.gwt.json.client.JSONValue;
 public final class JSON {
 
     private JSONSerializer serializer;
+    private Class<?> classLiteral;
 
-    private JSON(JSONSerializer serializer) {
+    private JSON(Class<?> classLiteral, JSONSerializer serializer) {
         this.serializer = serializer;
+        this.classLiteral = classLiteral;
     }
 
-    public final static JSON on(Class<?> classLiteral){ return new JSON(GWT.create(classLiteral)); }
+    public final static JSON on(Class<?> classLiteral){
+        return new JSON(classLiteral, GWT.create(classLiteral));
+    }
 
     public final String serializeObject(Object object) throws JSONException {
+        if(object.getClass() != classLiteral){
+           throw new JSONException(object.getClass().getCanonicalName() + " is not supported.");
+        }
         return serializer.serializeObject(object).toString();
     }
 
     public final <T> T deserializeJSON(String json) throws JSONException{
         JSONValue value = null;
         try {
-            value = JSONParser.parseStrict(json);
-        }  catch(Exception err) {
-
+            return (T) serializer.deserializeJSON(JSONParser.parseStrict(json));
         }
-        return (T) serializer.deserializeJSON(value);
+        catch(Exception err) {
+            return null;
+        }
     }
 
 }

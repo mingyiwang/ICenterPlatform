@@ -50,7 +50,7 @@ public final class Strings {
     public static String formatMethodName(String name){
         Checks.requireNotEmpty(name);
         char[] copies = name.toCharArray();
-        copies[0] = Character.toUpperCase(name.charAt(0));
+        copies[0] = Character.toUpperCase(copies[0]);
         return String.valueOf(copies);
     }
 

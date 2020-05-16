@@ -59,7 +59,7 @@ public final class JSONConverterGenerator  {
                                  : componentType.getQualifiedSourceName();
 
         if (componentType.isPrimitive() != null ) {
-            return PrimitiveConverters.of(componentTypeQualifiedName + "[]");
+            return PrimitiveConverters.of(targetType.getParameterizedQualifiedSourceName());
         }
 
         String sourceName = componentType.getSimpleSourceName() + "Array" + JSONConverter.class.getSimpleName();
@@ -86,16 +86,16 @@ public final class JSONConverterGenerator  {
     }
 
     private final static String generateMap(TreeLogger logger, GeneratorContext context, JClassType targetType){
-        JClassType keyType = getTypeArg(targetType);
-        JClassType valueType = getSecondTypeArg(targetType);
+        JClassType keyType   = targetType.isParameterized().getTypeArgs()[0];
+        JClassType valueType = targetType.isParameterized().getTypeArgs()[1];
 
-        String sourceName = keyType.getName() + valueType.getName()+ "Map" + JSONConverter.class.getSimpleName();
+        String sourceName = keyType.getName() + valueType.getName() + "Map" + JSONConverter.class.getSimpleName();
         String qualifiedSourceName = packagePath + "." + sourceName;
 
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(AbstractMapJSONConverter.class.getCanonicalName());
-        composer.addImport(keyType.getParameterizedQualifiedSourceName());
-        composer.addImport(valueType.getParameterizedQualifiedSourceName());
+        composer.addImport(valueType.getQualifiedSourceName());
+        composer.addImport(keyType.getQualifiedSourceName());
         composer.setSuperclass(AbstractMapJSONConverter.class.getCanonicalName() + "<" + keyType.getName()+"," + valueType.getName()+ ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
@@ -104,11 +104,11 @@ public final class JSONConverterGenerator  {
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
-            sw.println("@Override public JSONConverter<" + keyType.getParameterizedQualifiedSourceName() + "> createKeyConverter(){ ");
+            sw.println("@Override public JSONConverter<" + keyType.getQualifiedSourceName() + "> createKeyConverter(){ ");
             sw.indentln("return new " + JSONConverterGenerator.generate(logger, context, keyType) + "();");
             sw.println("}");
 
-            sw.println("@Override public JSONConverter<" + valueType.getParameterizedQualifiedSourceName() + "> createValueConverter(){ ");
+            sw.println("@Override public JSONConverter<" + valueType.getQualifiedSourceName() + "> createValueConverter(){ ");
             sw.indentln("return new " + JSONConverterGenerator.generate(logger, context, valueType) + "();");
             sw.println("}");
             sw.commit(logger);
@@ -117,7 +117,7 @@ public final class JSONConverterGenerator  {
     }
 
     private final static String generateList(TreeLogger logger, GeneratorContext context, JClassType targetType){
-        JClassType componentType = getTypeArg(targetType);
+        JClassType componentType = targetType.isParameterized().getTypeArgs()[0];
         String componentQualifiedSourceName = componentType.getParameterizedQualifiedSourceName();
 
         String sourceName = componentType.getName() +"List" + JSONConverter.class.getSimpleName();
@@ -125,7 +125,7 @@ public final class JSONConverterGenerator  {
 
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
-        composer.addImport(componentQualifiedSourceName);
+        composer.addImport(componentType.getQualifiedSourceName());
         composer.setSuperclass(AbstractListJSONConverter.class.getCanonicalName() + "<" + componentQualifiedSourceName + ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
@@ -134,8 +134,8 @@ public final class JSONConverterGenerator  {
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
-            System.out.println("@Override public JSONConverter<" + componentType.getParameterizedQualifiedSourceName() + "> createConverter(){ ");
-            sw.println("@Override public JSONConverter<" + componentType.getParameterizedQualifiedSourceName() + "> createConverter(){ ");
+            System.out.println("@Override public JSONConverter<" + componentType.getQualifiedSourceName() + "> createConverter(){ ");
+            sw.println("@Override public JSONConverter<" + componentType.getQualifiedSourceName() + "> createConverter(){ ");
             sw.indentln("return new " + JSONConverterGenerator.generate(logger, context, componentType) + "();");
             sw.println("}");
             sw.commit(logger);

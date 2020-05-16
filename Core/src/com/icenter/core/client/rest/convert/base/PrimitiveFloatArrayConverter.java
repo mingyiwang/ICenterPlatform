@@ -6,19 +6,18 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public class PrimitiveDoubleArrayConverter extends JSONConverter<double[]> {
+public class PrimitiveFloatArrayConverter extends JSONConverter<float[]> {
 
     @Override
-    public final double[] createInstance() {
+    public final float[] createInstance() {
         return null;
     }
 
     @Override
-    public JSONValue convertObjectToJSON(double[] object) {
+    public JSONValue convertObjectToJSON(float[] object) {
         if (object == null){
             return JSONNull.getInstance();
         }
-
         JSONArray json = new JSONArray();
         for (int i=0; i<object.length; i++) {
              json.set(i, new JSONNumber(object[i]));
@@ -27,16 +26,15 @@ public class PrimitiveDoubleArrayConverter extends JSONConverter<double[]> {
     }
 
     @Override
-    public double[] convertJSONToObject(JSONValue value) {
+    public float[] convertJSONToObject(JSONValue value) {
         if (value == null || value.isNull() != null || value.isArray() == null){
             return null;
         }
-
         JSONArray array = value.isArray();
         int size = array.size();
-        double[] a = new double[size];
+        float[] a = new float[size];
         for (int i = 0; i < size; i++) {
-             a[i] = array.get(i).isNumber().doubleValue();
+             a[i] = (float) array.get(i).isNumber().doubleValue();
         }
         return a;
     }

@@ -15,7 +15,10 @@ public final class DateJSONConverter extends JSONConverter<Date> {
 
     @Override
     public JSONValue convertObjectToJSON(Date object) {
-        return object == null ? JSONNull.getInstance() : new JSONString(String.valueOf(object.getTime()));
+        return object == null
+             ? JSONNull.getInstance()
+             : new JSONString(String.valueOf(object.getTime()))
+             ;
     }
 
     @Override
@@ -29,11 +32,6 @@ public final class DateJSONConverter extends JSONConverter<Date> {
         }
 
         return new Date((long)value.isNumber().doubleValue());
-    }
-
-
-    public enum DateKind {
-        WCF, JAVA
     }
 
 }

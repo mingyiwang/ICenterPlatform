@@ -129,18 +129,13 @@ public final class RemoteRESTServiceHelper {
         validateType(logger, types, type.isClassOrInterface().isParameterized().getTypeArgs()[0]);
     }
 
-    public static boolean isAsyncCallbackClass(JType type, TypeOracle types){
-        return type.isClassOrInterface() != null
-            && type.isClassOrInterface().isAssignableTo(types.findType(AsyncCallback.class.getCanonicalName()));
-    }
-
-    public static JParameter getAsyncReturnParameter(JMethod method){
+    public static JParameter getReturnParameter(JMethod method){
         JParameter[] ps = method.getParameters();
         return ps[ps.length-1];
     }
 
-    public static JClassType getAsyncReturnType(JMethod method) {
-        return getAsyncReturnParameter(method).getType().isParameterized().getTypeArgs()[0];
+    public static JClassType getReturnType(JMethod method) {
+        return getReturnParameter(method).getType().isParameterized().getTypeArgs()[0];
     }
 
     public static List<JParameter> getMethodParameters(JMethod method){

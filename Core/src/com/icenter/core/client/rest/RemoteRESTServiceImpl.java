@@ -30,7 +30,6 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         RequestBuilder.Method httpMethod = params == null ? RequestBuilder.GET : RequestBuilder.POST;
         RequestBuilder builder = new RequestBuilder(httpMethod, getServiceEndPoint());
         builder.setRequestData(params.toString());
-
         try {
              builder.sendRequest(params.toString(), new RequestCallback() {
                 @Override
