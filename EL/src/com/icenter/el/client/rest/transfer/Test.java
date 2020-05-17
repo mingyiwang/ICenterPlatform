@@ -30,6 +30,8 @@ public class Test implements JSONConvertible {
     private short[] testShort;
     private byte[] testByte;
     private String[] testString;
+    private List<Map<String, Integer>> testListMap;
+    private Map<String, List<String>> testMapList;
 
     public int getInteger() {
         return integer;
@@ -205,5 +207,19 @@ public class Test implements JSONConvertible {
         this.mapStringValue = mapStringValue;
     }
 
+    public List<Map<String, Integer>> getTestListMap() {
+        return testListMap;
+    }
 
+    public void setTestListMap(List<Map<String, Integer>> testListMap) {
+        this.testListMap = testListMap;
+    }
+
+    public Map<String, List<String>> getTestMapList() {
+        return testMapList;
+    }
+
+    public void setTestMapList(Map<String, List<String>> testMapList) {
+        this.testMapList = testMapList;
+    }
 }

@@ -18,9 +18,11 @@ public final class ArrayStream<T> {
 
     public ArrayStream<T> forEach(Action<T> action){
         Objects.requireNonNull(action);
+
         for(int i=0; i< elements.length; i++){
             action.run(elements[i]);
         }
+
         return this;
     }
 
@@ -31,5 +33,13 @@ public final class ArrayStream<T> {
         }
         return this;
     }
+
+    public final T last(){
+        int length = this.elements.length;
+        return this.elements[length -1];
+    }
+
+
+
 
 }

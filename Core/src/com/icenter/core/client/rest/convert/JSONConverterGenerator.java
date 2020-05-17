@@ -7,13 +7,13 @@ import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.icenter.core.client.lambda.BiAction;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.RemoteRESTService;
 import com.icenter.core.client.rest.RemoteRESTServiceImpl;
 import com.icenter.core.client.rest.convert.base.*;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 /***
  * JSONConvertible Object Converter, used to generates object converters,
@@ -49,10 +49,10 @@ public final class JSONConverterGenerator  {
     }
 
     private final static String generateArray(TreeLogger logger, GeneratorContext context, JArrayType targetType)  {
-        JType componentType = targetType.getComponentType();
+        JType  componentType = targetType.getComponentType();
         String componentTypeQualifiedName = componentType.isPrimitive() != null
-                                 ? componentType.isPrimitive().getQualifiedBoxedSourceName()
-                                 : componentType.getQualifiedSourceName();
+               ? componentType.isPrimitive().getQualifiedBoxedSourceName()
+               : componentType.getQualifiedSourceName();
 
         // Primitive arrays: int[], double[] etc.
         if (componentType.isPrimitive() != null ) {
@@ -76,6 +76,7 @@ public final class JSONConverterGenerator  {
             sw.println(String.format("@Override public JSONConverter<%1$s> createConverter(){ ",
                componentTypeQualifiedName
             ));
+
             sw.indentln(String.format("return new %1$s();",JSONConverterGenerator.generate(logger, context, componentType)));
             sw.println("}");
             sw.commit(logger);
@@ -94,7 +95,7 @@ public final class JSONConverterGenerator  {
         composer.addImport(AbstractMapJSONConverter.class.getCanonicalName());
         composer.addImport(valueType.getQualifiedSourceName());
         composer.addImport(keyType.getQualifiedSourceName());
-        composer.setSuperclass(AbstractMapJSONConverter.class.getCanonicalName() + "<" + keyType.getName()+"," + valueType.getName()+ ">");
+        composer.setSuperclass(AbstractMapJSONConverter.class.getCanonicalName() + "<" + keyType.getQualifiedSourceName() + "," + valueType.getParameterizedQualifiedSourceName()+ ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
@@ -106,7 +107,7 @@ public final class JSONConverterGenerator  {
             sw.println(String.format("return new %1$s();", JSONConverterGenerator.generate(logger, context, keyType)));
             sw.println("}");
 
-            sw.println(String.format("@Override public JSONConverter<%1$s> createValueConverter(){ ",valueType.getQualifiedSourceName()));
+            sw.println(String.format("@Override public JSONConverter<%1$s> createValueConverter(){ ",valueType.getParameterizedQualifiedSourceName()));
             sw.println(String.format("return new %1$s();",JSONConverterGenerator.generate(logger, context, valueType)));
             sw.println("}");
             sw.commit(logger);
@@ -132,7 +133,8 @@ public final class JSONConverterGenerator  {
         }
         else {
             SourceWriter sw = composer.createSourceWriter(context, pw);
-            sw.println(String.format("@Override public JSONConverter<%1$s> createConverter(){ ", componentType.getQualifiedSourceName()));
+            sw.println(String.format("@Override public JSONConverter<%1$s> createConverter(){ ", componentType.getParameterizedQualifiedSourceName()));
+            System.out.println(String.format("@Override public JSONConverter<%1$s> createConverter(){ ", componentType.getParameterizedQualifiedSourceName()));
             sw.println(String.format("return new %1$s();", JSONConverterGenerator.generate(logger, context, componentType)));
             sw.println("}");
             sw.commit(logger);
@@ -186,6 +188,12 @@ public final class JSONConverterGenerator  {
                    JSONConverterGenerator.generate(logger, context, f.getType()),
                    f.getName()
                 ));
+
+                System.out.println(String.format("instance.%1$s(new %2$s().convertJSONToObject(jsonObject.get(\"%3$s\")));",
+                        p.getSetMethod(),
+                        JSONConverterGenerator.generate(logger, context, f.getType()),
+                        f.getName()
+                ));
             });
             sw.println("return instance;}");
             sw.commit(logger);
@@ -204,7 +212,7 @@ public final class JSONConverterGenerator  {
         composerFactory.addImport(JSONNumber.class.getCanonicalName());
         composerFactory.addImport(JSONObject.class.getCanonicalName());
         composerFactory.addImport(JSONString.class.getCanonicalName());
-        composerFactory.addImport(JSONProperty.class.getCanonicalName());
+        composerFactory.addImport(JProperty.class.getCanonicalName());
         composerFactory.addImport(AsyncCallback.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
@@ -226,18 +234,18 @@ public final class JSONConverterGenerator  {
         return composerFactory;
     }
 
-    private final static void forEach(JClassType classType, BiConsumer<JField, JSONProperty> consumer){
-        Objects.requireNonNull(consumer);
+    private final static void forEach(JClassType classType, BiAction<JField, JProperty> action){
         Objects.requireNonNull(classType);
+        Objects.requireNonNull(action);
 
         JField[] fields = classType.getFields();
         int len = fields.length;
         if(len == 0) {
-           return ;
+           return ; // Type doesn't have fields?
         }
 
         for(int i =0; i<len; i++){
-            consumer.accept(fields[i], JSONProperty.of(fields[i], classType));
+            action.run(fields[i], JProperty.of(fields[i], classType));
         }
     }
 
@@ -245,14 +253,14 @@ public final class JSONConverterGenerator  {
     private final static String getConverterSourceName(TypeOracle types, JType type){
         String sourceName;
         if(Reflects.isArray(type)){
-           sourceName = type.isArray().getComponentType().getSimpleSourceName()+"_Array_JSONConverter";
+           sourceName = "Array_of_"+type.isArray().getComponentType().getSimpleSourceName()+"_JSONConverter";
         }
-        else if(Reflects.isList(type,types)){
-           sourceName = type.isClassOrInterface().isParameterized().getTypeArgs()[0].getSimpleSourceName()+"_List_JSONConverter";
+        else if(Reflects.isList(type, types)){
+           sourceName = "List_Of_"+type.isClassOrInterface().isParameterized().getTypeArgs()[0].getSimpleSourceName()+"_JSONConverter";
         }
-        else if(Reflects.isMap(type,types)){
+        else if(Reflects.isMap(type, types)){
            JType[] typeArgs = type.isParameterized().getTypeArgs();
-           sourceName = typeArgs[0].getSimpleSourceName()+"_To_"+typeArgs[1].getSimpleSourceName()+"_Map_JSONConverter";
+           sourceName = "Map_of_" + typeArgs[0].getSimpleSourceName() + "_To_" + typeArgs[1].getSimpleSourceName()+"_JSONConverter";
         }
         else {
            sourceName = type.isClassOrInterface().getSimpleSourceName()+"_JSONConverter";

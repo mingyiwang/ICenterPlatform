@@ -13,7 +13,8 @@ public final class JSON {
         try {
             JSONValue json = JSONParser.parseStrict(couldBeJson);
             return JSONParseResult.succeed(json);
-        } catch(JSONException error){
+        }
+        catch(JSONException error){
             return JSONParseResult.failed(error);
         }
    }

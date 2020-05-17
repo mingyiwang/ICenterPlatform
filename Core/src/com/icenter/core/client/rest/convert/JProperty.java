@@ -11,27 +11,25 @@ import com.icenter.core.client.reflect.Reflects;
 /**
  * Helper class used to store property name and methods
  * **/
-public final class JSONProperty {
+public final class JProperty {
 
     private String setMethod  = Strings.Empty;
     private String getMethod  = Strings.Empty;
     private String name       = Strings.Empty;
 
-    private JSONProperty(){}
-
-    public final static JSONProperty of(JField field, JClassType targetType){
+    public final static JProperty of(JField field, JClassType targetType){
         JMethod setMethod = findSetMethod(field, targetType);
         JMethod getMethod = findGetMethod(field, targetType);
-        return new JSONProperty().setName(field.getName())
-                                 .setSetMethod(setMethod == null ? Strings.Empty : setMethod.getName())
-                                 .setGetMethod(getMethod == null ? Strings.Empty : getMethod.getName());
+        return new JProperty().setName(field.getName())
+                              .setSetMethod(setMethod == null ? Strings.Empty : setMethod.getName())
+                              .setGetMethod(getMethod == null ? Strings.Empty : getMethod.getName());
     }
 
     public String getSetMethod() {
         return this.setMethod;
     }
 
-    public JSONProperty setSetMethod(String setMethod) {
+    public JProperty setSetMethod(String setMethod) {
         this.setMethod = setMethod;
         return this;
     }
@@ -40,7 +38,7 @@ public final class JSONProperty {
         return this.getMethod;
     }
 
-    public JSONProperty setGetMethod(String getMethod) {
+    public JProperty setGetMethod(String getMethod) {
         this.getMethod = getMethod;
         return this;
     }
@@ -49,7 +47,7 @@ public final class JSONProperty {
         return this.name;
     }
 
-    public JSONProperty setName(String name) {
+    public JProperty setName(String name) {
         this.name = name;
         return this;
     }
@@ -66,9 +64,15 @@ public final class JSONProperty {
     }
 
     private final static String formatMethodName(String name){
+        Checks.requireNotNullOrEmpty(name);
+
         char[] copies = name.toCharArray();
         copies[0] = Character.toUpperCase(copies[0]);
         return String.valueOf(copies);
+    }
+
+    private JProperty(){
+
     }
 
 }

@@ -4,6 +4,7 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.icenter.core.client.primitive.ArrayStream;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.rest.convert.JSONConvertible;
 import java.io.Serializable;
@@ -13,12 +14,12 @@ public final class RemoteRESTServiceHelper {
 
     public final static void validateService(TreeLogger logger, TypeOracle types, JClassType service) throws UnableToCompleteException{
         if(service == null) {
-           logger.log(TreeLogger.Type.ERROR, "Service can not be null.");
+           logger.log(TreeLogger.Type.ERROR, "Service type can not be null.");
            throw new UnableToCompleteException();
         }
 
         if(!service.isAssignableTo(types.findType(RemoteRESTService.class.getCanonicalName()))){
-            logger.log(TreeLogger.Type.ERROR, service.getName() + "should be RemoteRESTService.");
+            logger.log(TreeLogger.Type.ERROR, service.getName() + " must be RemoteRESTService.");
             throw new UnableToCompleteException();
         }
     }
@@ -31,9 +32,9 @@ public final class RemoteRESTServiceHelper {
 
         JParameter[] parameters = method.getParameters();
         int length = parameters.length;
-        if (length == 0){
-            logger.log(TreeLogger.Type.ERROR, method.getName() + " should have return type.");
-            throw new UnableToCompleteException();
+        if(length == 0){
+           logger.log(TreeLogger.Type.ERROR, method.getName() + " should have return type.");
+           throw new UnableToCompleteException();
         }
 
         // Validates Parameters
@@ -97,7 +98,7 @@ public final class RemoteRESTServiceHelper {
 
             if(Reflects.isList(typeArgs[0], types) || Reflects.isArray(typeArgs[0]) || Reflects.isMap(typeArgs[0], types)
             || typeArgs[0].isGenericType() != null){
-               logger.log(TreeLogger.Type.ERROR, "Nest Generic Key is not supported.");
+               logger.log(TreeLogger.Type.ERROR, "Nested Generic Key is not supported.");
                throw new UnableToCompleteException();
             }
 
@@ -128,15 +129,15 @@ public final class RemoteRESTServiceHelper {
         }
     }
 
-    public static void validateReturnType(TreeLogger logger, TypeOracle types, JType type) throws UnableToCompleteException{
+    public final static void validateReturnType(TreeLogger logger, TypeOracle types, JType type) throws UnableToCompleteException{
         if(type.isClassOrInterface() == null){
            logger.log(TreeLogger.Type.ERROR, "Null return type is not supported.");
            throw new UnableToCompleteException();
         }
 
         if(!type.isClassOrInterface().isAssignableTo(types.findType(AsyncCallback.class.getCanonicalName()))){
-           logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName()+ " must extends AsyncCallback Class.");
-           throw new UnableToCompleteException();
+            logger.log(TreeLogger.Type.ERROR, type.getQualifiedSourceName()+ " must extends AsyncCallback Class.");
+            throw new UnableToCompleteException();
         }
 
         if(type.isClassOrInterface().isParameterized() == null){
@@ -153,17 +154,16 @@ public final class RemoteRESTServiceHelper {
         validateType(logger, types, typeArgs[0]);
     }
 
-    public static JParameter getReturnParameter(JMethod method){
-        JParameter[] ps = method.getParameters();
-        return ps[ps.length-1];
-    }
-
-    public static JClassType getReturnType(JMethod method) {
-        return getReturnParameter(method).getType().isParameterized().getTypeArgs()[0];
-    }
-
-    public static List<JParameter> getMethodParameters(JMethod method){
+    public final static List<JParameter> getParamsAsList(JMethod method){
         return Arrays.asList(method.getParameters());
+    }
+
+    public final static JParameter getAsyncCallbackParam(JMethod method){
+        return (JParameter) ArrayStream.of(method.getParameters()).last();
+    }
+
+    public final static JClassType getReturnObjectType(JMethod method) {
+        return getAsyncCallbackParam(method).getType().isParameterized().getTypeArgs()[0];
     }
 
 }

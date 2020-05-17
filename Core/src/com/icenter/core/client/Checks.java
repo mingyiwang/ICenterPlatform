@@ -16,9 +16,13 @@ public final class Checks {
 
     }
 
-    public static void requireNotEmpty(String value){
-        if(value == null || value.isEmpty()){
+    public static void requireNotNullOrEmpty(String value) throws IllegalArgumentException {
+        requireNotNullOrEmpty(value, "value can not be null or empty");
+    }
 
+    public static void requireNotNullOrEmpty(String value, String errorMessage) throws IllegalArgumentException {
+        if(value == null || value.isEmpty()){
+            throw new IllegalArgumentException(errorMessage);
         }
     }
 }

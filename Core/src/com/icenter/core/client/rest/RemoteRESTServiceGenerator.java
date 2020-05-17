@@ -13,7 +13,6 @@ import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.primitive.Joiner;
-import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.base.*;
@@ -59,7 +58,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 * **/
                 RemoteRESTServiceHelper.validateMethod(logger, types, method);
 
-                List<JParameter> mParams = RemoteRESTServiceHelper.getMethodParameters(method);
+                List<JParameter> mParams = RemoteRESTServiceHelper.getParamsAsList(method);
                 String mParamsSyntxt = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
                 sw.println(String.format("@Override public void %1$s(%2$s){ ",method.getName(), mParamsSyntxt));
                 sw.println("JSONObject params = new JSONObject();");
@@ -75,12 +74,12 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 });
 
                 sw.println(String.format("JSONConverter converter = new %1$s();",
-                   JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(method))
+                   JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnObjectType(method))
                 ));
 
                 sw.println(String.format("send(\"%1$s\",params, converter,%2$s);",
                    method.getName(),
-                   RemoteRESTServiceHelper.getReturnParameter(method).getName()
+                   RemoteRESTServiceHelper.getAsyncCallbackParam(method).getName()
                 ));
 
                 sw.println("}");
@@ -103,7 +102,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(JSONNumber.class.getCanonicalName());
         composerFactory.addImport(JSONObject.class.getCanonicalName());
         composerFactory.addImport(JSONString.class.getCanonicalName());
-        composerFactory.addImport(JSONProperty.class.getCanonicalName());
+        composerFactory.addImport(JProperty.class.getCanonicalName());
         composerFactory.addImport(AsyncCallback.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());

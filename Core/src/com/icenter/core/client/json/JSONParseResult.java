@@ -9,8 +9,6 @@ public final class JSONParseResult {
     private JSONValue result;
     private JSONException error;
 
-    private JSONParseResult(){ }
-
     public final static JSONParseResult succeed(JSONValue result){
         return new JSONParseResult().setSucceed(true).setResult(result);
     }
@@ -20,14 +18,19 @@ public final class JSONParseResult {
     }
 
     public JSONValue getResult() {
-        return result;
+        return this.result;
     }
+
     public boolean isSucceed() {
-        return succeed;
+        return this.succeed;
     }
 
     public JSONException getError() {
-        return error;
+        return this.error;
+    }
+
+    public String getErrorMessage(){
+        return this.error.getMessage();
     }
 
     private JSONParseResult setResult(JSONValue result) {
@@ -43,6 +46,10 @@ public final class JSONParseResult {
     private JSONParseResult setError(JSONException error) {
         this.error = error;
         return this;
+    }
+
+    private JSONParseResult(){
+
     }
 
 }
