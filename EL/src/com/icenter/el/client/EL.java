@@ -6,8 +6,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.icenter.core.client.rest.ServiceCallback;
 import com.icenter.el.client.rest.Services;
-import com.icenter.el.client.rest.transfer.Test;
-import com.icenter.el.client.rest.transfer.Test2;
+import com.icenter.el.client.rest.transfer.Session;
 
 public class EL implements EntryPoint {
 
@@ -15,28 +14,12 @@ public class EL implements EntryPoint {
         AbsolutePanel w = new AbsolutePanel();
         RootPanel.get().add(w);
 
-        final Test test = new Test();
-        test.getTestListValue().add(new Test2());
-        test.getTestListValue().add(new Test2());
-
-        test.getMapValue().put(new Test2(), 1);
-        test.getMapValue().put(new Test2(), 2);
-
-        Button button = new Button("Click me");
+        Button button = new Button("Click me to log in");
         button.addClickHandler(clickEvent -> {
-            Services.LogIn.logIn("mingyi", "wang", new ServiceCallback<String>() {
+            Services.LogIn.logIn("mingyi", "wang", new ServiceCallback<Session>() {
                 @Override
-                public void onSuccess(String s) {
-
-                }
-            });
-
-            Services.Testing.postService("", test,  new ServiceCallback<Test>() {
-                @Override
-                public void onSuccess(Test s) {
-                    Test2 t = s.getMapValue().keySet().iterator().next();
-
-
+                public void onSuccess(Session session) {
+                String passport = session.getPassport();
                 }
             });
         });

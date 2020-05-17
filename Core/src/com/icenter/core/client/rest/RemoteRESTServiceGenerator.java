@@ -13,6 +13,7 @@ import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.primitive.Joiner;
+import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.base.*;
@@ -76,10 +77,12 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 sw.println(String.format("JSONConverter converter = new %1$s();",
                    JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(method))
                 ));
+
                 sw.println(String.format("send(\"%1$s\",params, converter,%2$s);",
                    method.getName(),
                    RemoteRESTServiceHelper.getReturnParameter(method).getName()
                 ));
+
                 sw.println("}");
             }
             sw.commit(logger);

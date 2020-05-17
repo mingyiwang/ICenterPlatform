@@ -29,7 +29,7 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         Objects.requireNonNull(routeName);
 
         RequestBuilder.Method httpMethod = params == null ? RequestBuilder.GET : RequestBuilder.POST;
-        RequestBuilder builder = new RequestBuilder(httpMethod, getServiceEndPoint() + "/" + routeName);
+        RequestBuilder builder = new RequestBuilder(httpMethod, addSlashIfNeeded(getServiceEndPoint()) + Strings.format(routeName));
         builder.setHeader("Content-type", "application/json; charset=utf-8");
         builder.setRequestData(params.toString());
 
@@ -72,5 +72,10 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         }
     }
 
-
+    private final String addSlashIfNeeded(String url){
+        if(url.endsWith("/")){
+           return url;
+        }
+        return url + "/";
+    }
 }
