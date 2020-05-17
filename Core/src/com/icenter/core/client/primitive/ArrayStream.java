@@ -32,11 +32,4 @@ public final class ArrayStream<T> {
         return this;
     }
 
-    public ArrayStream<T> last(Action<T> action){
-        Objects.requireNonNull(action);
-        int len = elements.length;
-        action.run(elements[len - 1]);
-        return this;
-    }
-
 }

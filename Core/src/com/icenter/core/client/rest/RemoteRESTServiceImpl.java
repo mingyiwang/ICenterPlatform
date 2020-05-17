@@ -28,8 +28,7 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         Objects.requireNonNull(callback);
         Objects.requireNonNull(routeName);
 
-        RequestBuilder.Method httpMethod = params == null ? RequestBuilder.GET : RequestBuilder.POST;
-        RequestBuilder builder = new RequestBuilder(httpMethod, addSlashIfNeeded(getServiceEndPoint()) + Strings.format(routeName));
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, addSlashIfNeeded(getServiceEndPoint()) + Strings.format(routeName));
         builder.setHeader("Content-type", "application/json; charset=utf-8");
         builder.setRequestData(params.toString());
 
@@ -43,39 +42,45 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     if(response.getStatusCode() != Response.SC_OK){
-                       callback.onFailure(new Exception(response.getText())); // remote server error
+                       callback.onFailure(new Exception(response.getText())); // Create RemoteServiceException,Probably caused by remote service
                        return;
                     }
 
                     // It is not a json message
-                    JSONParseResult result = JSON.parseStrict(response.getText());
+                    JSONParseResult result = JSON.parse(response.getText());
                     if(!result.isSucceed()){
-                        callback.onFailure(result.getError()); // Malformed JSONException
+                        callback.onFailure(result.getError()); // Create MalformedJSONException, Returns is not a JSON
                     }
                     else {
-                        T object = null;
+                        T object;
                         try {
-                            object = converter.convertJSONToObject(result.getResult()); // Exception when convert json to object
+                            object = converter.convertJSONToObject(result.getResult());
                         }
                         catch(Exception error) {
                             // not a expected json message
-                            callback.onFailure(error);
+                            object = null;
+                            callback.onFailure(error); // Create UnexpectedJSONException
                         }
 
-                        callback.onSuccess(object);
+                        if (object != null){ // Object is converted
+                            callback.onSuccess(object);
+                        }
                     }
                 }
             });
         }
         catch (RequestException e) {
-           callback.onFailure(e);
+           callback.onFailure(e); // Create HTTPRelatedRequest exceptions
         }
     }
 
     private final String addSlashIfNeeded(String url){
-        if(url.endsWith("/")){
-           return url;
+        if(!url.startsWith("/")){
+            url = "/" + url;
         }
-        return url + "/";
+        if(!url.endsWith("/")){
+            url = url + "/";
+        }
+        return url;
     }
 }

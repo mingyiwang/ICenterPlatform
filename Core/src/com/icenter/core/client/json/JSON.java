@@ -7,21 +7,15 @@ import com.google.gwt.json.client.JSONValue;
 public final class JSON {
 
    /**
-    * Traditional way to parse a json to object.
+    * JavaScript native way to parse a json to object.
     * **/
-   public final static JSONParseResult parseStrict(String couldBeJson){
+   public final static JSONParseResult parse(String couldBeJson){
         try {
-            JSONValue value = JSONParser.parseStrict(couldBeJson);
-            return new JSONParseResult().setError(null)
-                                        .setResult(value)
-                                        .setSucceed(true);
+            JSONValue json = JSONParser.parseStrict(couldBeJson);
+            return JSONParseResult.succeed(json);
         } catch(JSONException error){
-            return new JSONParseResult().setError(error)
-                                        .setResult(null)
-                                        .setSucceed(false);
+            return JSONParseResult.failed(error);
         }
    }
-
-
 
 }

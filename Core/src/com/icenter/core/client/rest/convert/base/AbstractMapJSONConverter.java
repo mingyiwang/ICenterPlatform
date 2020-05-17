@@ -61,7 +61,7 @@ public abstract class AbstractMapJSONConverter<T1,T2> extends JSONConverter<Map<
         Map<T1, T2> map = createInstance();
         Set<String> keys = object.keySet();
         for(String key : keys){
-            JSONParseResult result = JSON.parseStrict(key);
+            JSONParseResult result = JSON.parse(key);
             if(result.isSucceed()){
                T1 t1 = getKeyConverter().convertJSONToObject(result.getResult());
                T2 t2 = getValueConverter().convertJSONToObject(object.get(key));
