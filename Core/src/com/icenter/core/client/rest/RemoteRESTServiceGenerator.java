@@ -59,22 +59,27 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 RemoteRESTServiceHelper.validateMethod(logger, types, method);
 
                 List<JParameter> mParams = RemoteRESTServiceHelper.getMethodParameters(method);
-                String mParamsSyntext = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                sw.println("@Override public void "+ method.getName() + "(" + mParamsSyntext + "){ ");
-                sw.indentln("JSONObject params = new JSONObject();");
+                String mParamsSyntxt = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                sw.println(String.format("@Override public void %1$s(%2$s){ ",method.getName(), mParamsSyntxt));
+                sw.println("JSONObject params = new JSONObject();");
 
                 final int size = mParams.size();
                 CollectionStream.of(mParams).forEach((i, parameter)-> {
                     if(i != size -1){
-                        String parameterName = parameter.getName();
-                        String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, parameter.getType());
-                        sw.print("params.put("+"\"" + parameterName + "\""+"," + "new " + converterQualifiedSourceName + "().convertObjectToJSON(" + parameterName + "));");
+                        sw.println(String.format("params.put(\"%1$s\",new %2$s().convertObjectToJSON(%1$s));",
+                            parameter.getName(),
+                            JSONConverterGenerator.generate(logger, context, parameter.getType())
+                        ));
                     }
                 });
 
-                String converterQualifiedSourceName = JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(method));
-                sw.print("JSONConverter converter = new " + converterQualifiedSourceName + "();");
-                sw.println("send(\"" + method.getName() + "\",params, converter," + RemoteRESTServiceHelper.getReturnParameter(method).getName() + ");");
+                sw.println(String.format("JSONConverter converter = new %1$s();",
+                   JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnType(method))
+                ));
+                sw.println(String.format("send(\"%1$s\",params, converter,%2$s);",
+                   method.getName(),
+                   RemoteRESTServiceHelper.getReturnParameter(method).getName()
+                ));
                 sw.println("}");
             }
             sw.commit(logger);
@@ -82,7 +87,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
         }
     }
 
-    private ClassSourceFileComposerFactory createServiceSourceFileComposerFactory(String targetTypeName, JClassType target, String remoteServiceName) {
+    private final ClassSourceFileComposerFactory createServiceSourceFileComposerFactory(String targetTypeName, JClassType target, String remoteServiceName) {
         ClassSourceFileComposerFactory composerFactory = new ClassSourceFileComposerFactory(target.getPackage().getName(), remoteServiceName);
         composerFactory.addImport(IllegalArgumentException.class.getCanonicalName());
         composerFactory.addImport(RequestBuilder.class.getCanonicalName());

@@ -5,8 +5,8 @@ import com.google.gwt.json.client.JSONValue;
 
 public class JSONParseResult {
 
-    private JSONValue result;
     private boolean succeed;
+    private JSONValue result;
     private JSONException error;
 
     public JSONValue getResult() {
