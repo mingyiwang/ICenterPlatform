@@ -164,7 +164,7 @@ public final class JSONConverterGenerator  {
             sw.println(String.format("return new %1$s();", targetTypeQualifiedName));
             sw.println("}");
 
-            // Generate object to json method
+            // Convert object to json method
             sw.println(String.format("@Override public JSONValue convertObjectToJSON(%1$s instance){ ", targetTypeQualifiedName));
             sw.println("if (instance == null) { return JSONNull.getInstance(); }"); //should we handle null value?
             sw.println("JSONObject jsonObject = new JSONObject();");
@@ -177,7 +177,7 @@ public final class JSONConverterGenerator  {
             });
             sw.println("return jsonObject;}");
 
-            // Generate Json to object method
+            // Convert Json to object method
             sw.println(String.format("@Override public %1$s convertJSONToObject(JSONValue value){ ", targetTypeQualifiedName));
             sw.println("JSONObject jsonObject = value.isObject();");
             sw.println(String.format("%1$s instance = createInstance();", targetTypeQualifiedName));

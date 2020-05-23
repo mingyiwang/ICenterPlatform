@@ -9,11 +9,11 @@ public final class ServiceInit {
         return service;
     }
 
-    public static boolean isLocal() {
-        return Window.Location.getPort().equals("9999");
+    public final static boolean isLocal() {
+        return Window.Location.getPort().equals("8888");
     }
 
-    public static String getServiceRootURL() {
+    public final static String getServiceRootURL() {
         return isLocal() ? "/Proxy" : "";
     }
 

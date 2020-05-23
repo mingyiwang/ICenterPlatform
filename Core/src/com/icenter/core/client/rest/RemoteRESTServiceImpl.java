@@ -24,11 +24,11 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
     }
 
     protected final <T> void send(String routeName, JSONValue params, final JSONConverter<T> converter, final AsyncCallback<T> callback) {
+        Objects.requireNonNull(routeName);
         Objects.requireNonNull(converter);
         Objects.requireNonNull(callback);
-        Objects.requireNonNull(routeName);
 
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, addSlashIfNeeded(getServiceEndPoint()) + Strings.format(routeName));
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(addSlashIfNeeded(getServiceEndPoint()) + Strings.format(routeName)));
         builder.setHeader("Content-type", "application/json; charset=utf-8");
         builder.setRequestData(params.toString());
 
@@ -42,7 +42,7 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     if(response.getStatusCode() != Response.SC_OK){
-                       callback.onFailure(new Exception(response.getText())); // Create RemoteServiceException,Probably caused by remote service
+                       callback.onFailure(new Exception(response.getText())); // Create RemoteServiceException, Probably caused by remote service
                        return;
                     }
 
@@ -62,9 +62,7 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
                             callback.onFailure(error); // Create UnexpectedJSONException
                         }
 
-                        if (object != null){ // Object is converted
-                            callback.onSuccess(object);
-                        }
+                        callback.onSuccess(object);
                     }
                 }
             });
@@ -74,7 +72,7 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         }
     }
 
-    private final String addSlashIfNeeded(String url){
+    private final static String addSlashIfNeeded(String url){
         if(!url.startsWith("/")){
             url = "/" + url;
         }

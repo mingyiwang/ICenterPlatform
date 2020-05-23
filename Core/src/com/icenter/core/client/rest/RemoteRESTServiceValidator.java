@@ -10,7 +10,7 @@ import com.icenter.core.client.rest.convert.JSONConvertible;
 import java.io.Serializable;
 import java.util.*;
 
-public final class RemoteRESTServiceHelper {
+public final class RemoteRESTServiceValidator {
 
     public final static void validateService(TreeLogger logger, TypeOracle types, JClassType service) throws UnableToCompleteException{
         if(service == null) {

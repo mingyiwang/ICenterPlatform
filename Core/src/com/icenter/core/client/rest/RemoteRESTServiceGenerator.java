@@ -38,7 +38,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
         // we always knows that service type is a interface.
         JClassType service = types.findType(targetTypeName);
 
-        RemoteRESTServiceHelper.validateService(logger, context.getTypeOracle(), service);
+        RemoteRESTServiceValidator.validateService(logger, context.getTypeOracle(), service);
 
         String remoteServicePackage = service.getPackage().getName();
         String remoteServiceName = service.getName() + ServiceSuffix; // Custom rebind service class name
@@ -56,9 +56,9 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 /*
                 * Recursive Validator used to validates method and variables.
                 * **/
-                RemoteRESTServiceHelper.validateMethod(logger, types, method);
+                RemoteRESTServiceValidator.validateMethod(logger, types, method);
 
-                List<JParameter> mParams = RemoteRESTServiceHelper.getParamsAsList(method);
+                List<JParameter> mParams = RemoteRESTServiceValidator.getParamsAsList(method);
                 String mParamsSyntxt = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
                 sw.println(String.format("@Override public void %1$s(%2$s){ ",method.getName(), mParamsSyntxt));
                 sw.println("JSONObject params = new JSONObject();");
@@ -74,12 +74,12 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 });
 
                 sw.println(String.format("JSONConverter converter = new %1$s();",
-                   JSONConverterGenerator.generate(logger, context, RemoteRESTServiceHelper.getReturnObjectType(method))
+                   JSONConverterGenerator.generate(logger, context, RemoteRESTServiceValidator.getReturnObjectType(method))
                 ));
 
                 sw.println(String.format("send(\"%1$s\",params, converter,%2$s);",
                    method.getName(),
-                   RemoteRESTServiceHelper.getAsyncCallbackParam(method).getName()
+                   RemoteRESTServiceValidator.getAsyncCallbackParam(method).getName()
                 ));
 
                 sw.println("}");

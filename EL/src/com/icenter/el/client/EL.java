@@ -33,7 +33,7 @@ public class EL implements EntryPoint {
             Services.LogIn.logIn("mingyi", "wang", new ServiceCallback<Session>() {
                 @Override
                 public void onSuccess(Session session) {
-                String passport = session.getPassport();
+                    String passport = session.getPassport();
                 }
             });
         });
