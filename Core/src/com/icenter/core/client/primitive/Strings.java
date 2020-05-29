@@ -2,6 +2,8 @@ package com.icenter.core.client.primitive;
 
 import com.icenter.core.client.Checks;
 import com.icenter.core.client.lambda.Function;
+
+import java.nio.CharBuffer;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -47,9 +49,24 @@ public final class Strings {
         return s1.toLowerCase(Locale.ROOT).equals(s2.toLowerCase(Locale.ROOT));
     }
 
-    public final static String format(String name){
+    /**
+     * Converts the char in specified location to upper case
+     * @param name
+     * @param index
+     * @return
+     */
+    public final static String toUpperCase(String name, int index){
         char[] copies = name.toCharArray();
-        copies[0] = Character.toUpperCase(copies[0]);
+        if(index < 0 || index > copies.length - 1){
+           return name;
+        }
+
+        if(Character.isUpperCase(copies[index])){
+           return name;
+        }
+
+        copies[index] = Character.toUpperCase(copies[index]);
         return String.valueOf(copies);
     }
+
 }

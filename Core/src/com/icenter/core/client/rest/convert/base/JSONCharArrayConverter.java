@@ -25,9 +25,14 @@ public class JSONCharArrayConverter extends JSONConverter<char[]> {
 
     @Override
     public char[] convertJSONToObject(JSONValue value) {
-        if (value == null || value.isNull() != null || value.isArray() == null){
+        if (value == null || value.isNull() != null){
             return null;
         }
+
+        if(value.isArray() == null){
+            // handle this error
+        }
+
         JSONArray array = value.isArray();
         int size = array.size();
         char[] a = new char[size];

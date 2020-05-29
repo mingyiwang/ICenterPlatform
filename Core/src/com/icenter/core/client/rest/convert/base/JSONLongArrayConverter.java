@@ -18,6 +18,7 @@ public class JSONLongArrayConverter extends JSONConverter<long[]> {
         if (object == null){
             return JSONNull.getInstance();
         }
+
         JSONArray json = new JSONArray();
         for (int i=0; i<object.length; i++) {
              json.set(i, new JSONNumber(object[i]));
@@ -27,9 +28,14 @@ public class JSONLongArrayConverter extends JSONConverter<long[]> {
 
     @Override
     public long[] convertJSONToObject(JSONValue value) {
-        if (value == null || value.isNull() != null || value.isArray() == null){
+        if (value == null || value.isNull() != null){
             return null;
         }
+
+        if(value.isArray() == null){
+            // handle this error
+        }
+
         JSONArray array = value.isArray();
         int size = array.size();
         long[] a = new long[size];

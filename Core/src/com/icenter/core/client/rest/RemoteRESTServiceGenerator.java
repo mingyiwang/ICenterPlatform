@@ -10,12 +10,12 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
-import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.primitive.ArrayStream;
 import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.primitive.Joiner;
 import com.icenter.core.client.primitive.Strings;
-import com.icenter.core.client.rest.annotation.RemoteRestMethod;
+import com.icenter.core.client.reflect.SimpleSourceWriter;
+import com.icenter.core.client.rest.annotation.RestEndpoint;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.base.*;
@@ -53,7 +53,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
             return remoteServiceQualifiedSourceName;
         }
         else {
-            SourceWriter sw = composerFactory.createSourceWriter(context, pw);
+            SimpleSourceWriter sw = new SimpleSourceWriter(composerFactory.createSourceWriter(context, pw));
             for (JMethod method : service.getMethods()) {
                 /*
                 * Recursive Validator used to validates method and variables.
@@ -62,7 +62,8 @@ public final class RemoteRESTServiceGenerator extends Generator {
 
                 List<JParameter> mParams = getParamsAsList(method);
                 String mParamsSyntxt = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                sw.println(String.format("@Override public void %1$s(%2$s){ ",method.getName(), mParamsSyntxt));
+                sw.println(String.format("@Override\npublic void %1$s(%2$s){ ",method.getName(), mParamsSyntxt));
+                sw.indent();
                 sw.println("JSONObject params = new JSONObject();");
 
                 final int size = mParams.size();
@@ -79,14 +80,21 @@ public final class RemoteRESTServiceGenerator extends Generator {
                    JSONConverterGenerator.generate(logger, context, getReturnObjectType(method))
                 ));
 
-                sw.println(String.format("send(\"%1$s\",params, converter,%2$s);",
-                   method.getName(),
+
+                RestEndpoint endpoint = method.getAnnotation(RestEndpoint.class);
+                sw.println(String.format("send(\"%1$s\",\"%2$s\",params, converter,%3$s);",
+                   endpoint == null ? method.getName() : Strings.of(endpoint.action(), method.getName()),
+                   endpoint == null ? Strings.Empty    : Strings.of(endpoint.Method().getMethod(), Strings.Empty),
                    getAsyncCallbackParam(method).getName()
                 ));
 
+                sw.outdent();
                 sw.println("}");
             }
             sw.commit(logger);
+
+            System.out.println(sw.toString());
+
             return remoteServiceQualifiedSourceName;
         }
     }

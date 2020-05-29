@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.icenter.core.client.json.JSON;
 import com.icenter.core.client.json.JSONParseResult;
 import com.icenter.core.client.primitive.Strings;
+import com.icenter.core.client.rest.annotation.HttpMethod;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.Objects;
 
@@ -23,12 +24,13 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         this.serviceEndPoint = endPoint;
     }
 
-    protected final <T> void send(String endPoint, JSONValue params, final JSONConverter<T> converter, final AsyncCallback<T> callback) {
-        Objects.requireNonNull(endPoint);
+    protected final <T> void send(String action, String httpMethod, JSONValue params, final JSONConverter<T> converter, final AsyncCallback<T> callback) {
+        Objects.requireNonNull(action);
+        Objects.requireNonNull(httpMethod);
         Objects.requireNonNull(converter);
         Objects.requireNonNull(callback);
 
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(addSlashIfNeeded(getServiceEndPoint()) + Strings.format(endPoint)));
+        RequestBuilder builder = new RequestBuilder(HttpMethod.getMethod(httpMethod), URL.encode(addSlashIfNeeded(getServiceEndPoint()) + Strings.toUpperCase(action,0)));
         builder.setHeader("Content-type", "application/json; charset=utf-8");
         builder.setRequestData(params.toString());
 

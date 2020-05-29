@@ -11,7 +11,7 @@ public final class JSON {
     * **/
    public final static JSONParseResult parse(String couldBeJson){
         try {
-            JSONValue json = JSONParser.parseStrict(couldBeJson);
+            JSONValue json = JSONParser.parseStrict(couldBeJson); // this method not execute javascript code.
             return JSONParseResult.succeed(json);
         } catch(JSONException error){
             return JSONParseResult.failed(error);

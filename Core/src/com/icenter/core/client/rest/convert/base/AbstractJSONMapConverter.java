@@ -43,7 +43,7 @@ public abstract class AbstractJSONMapConverter<T1,T2> extends JSONConverter<Map<
 
         JSONObject jsonObject = new JSONObject();
         for(Map.Entry<T1, T2> entry : object.entrySet()){
-            JSONValue key = getKeyConverter().convertObjectToJSON(entry.getKey());
+            JSONValue key   = getKeyConverter().convertObjectToJSON(entry.getKey());
             JSONValue value = getValueConverter().convertObjectToJSON(entry.getValue());
             jsonObject.put(key.toString(), value);
         }
@@ -58,9 +58,9 @@ public abstract class AbstractJSONMapConverter<T1,T2> extends JSONConverter<Map<
         }
 
         JSONObject object = value.isObject();
-        Map<T1, T2> map = createInstance();
-        Set<String> keys = object.keySet();
-        for(String key : keys){
+        Map<T1, T2> map   = createInstance();
+        Set<String> keys  = object.keySet();
+        for (String key : keys){
             JSONParseResult result = JSON.parse(key);
             if(result.isSucceed()){
                T1 t1 = getKeyConverter().convertJSONToObject(result.getResult());
@@ -68,7 +68,7 @@ public abstract class AbstractJSONMapConverter<T1,T2> extends JSONConverter<Map<
                map.put(t1, t2);
             }
             else {
-                // log?
+               // should throw exception.
             }
         }
         return map;

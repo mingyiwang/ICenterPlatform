@@ -2,6 +2,7 @@ package com.icenter.core.client.json;
 
 import com.google.gwt.json.client.JSONException;
 import com.google.gwt.json.client.JSONValue;
+import com.icenter.core.client.primitive.Strings;
 
 public final class JSONParseResult {
 
@@ -29,8 +30,8 @@ public final class JSONParseResult {
         return this.error;
     }
 
-    public String getErrorMessage(){
-        return this.error.getMessage();
+    public String getErrorMessage() {
+        return this.error == null ? Strings.Empty : this.error.getMessage();
     }
 
     private JSONParseResult setResult(JSONValue result) {
@@ -48,8 +49,6 @@ public final class JSONParseResult {
         return this;
     }
 
-    private JSONParseResult(){
-
-    }
+    private JSONParseResult(){ }
 
 }

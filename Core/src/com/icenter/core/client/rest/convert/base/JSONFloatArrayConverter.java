@@ -27,9 +27,14 @@ public class JSONFloatArrayConverter extends JSONConverter<float[]> {
 
     @Override
     public float[] convertJSONToObject(JSONValue value) {
-        if (value == null || value.isNull() != null || value.isArray() == null){
+        if (value == null || value.isNull() != null){
             return null;
         }
+
+        if(value.isArray() == null){
+            // handle this error
+        }
+
         JSONArray array = value.isArray();
         int size = array.size();
         float[] a = new float[size];

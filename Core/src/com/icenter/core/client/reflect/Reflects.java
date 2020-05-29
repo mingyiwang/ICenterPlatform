@@ -3,9 +3,8 @@ package com.icenter.core.client.reflect;
 import com.google.gwt.core.ext.typeinfo.JPrimitiveType;
 import com.google.gwt.core.ext.typeinfo.JType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public final class Reflects {
 
@@ -54,6 +53,16 @@ public final class Reflects {
     public final static boolean isMap(JType type, TypeOracle types){
         return type.isClassOrInterface() != null
             && type.isClassOrInterface().isAssignableTo(types.findType(Map.class.getCanonicalName()));
+    }
+
+    public final static boolean isQueue(JType type, TypeOracle types){
+        return type.isClassOrInterface() != null
+                && type.isClassOrInterface().isAssignableTo(types.findType(Queue.class.getCanonicalName()));
+    }
+
+    public final static boolean isSet(JType type, TypeOracle types){
+        return type.isClassOrInterface() != null
+                && type.isClassOrInterface().isAssignableTo(types.findType(Set.class.getCanonicalName()));
     }
 
 }

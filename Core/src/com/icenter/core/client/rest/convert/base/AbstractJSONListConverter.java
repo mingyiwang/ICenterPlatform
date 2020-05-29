@@ -42,8 +42,12 @@ public abstract class AbstractJSONListConverter<T> extends JSONConverter<List<T>
 
     @Override
     public final List<T> convertJSONToObject(JSONValue value) {
-        if (value == null || value.isNull() != null || value.isArray() == null){
+        if (value == null || value.isNull() != null){
             return null;
+        }
+
+        if(value.isArray() == null){
+           // throw UnexpectedJsonException;
         }
 
         List<T> list = createInstance();
