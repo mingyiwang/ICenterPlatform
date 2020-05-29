@@ -6,7 +6,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.primitive.Numbers;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public final class FloatJSONConverter extends JSONConverter<Float> {
+public final class JSONFloatConverter extends JSONConverter<Float> {
 
     @Override
     public Float createInstance() {

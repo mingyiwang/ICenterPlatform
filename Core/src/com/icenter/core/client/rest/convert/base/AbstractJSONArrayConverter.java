@@ -7,7 +7,7 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractArrayJSONConverter<T> extends JSONConverter<T[]> {
+public abstract class AbstractJSONArrayConverter<T> extends JSONConverter<T[]> {
 
     private JSONConverter<T> converter;
     protected abstract JSONConverter<T> createConverter();

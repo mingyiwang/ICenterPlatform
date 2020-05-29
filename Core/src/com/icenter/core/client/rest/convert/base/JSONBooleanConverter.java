@@ -5,7 +5,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.primitive.Numbers;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public final class BooleanJSONConverter extends JSONConverter<Boolean> {
+public final class JSONBooleanConverter extends JSONConverter<Boolean> {
 
     @Override
     public Boolean createInstance() {

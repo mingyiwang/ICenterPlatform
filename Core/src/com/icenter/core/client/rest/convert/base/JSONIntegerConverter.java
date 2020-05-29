@@ -5,29 +5,29 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public final class ShortJSONConverter extends JSONConverter<Short> {
+public final class JSONIntegerConverter extends JSONConverter<Integer> {
 
     @Override
-    public Short createInstance() {
+    public Integer createInstance() {
         return null;
     }
 
     @Override
-    public JSONValue convertObjectToJSON(Short object) {
+    public JSONValue convertObjectToJSON(Integer object) {
         return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }
 
     @Override
-    public Short convertJSONToObject(JSONValue value) {
-        if (value.isNull() != null){
+    public Integer convertJSONToObject(JSONValue value) {
+        if (value == null || value.isNull()!= null){
             return null;
         }
 
         if (value.isString() != null){
-            return Short.parseShort(value.isString().stringValue());
+            return Integer.valueOf(value.isString().stringValue());
         }
 
-        return (short) value.isNumber().doubleValue();
+        return (int) value.isNumber().doubleValue();
     }
 
 }

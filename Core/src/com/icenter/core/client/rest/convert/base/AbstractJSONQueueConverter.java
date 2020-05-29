@@ -4,7 +4,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.Queue;
 
-public class AbstractQueueJSONConverter<T> extends JSONConverter<Queue<T>> {
+public class AbstractJSONQueueConverter<T> extends JSONConverter<Queue<T>> {
 
     @Override
     public Queue<T> createInstance() {

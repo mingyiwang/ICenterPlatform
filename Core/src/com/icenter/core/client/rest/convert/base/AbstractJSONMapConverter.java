@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class AbstractMapJSONConverter<T1,T2> extends JSONConverter<Map<T1,T2>> {
+public abstract class AbstractJSONMapConverter<T1,T2> extends JSONConverter<Map<T1,T2>> {
 
     private JSONConverter<T2> valueConverter;
     private JSONConverter<T1> keyConverter;

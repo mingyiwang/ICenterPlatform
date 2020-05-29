@@ -6,7 +6,7 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public class PrimitiveShortArrayConverter extends JSONConverter<short[]> {
+public class JSONShortArrayConverter extends JSONConverter<short[]> {
 
     @Override
     public final short[] createInstance() {

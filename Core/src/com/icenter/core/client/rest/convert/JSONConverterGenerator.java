@@ -63,9 +63,9 @@ public final class JSONConverterGenerator  {
         String qualifiedConverterSourceName = packagePath + "." + sourceName;
 
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
-        composer.addImport(AbstractArrayJSONConverter.class.getCanonicalName());
+        composer.addImport(AbstractJSONArrayConverter.class.getCanonicalName());
         composer.addImport(componentTypeQualifiedName);
-        composer.setSuperclass(AbstractArrayJSONConverter.class.getCanonicalName()+ "<" + componentTypeQualifiedName + ">");
+        composer.setSuperclass(AbstractJSONArrayConverter.class.getCanonicalName()+ "<" + componentTypeQualifiedName + ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
@@ -92,10 +92,10 @@ public final class JSONConverterGenerator  {
         String qualifiedSourceName = packagePath + "." + sourceName;
 
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
-        composer.addImport(AbstractMapJSONConverter.class.getCanonicalName());
+        composer.addImport(AbstractJSONMapConverter.class.getCanonicalName());
         composer.addImport(valueType.getQualifiedSourceName());
         composer.addImport(keyType.getQualifiedSourceName());
-        composer.setSuperclass(AbstractMapJSONConverter.class.getCanonicalName() + "<" + keyType.getQualifiedSourceName() + "," + valueType.getParameterizedQualifiedSourceName()+ ">");
+        composer.setSuperclass(AbstractJSONMapConverter.class.getCanonicalName() + "<" + keyType.getQualifiedSourceName() + "," + valueType.getParameterizedQualifiedSourceName()+ ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
@@ -123,9 +123,9 @@ public final class JSONConverterGenerator  {
         String qualifiedSourceName = packagePath + "." + sourceName;
 
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
-        composer.addImport(AbstractListJSONConverter.class.getCanonicalName());
+        composer.addImport(AbstractJSONListConverter.class.getCanonicalName());
         composer.addImport(componentType.getQualifiedSourceName());
-        composer.setSuperclass(AbstractListJSONConverter.class.getCanonicalName() + "<" + componentQualifiedSourceName + ">");
+        composer.setSuperclass(AbstractJSONListConverter.class.getCanonicalName() + "<" + componentQualifiedSourceName + ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
@@ -217,16 +217,16 @@ public final class JSONConverterGenerator  {
         composerFactory.addImport(RemoteRESTService.class.getCanonicalName());
         composerFactory.addImport(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImport(JSONConverter.class.getCanonicalName());
-        composerFactory.addImport(BooleanJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(ByteJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(CharacterJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(DateJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(DoubleJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(FloatJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(IntegerJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(LongJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(ShortJSONConverter.class.getCanonicalName());
-        composerFactory.addImport(StringJSONConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONBooleanConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONByteConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONCharConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONDateConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONDoubleConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONFloatConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONIntegerConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONLongConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONShortConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONStringConverter.class.getCanonicalName());
         composerFactory.addImport(List.class.getCanonicalName());
         composerFactory.addImport(ArrayList.class.getCanonicalName());
         composerFactory.addImport(Map.class.getCanonicalName());

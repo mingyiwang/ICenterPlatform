@@ -3,35 +3,36 @@ package com.icenter.core.client.rest.convert.base;
 import com.google.gwt.json.client.*;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public class PrimitiveByteArrayConverter extends JSONConverter<byte[]> {
+public class JSONCharArrayConverter extends JSONConverter<char[]> {
 
     @Override
-    public final byte[] createInstance() {
+    public final char[] createInstance() {
         return null;
     }
 
     @Override
-    public JSONValue convertObjectToJSON(byte[] object) {
+    public JSONValue convertObjectToJSON(char[] object) {
         if (object == null){
             return JSONNull.getInstance();
         }
+
         JSONArray json = new JSONArray();
         for (int i=0; i<object.length; i++) {
-             json.set(i, new JSONNumber(object[i]));
+             json.set(i, new JSONString(String.valueOf(object[i])));
         }
         return json;
     }
 
     @Override
-    public byte[] convertJSONToObject(JSONValue value) {
+    public char[] convertJSONToObject(JSONValue value) {
         if (value == null || value.isNull() != null || value.isArray() == null){
             return null;
         }
         JSONArray array = value.isArray();
         int size = array.size();
-        byte[] a = new byte[size];
+        char[] a = new char[size];
         for (int i = 0; i < size; i++) {
-             a[i] = (byte) array.get(i).isNumber().doubleValue();
+             a[i] = array.get(i).isString().stringValue().charAt(0);
         }
         return a;
     }

@@ -7,14 +7,13 @@ import com.google.gwt.json.client.JSONValue;
 public final class JSON {
 
    /**
-    * JavaScript native way to parse a json to object.
+    * JavaScript native way to parse a json to object with quiet error handling.
     * **/
    public final static JSONParseResult parse(String couldBeJson){
         try {
             JSONValue json = JSONParser.parseStrict(couldBeJson);
             return JSONParseResult.succeed(json);
-        }
-        catch(JSONException error){
+        } catch(JSONException error){
             return JSONParseResult.failed(error);
         }
    }

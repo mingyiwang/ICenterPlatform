@@ -6,7 +6,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.Date;
 
-public final class DateJSONConverter extends JSONConverter<Date> {
+public final class JSONDateConverter extends JSONConverter<Date> {
 
     @Override
     public Date createInstance() {

@@ -6,7 +6,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public final class StringJSONConverter extends JSONConverter<String> {
+public final class JSONStringConverter extends JSONConverter<String> {
 
     @Override
     public String createInstance() {

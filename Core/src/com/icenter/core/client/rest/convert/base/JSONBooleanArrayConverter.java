@@ -1,40 +1,39 @@
 package com.icenter.core.client.rest.convert.base;
 
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNull;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.json.client.*;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public class PrimitiveLongArrayConverter extends JSONConverter<long[]> {
+public class JSONBooleanArrayConverter extends JSONConverter<boolean[]> {
 
     @Override
-    public final long[] createInstance() {
+    public final boolean[] createInstance() {
         return null;
     }
 
     @Override
-    public JSONValue convertObjectToJSON(long[] object) {
+    public JSONValue convertObjectToJSON(boolean[] object) {
         if (object == null){
             return JSONNull.getInstance();
         }
+
         JSONArray json = new JSONArray();
         for (int i=0; i<object.length; i++) {
-             json.set(i, new JSONNumber(object[i]));
+             json.set(i, JSONBoolean.getInstance(object[i]));
         }
         return json;
     }
 
     @Override
-    public long[] convertJSONToObject(JSONValue value) {
+    public boolean[] convertJSONToObject(JSONValue value) {
         if (value == null || value.isNull() != null || value.isArray() == null){
             return null;
         }
+
         JSONArray array = value.isArray();
         int size = array.size();
-        long[] a = new long[size];
+        boolean[] a = new boolean[size];
         for (int i = 0; i < size; i++) {
-             a[i] = (long) array.get(i).isNumber().doubleValue();
+             a[i] = array.get(i).isBoolean().booleanValue();
         }
         return a;
     }
