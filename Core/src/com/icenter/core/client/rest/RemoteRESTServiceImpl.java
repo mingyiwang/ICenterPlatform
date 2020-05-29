@@ -23,12 +23,12 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         this.serviceEndPoint = endPoint;
     }
 
-    protected final <T> void send(String routeName, JSONValue params, final JSONConverter<T> converter, final AsyncCallback<T> callback) {
-        Objects.requireNonNull(routeName);
+    protected final <T> void send(String endPoint, JSONValue params, final JSONConverter<T> converter, final AsyncCallback<T> callback) {
+        Objects.requireNonNull(endPoint);
         Objects.requireNonNull(converter);
         Objects.requireNonNull(callback);
 
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(addSlashIfNeeded(getServiceEndPoint()) + Strings.format(routeName)));
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(addSlashIfNeeded(getServiceEndPoint()) + Strings.format(endPoint)));
         builder.setHeader("Content-type", "application/json; charset=utf-8");
         builder.setRequestData(params.toString());
 

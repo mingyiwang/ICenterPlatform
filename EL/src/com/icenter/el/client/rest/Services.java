@@ -6,6 +6,5 @@ import com.icenter.core.client.rest.ServiceInit;
 public final class Services {
 
     public static LogInService LogIn  = ServiceInit.init(GWT.create(LogInService.class),"/LogInServiceX");
-    public static TestingService Test = ServiceInit.init(GWT.create(TestingService.class),"/TestServiceX");
 
 }

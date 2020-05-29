@@ -11,8 +11,11 @@ import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
+import com.icenter.core.client.primitive.ArrayStream;
 import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.primitive.Joiner;
+import com.icenter.core.client.primitive.Strings;
+import com.icenter.core.client.rest.annotation.RemoteRestMethod;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.base.*;
@@ -35,7 +38,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
 
         TypeOracle types = context.getTypeOracle();
 
-        // we always knows that service type is a interface.
+        // we always knows that service type must be an interface.
         JClassType service = types.findType(targetTypeName);
 
         RemoteRESTServiceValidator.validateService(logger, context.getTypeOracle(), service);
@@ -52,13 +55,12 @@ public final class RemoteRESTServiceGenerator extends Generator {
         else {
             SourceWriter sw = composerFactory.createSourceWriter(context, pw);
             for (JMethod method : service.getMethods()) {
-
                 /*
                 * Recursive Validator used to validates method and variables.
                 * **/
                 RemoteRESTServiceValidator.validateMethod(logger, types, method);
 
-                List<JParameter> mParams = RemoteRESTServiceValidator.getParamsAsList(method);
+                List<JParameter> mParams = getParamsAsList(method);
                 String mParamsSyntxt = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
                 sw.println(String.format("@Override public void %1$s(%2$s){ ",method.getName(), mParamsSyntxt));
                 sw.println("JSONObject params = new JSONObject();");
@@ -74,12 +76,12 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 });
 
                 sw.println(String.format("JSONConverter converter = new %1$s();",
-                   JSONConverterGenerator.generate(logger, context, RemoteRESTServiceValidator.getReturnObjectType(method))
+                   JSONConverterGenerator.generate(logger, context, getReturnObjectType(method))
                 ));
 
                 sw.println(String.format("send(\"%1$s\",params, converter,%2$s);",
                    method.getName(),
-                   RemoteRESTServiceValidator.getAsyncCallbackParam(method).getName()
+                   getAsyncCallbackParam(method).getName()
                 ));
 
                 sw.println("}");
@@ -126,6 +128,18 @@ public final class RemoteRESTServiceGenerator extends Generator {
         composerFactory.setSuperclass(RemoteRESTServiceImpl.class.getCanonicalName());
         composerFactory.addImplementedInterface(targetTypeName);
         return composerFactory;
+    }
+
+    private final static List<JParameter> getParamsAsList(JMethod method){
+        return Arrays.asList(method.getParameters());
+    }
+
+    private final static JParameter getAsyncCallbackParam(JMethod method){
+        return (JParameter) ArrayStream.of(method.getParameters()).last();
+    }
+
+    private final static JClassType getReturnObjectType(JMethod method) {
+        return getAsyncCallbackParam(method).getType().isParameterized().getTypeArgs()[0];
     }
 
 }

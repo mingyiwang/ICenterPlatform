@@ -154,16 +154,6 @@ public final class RemoteRESTServiceValidator {
         validateType(logger, types, typeArgs[0]);
     }
 
-    public final static List<JParameter> getParamsAsList(JMethod method){
-        return Arrays.asList(method.getParameters());
-    }
 
-    public final static JParameter getAsyncCallbackParam(JMethod method){
-        return (JParameter) ArrayStream.of(method.getParameters()).last();
-    }
-
-    public final static JClassType getReturnObjectType(JMethod method) {
-        return getAsyncCallbackParam(method).getType().isParameterized().getTypeArgs()[0];
-    }
 
 }
