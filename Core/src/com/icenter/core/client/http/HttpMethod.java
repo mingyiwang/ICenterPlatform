@@ -1,4 +1,4 @@
-package com.icenter.core.client.rest.annotation;
+package com.icenter.core.client.http;
 
 import com.google.gwt.http.client.RequestBuilder;
 
@@ -7,7 +7,7 @@ public enum HttpMethod {
     DELETE,
     GET,
     HEAD,
-    POST,
+    POST, // Indicates Http Post action.
     PUT;
 
     public RequestBuilder.Method getMethod() {

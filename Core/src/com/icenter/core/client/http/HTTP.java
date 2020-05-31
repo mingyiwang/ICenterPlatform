@@ -6,12 +6,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public final class HTTP {
 
-    public static void get(String params, URL url) {
 
-    }
-
-    public static void post(String params,URL url){
-
-    }
 
 }

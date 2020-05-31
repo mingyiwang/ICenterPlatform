@@ -2,7 +2,6 @@ package com.icenter.core.client;
 
 public final class Checks {
 
-
     public static boolean is(Object object, Class<?> expected){
 
         if(object.getClass() == expected){

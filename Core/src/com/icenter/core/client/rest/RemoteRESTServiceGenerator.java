@@ -15,7 +15,7 @@ import com.icenter.core.client.primitive.CollectionStream;
 import com.icenter.core.client.primitive.Joiner;
 import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.reflect.SimpleSourceWriter;
-import com.icenter.core.client.rest.annotation.RestEndpoint;
+import com.icenter.core.client.rest.annotation.RemoteRestAction;
 import com.icenter.core.client.rest.convert.*;
 import com.icenter.core.client.rest.convert.JSONConverterGenerator;
 import com.icenter.core.client.rest.convert.base.*;
@@ -61,8 +61,8 @@ public final class RemoteRESTServiceGenerator extends Generator {
                 RemoteRESTServiceValidator.validateMethod(logger, types, method);
 
                 List<JParameter> mParams = getParamsAsList(method);
-                String mParamsSyntxt = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
-                sw.println(String.format("@Override\npublic void %1$s(%2$s){ ",method.getName(), mParamsSyntxt));
+                String mParamsText = Joiner.on(',').join(mParams, p -> p.getType().getParameterizedQualifiedSourceName() + " " + p.getName());
+                sw.println(String.format("@Override\npublic void %1$s(%2$s){ ",method.getName(), mParamsText));
                 sw.indent();
                 sw.println("JSONObject params = new JSONObject();");
 
@@ -80,12 +80,12 @@ public final class RemoteRESTServiceGenerator extends Generator {
                    JSONConverterGenerator.generate(logger, context, getReturnObjectType(method))
                 ));
 
+                RemoteRestAction endpoint = method.getAnnotation(RemoteRestAction.class);
 
-                RestEndpoint endpoint = method.getAnnotation(RestEndpoint.class);
-                sw.println(String.format("send(\"%1$s\",\"%2$s\",params, converter,%3$s);",
+                sw.println(String.format("send(\"%1$s\",\"%2$s\", params, converter,%3$s);",
                    endpoint == null ? method.getName() : Strings.of(endpoint.action(), method.getName()),
                    endpoint == null ? Strings.Empty    : Strings.of(endpoint.Method().getMethod(), Strings.Empty),
-                   getAsyncCallbackParam(method).getName()
+                   getAsyncCallbackParamName(method)
                 ));
 
                 sw.outdent();
@@ -94,7 +94,6 @@ public final class RemoteRESTServiceGenerator extends Generator {
             sw.commit(logger);
 
             System.out.println(sw.toString());
-
             return remoteServiceQualifiedSourceName;
         }
     }
@@ -144,6 +143,10 @@ public final class RemoteRESTServiceGenerator extends Generator {
 
     private final static JParameter getAsyncCallbackParam(JMethod method){
         return (JParameter) ArrayStream.of(method.getParameters()).last();
+    }
+
+    private final static String getAsyncCallbackParamName(JMethod method){
+        return getAsyncCallbackParam(method).getName();
     }
 
     private final static JClassType getReturnObjectType(JMethod method) {

@@ -3,10 +3,12 @@ package com.icenter.core.client.rest;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.icenter.core.client.http.MimeTypes;
+import com.icenter.core.client.http.Urls;
 import com.icenter.core.client.json.JSON;
 import com.icenter.core.client.json.JSONParseResult;
 import com.icenter.core.client.primitive.Strings;
-import com.icenter.core.client.rest.annotation.HttpMethod;
+import com.icenter.core.client.http.HttpMethod;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.Objects;
 
@@ -30,10 +32,10 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         Objects.requireNonNull(converter);
         Objects.requireNonNull(callback);
 
-        RequestBuilder builder = new RequestBuilder(HttpMethod.getMethod(httpMethod), URL.encode(addSlashIfNeeded(getServiceEndPoint()) + Strings.toUpperCase(action,0)));
-        builder.setHeader("Content-type", "application/json; charset=utf-8");
-        builder.setRequestData(params.toString());
+        RequestBuilder builder = new RequestBuilder(HttpMethod.getMethod(httpMethod), URL.encode(Urls.addSlashIfNeeded(getServiceEndPoint()) + Strings.toUpperCase(action,0)));
+        builder.setHeader("Content-type", MimeTypes.Json.Json);
 
+        builder.setRequestData(params.toString());
         try {
             builder.sendRequest(params.toString(), new RequestCallback() {
                 @Override
@@ -63,7 +65,6 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
                             object = null;
                             callback.onFailure(error); // Create UnexpectedJSONException
                         }
-
                         callback.onSuccess(object);
                     }
                 }
@@ -74,13 +75,4 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         }
     }
 
-    private final static String addSlashIfNeeded(String url){
-        if(!url.startsWith("/")){
-            url = "/" + url;
-        }
-        if(!url.endsWith("/")){
-            url = url + "/";
-        }
-        return url;
-    }
 }

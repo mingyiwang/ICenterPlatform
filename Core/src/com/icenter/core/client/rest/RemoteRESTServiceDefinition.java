@@ -1,6 +1,6 @@
 package com.icenter.core.client.rest;
 
-public interface RemoteRESTServiceDef {
+public interface RemoteRESTServiceDefinition {
 
     String getServiceEndPoint();
 
