@@ -3,6 +3,7 @@ package com.icenter.core.client.rest;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.icenter.core.client.http.HttpClient;
 import com.icenter.core.client.http.MimeTypes;
 import com.icenter.core.client.http.Urls;
 import com.icenter.core.client.json.JSON;
@@ -32,10 +33,15 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         Objects.requireNonNull(converter);
         Objects.requireNonNull(callback);
 
+        HttpClient.of(HttpMethod.of(httpMethod))
+                  //.url(URL.encode(Urls.addSlashIfNeeded(getServiceEndPoint()) + Strings.toUpperCase(action,0)))
+                  .send(params, new RemoteRESTServiceCallback(converter, callback));
+
         RequestBuilder builder = new RequestBuilder(HttpMethod.getMethod(httpMethod), URL.encode(Urls.addSlashIfNeeded(getServiceEndPoint()) + Strings.toUpperCase(action,0)));
         builder.setHeader("Content-type", MimeTypes.Json.Json);
 
         builder.setRequestData(params.toString());
+
         try {
             builder.sendRequest(params.toString(), new RequestCallback() {
                 @Override

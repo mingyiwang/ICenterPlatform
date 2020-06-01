@@ -32,4 +32,15 @@ public enum HttpMethod {
         }
     }
 
+    public final static HttpMethod of(String method){
+        switch(method) {
+            case "GET"    : return HttpMethod.GET;
+            case "POST"   : return HttpMethod.POST;
+            case "HEAD"   : return HttpMethod.HEAD;
+            case "PUT"    : return HttpMethod.PUT;
+            case "DELETE" : return HttpMethod.DELETE;
+            default       : return HttpMethod.POST;
+        }
+    }
+
 }

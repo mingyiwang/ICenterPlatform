@@ -2,6 +2,8 @@ package com.icenter.core.client.http;
 
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONValue;
+import com.icenter.core.client.json.JSON;
+import com.icenter.core.client.json.JSONParseResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,30 +46,24 @@ public final class HttpClient {
         return this;
     }
 
-    public final void send(JSONValue json) {
+    public final void send(JSONValue json, HttpCallback callback) {
         RequestBuilder builder = new RequestBuilder(method.getMethod(), url.toString());
         headers.forEach(header -> builder.setHeader(header.getName(), header.getValue()));
-
         try{
             builder.sendRequest(json.toString(), new RequestCallback() {
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    // handle error
-
+                    callback.handleError(exception);
                 }
 
                 @Override
                 public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() != Response.SC_OK){
-                        // handle error
-                        return;
-                    }
-                    // handle response
+                    callback.handleResponse(response);
                 }
             });
         }
         catch (RequestException error){
-            // error
+            callback.handleError(error);
         }
     }
 
