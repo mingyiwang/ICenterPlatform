@@ -2,17 +2,17 @@ package com.icenter.core.client.http;
 
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONValue;
-import com.icenter.core.client.json.JSON;
-import com.icenter.core.client.json.JSONParseResult;
+import com.icenter.core.client.Checks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public final class HttpClient {
 
-    private HttpMethod method;
-    private URL url;
     private List<HttpHeader> headers = new ArrayList<>();
+    private HttpMethod method;
+    private String url;
+    private JSONValue data;
 
     public final static HttpClient post() {
         HttpClient client = new HttpClient();
@@ -36,26 +36,37 @@ public final class HttpClient {
 
     public HttpClient url(URL url){
         Objects.requireNonNull(url);
+        setUrl(url.toString());
+        return this;
+    }
+
+    public HttpClient url(String url) {
+        Checks.requireNotNullOrEmpty(url);
         setUrl(url);
         return this;
     }
 
     public HttpClient header(HttpHeader header){
         Objects.requireNonNull(header);
-        headers.add(header);
+        this.headers.add(header);
         return this;
     }
 
-    public final void send(JSONValue json, HttpCallback callback) {
-        RequestBuilder builder = new RequestBuilder(method.getMethod(), url.toString());
+    public HttpClient data(JSONValue data){
+        Objects.requireNonNull(data);
+        this.data = data;
+        return this;
+    }
+
+    public final void send(HttpCallback callback) {
+        RequestBuilder builder = new RequestBuilder(method.getMethod(), URL.encode(url));
         headers.forEach(header -> builder.setHeader(header.getName(), header.getValue()));
         try{
-            builder.sendRequest(json.toString(), new RequestCallback() {
+            builder.sendRequest(data.toString(), new RequestCallback() {
                 @Override
                 public void onError(Request request, Throwable exception) {
                     callback.handleError(exception);
                 }
-
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     callback.handleResponse(response);
@@ -70,12 +81,9 @@ public final class HttpClient {
     private void setMethod(HttpMethod method) {
         this.method = method;
     }
-
-    private void setUrl(URL url) {
+    private void setUrl(String url) {
         this.url = url;
     }
-
-    private HttpClient(){
-    }
+    private HttpClient(){ }
 
 }

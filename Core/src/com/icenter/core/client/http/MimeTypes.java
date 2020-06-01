@@ -31,6 +31,4 @@ public final class MimeTypes {
         private Json(){}
     }
 
-
-
 }
