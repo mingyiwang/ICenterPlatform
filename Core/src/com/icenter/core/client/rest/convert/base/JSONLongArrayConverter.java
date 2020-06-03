@@ -4,6 +4,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONValue;
+import com.icenter.core.client.Checks;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
 public class JSONLongArrayConverter extends JSONConverter<long[]> {
@@ -32,11 +33,7 @@ public class JSONLongArrayConverter extends JSONConverter<long[]> {
             return null;
         }
 
-        if(value.isArray() == null){
-            // handle this error
-        }
-
-        JSONArray array = value.isArray();
+        JSONArray array = Checks.requireArray(value);
         int size = array.size();
         long[] a = new long[size];
         for (int i = 0; i < size; i++) {

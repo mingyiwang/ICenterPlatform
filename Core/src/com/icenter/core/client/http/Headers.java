@@ -2,9 +2,12 @@ package com.icenter.core.client.http;
 
 public class Headers {
 
-    public class ContentType {
+    public static class ContentType {
+        public static String Json = "";
 
-        public final HttpHeader JSON = null;
+        public String getName(){
+            return "Content-Type";
+        }
 
         private ContentType(){}
     }

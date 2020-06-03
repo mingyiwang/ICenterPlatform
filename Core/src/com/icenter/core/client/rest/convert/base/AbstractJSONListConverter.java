@@ -3,6 +3,7 @@ package com.icenter.core.client.rest.convert.base;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONValue;
+import com.icenter.core.client.Checks;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,12 +47,8 @@ public abstract class AbstractJSONListConverter<T> extends JSONConverter<List<T>
             return null;
         }
 
-        if(value.isArray() == null){
-           // throw UnexpectedJsonException;
-        }
-
+        JSONArray array = Checks.requireArray(value);
         List<T> list = createInstance();
-        JSONArray array = (JSONArray) value;
         int size = array.size();
         for (int i = 0; i < size; i++) {
              list.add(getConverter().convertJSONToObject(array.get(i)));

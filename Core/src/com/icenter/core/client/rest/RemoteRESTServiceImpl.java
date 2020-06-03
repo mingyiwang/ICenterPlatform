@@ -2,9 +2,7 @@ package com.icenter.core.client.rest;
 
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.icenter.core.client.http.HttpClient;
-import com.icenter.core.client.http.HttpMethod;
-import com.icenter.core.client.http.Urls;
+import com.icenter.core.client.http.*;
 import com.icenter.core.client.primitive.Strings;
 import com.icenter.core.client.rest.convert.JSONConverter;
 import java.util.Objects;
@@ -30,11 +28,11 @@ public abstract class RemoteRESTServiceImpl implements RemoteRESTService {
         Objects.requireNonNull(callback);
 
         HttpClient.of(HttpMethod.of(httpMethod))
-                  .data(params)
                   .url(Urls.addSlashIfNeeded(getServiceEndPoint()) + Strings.toUpperCase(action,0))
-                  .header(null) //"Content-type", MimeTypes.Json.Json
-                  .send(new RemoteRESTServiceCallback(converter, callback));
-
+                  .data(params)
+                  .header("Content-type", MimeTypes.Json.Json)
+                  .handler(new RemoteRESTServiceCallback(converter, callback))
+                  .send();
 
     }
 

@@ -1,8 +1,9 @@
 package com.icenter.core.client.rest;
 
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.icenter.core.client.http.HttpCallback;
+import com.icenter.core.client.http.HttpHandler;
 import com.icenter.core.client.json.JSON;
 import com.icenter.core.client.json.JSONParseResult;
 import com.icenter.core.client.rest.convert.JSONConverter;
@@ -11,7 +12,7 @@ import com.icenter.core.client.rest.error.ServiceException;
 import com.icenter.core.client.rest.error.UnexpectedJSONException;
 import java.util.Objects;
 
-public final class RemoteRESTServiceCallback<T> implements HttpCallback {
+public final class RemoteRESTServiceCallback<T> implements HttpHandler {
 
     private JSONConverter<T> converter;
     private AsyncCallback<T> callback;
@@ -20,17 +21,21 @@ public final class RemoteRESTServiceCallback<T> implements HttpCallback {
         Objects.requireNonNull(converter);
         Objects.requireNonNull(callback);
 
-        this.callback  = callback;
         this.converter = converter;
+        this.callback  = callback;
     }
 
     /**
      * This type of error happens on Internet level such as Request time out, connection lost etc.
+     * It should't be handled by AsyncCallback class.
      * @param error
      */
     @Override
     public void handleError(Throwable error) {
-        callback.onFailure(error);
+        if(error instanceof RequestException){
+
+        }
+        // callback.onFailure(error);
     }
 
     /**

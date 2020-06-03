@@ -1,5 +1,9 @@
 package com.icenter.core.client;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONValue;
+import com.icenter.core.client.rest.error.UnexpectedJSONException;
+
 public final class Checks {
 
     public static boolean is(Object object, Class<?> expected){
@@ -24,4 +28,10 @@ public final class Checks {
             throw new IllegalArgumentException(errorMessage);
         }
     }
+
+    public static JSONArray requireArray(JSONValue value){
+        if(value.isArray() == null) throw new UnexpectedJSONException("Expected is array but was not.");
+        return value.isArray();
+    }
+
 }

@@ -3,6 +3,7 @@ package com.icenter.core.client.http;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.Checks;
+import com.icenter.core.client.primitive.Strings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +14,7 @@ public final class HttpClient {
     private HttpMethod method;
     private String url;
     private JSONValue data;
+    private HttpHandler handler;
 
     public final static HttpClient post() {
         HttpClient client = new HttpClient();
@@ -20,9 +22,23 @@ public final class HttpClient {
         return client;
     }
 
+    public final static HttpClient post(String url) {
+        HttpClient client = new HttpClient();
+        client.setMethod(HttpMethod.POST);
+        client.setUrl(url);
+        return client;
+    }
+
     public final static HttpClient get() {
         HttpClient client = new HttpClient();
         client.setMethod(HttpMethod.GET);
+        return client;
+    }
+
+    public final static HttpClient get(String url) {
+        HttpClient client = new HttpClient();
+        client.setMethod(HttpMethod.GET);
+        client.setUrl(url);
         return client;
     }
 
@@ -52,29 +68,52 @@ public final class HttpClient {
         return this;
     }
 
+    public HttpClient header(String name, String value){
+        this.headers.add(HttpHeader.of(Strings.requireNotNullOrEmpty(name)).val(Strings.requireNotNullOrEmpty(value)));
+        return this;
+    }
+
     public HttpClient data(JSONValue data){
         Objects.requireNonNull(data);
         this.data = data;
         return this;
     }
 
-    public final void send(HttpCallback callback) {
+    public HttpClient handler(HttpHandler handler){
+        Objects.requireNonNull(handler);
+        this.handler = handler;
+        return this;
+    }
+
+    public final void send() {
+        Objects.requireNonNull(handler, "Request Handler can not be null.");
+        Objects.requireNonNull(data,    "Request data can not be null.");
+        Objects.requireNonNull(method,  "Request method can not be null");
+        Objects.requireNonNull(url,     "Request url can not be null.");
+        Objects.requireNonNull(headers, "Request header can not be null.");
+        handler(handler);
+
+        // 1. validates url
         RequestBuilder builder = new RequestBuilder(method.getMethod(), URL.encode(url));
-        headers.forEach(header -> builder.setHeader(header.getName(), header.getValue()));
+        for(HttpHeader h : headers){
+            builder.setHeader(h.getName(), h.getValue());
+        }
+
         try{
             builder.sendRequest(data.toString(), new RequestCallback() {
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    callback.handleError(exception);
+                    HttpClient.this.handler.handleError(exception);
                 }
+
                 @Override
                 public void onResponseReceived(Request request, Response response) {
-                    callback.handleResponse(response);
+                    HttpClient.this.handler.handleResponse(response);
                 }
             });
         }
         catch (RequestException error){
-            callback.handleError(error);
+            HttpClient.this.handler.handleError(error);
         }
     }
 

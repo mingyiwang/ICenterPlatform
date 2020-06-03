@@ -1,6 +1,7 @@
 package com.icenter.core.client.rest.convert.base;
 
 import com.google.gwt.json.client.*;
+import com.icenter.core.client.Checks;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
 public class JSONCharArrayConverter extends JSONConverter<char[]> {
@@ -29,11 +30,7 @@ public class JSONCharArrayConverter extends JSONConverter<char[]> {
             return null;
         }
 
-        if(value.isArray() == null){
-            // handle this error
-        }
-
-        JSONArray array = value.isArray();
+        JSONArray array = Checks.requireArray(value);
         int size = array.size();
         char[] a = new char[size];
         for (int i = 0; i < size; i++) {

@@ -5,6 +5,12 @@ public final class HttpHeader {
     private String name;
     private String value;
 
+    public static HttpHeader of(String name){
+        HttpHeader header = new HttpHeader();
+        header.setName(name);
+        return header;
+    }
+
     public String getName() {
         return name;
     }
@@ -13,8 +19,9 @@ public final class HttpHeader {
         return this.value;
     }
 
-    private void setValue(String value) {
+    public HttpHeader val(String value) {
         this.value = value;
+        return this;
     }
 
     private void setName(String name) {

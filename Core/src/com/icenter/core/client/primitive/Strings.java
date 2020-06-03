@@ -15,6 +15,11 @@ public final class Strings {
         return value == null || value.length() == 0;
     }
 
+    public final static String requireNotNullOrEmpty(String name){
+        if(isNullOrEmpty(name)) throw new IllegalArgumentException("Expected string should not be null or empty.");
+        return name;
+    }
+
     public static String of(Object object){
         return of(object, Empty);
     }
@@ -27,7 +32,6 @@ public final class Strings {
         if(Objects.isNull(object)){
            return defaultValue;
         }
-
         return object.toString();
     }
 
@@ -56,6 +60,11 @@ public final class Strings {
      * @return
      */
     public final static String toUpperCase(String name, int index){
+        Objects.requireNonNull(name);
+        if(name.length() == 0){
+           return name;
+        }
+
         char[] copies = name.toCharArray();
         if(index < 0 || index > copies.length - 1){
            return name;
@@ -68,5 +77,7 @@ public final class Strings {
         copies[index] = Character.toUpperCase(copies[index]);
         return String.valueOf(copies);
     }
+
+
 
 }
