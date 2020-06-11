@@ -3,7 +3,7 @@ package com.icenter.core.client.rest;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.icenter.core.client.http.HttpHandler;
+import com.icenter.core.client.http.HttpResponseHandler;
 import com.icenter.core.client.json.JSON;
 import com.icenter.core.client.json.JSONParseResult;
 import com.icenter.core.client.rest.convert.JSONConverter;
@@ -12,7 +12,7 @@ import com.icenter.core.client.rest.error.ServiceException;
 import com.icenter.core.client.rest.error.UnexpectedJSONException;
 import java.util.Objects;
 
-public final class RemoteRESTServiceCallback<T> implements HttpHandler {
+public final class RemoteRESTServiceCallback<T> implements HttpResponseHandler {
 
     private JSONConverter<T> converter;
     private AsyncCallback<T> callback;

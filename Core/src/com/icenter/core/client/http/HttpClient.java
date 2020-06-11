@@ -14,7 +14,7 @@ public final class HttpClient {
     private HttpMethod method;
     private String url;
     private JSONValue data;
-    private HttpHandler handler;
+    private HttpResponseHandler handler;
 
     public final static HttpClient post() {
         HttpClient client = new HttpClient();
@@ -79,7 +79,7 @@ public final class HttpClient {
         return this;
     }
 
-    public HttpClient handler(HttpHandler handler){
+    public HttpClient handler(HttpResponseHandler handler){
         Objects.requireNonNull(handler);
         this.handler = handler;
         return this;
