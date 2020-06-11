@@ -12,4 +12,8 @@ public class UnexpectedJSONException extends JSONException {
         super("Unexpected JSON Message.", cause);
     }
 
+    public UnexpectedJSONException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

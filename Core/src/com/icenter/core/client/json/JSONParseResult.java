@@ -8,13 +8,13 @@ public final class JSONParseResult {
 
     private boolean succeed;
     private JSONValue result;
-    private JSONException error;
+    private Exception error;
 
     public final static JSONParseResult succeed(JSONValue result){
         return new JSONParseResult().setSucceed(true).setResult(result);
     }
 
-    public final static JSONParseResult failed(JSONException error){
+    public final static JSONParseResult failed(Exception error){
         return new JSONParseResult().setSucceed(false).setError(error);
     }
 
@@ -26,7 +26,7 @@ public final class JSONParseResult {
         return this.succeed;
     }
 
-    public JSONException getError() {
+    public Exception getError() {
         return this.error;
     }
 
@@ -44,7 +44,7 @@ public final class JSONParseResult {
         return this;
     }
 
-    private JSONParseResult setError(JSONException error) {
+    private JSONParseResult setError(Exception error) {
         this.error = error;
         return this;
     }

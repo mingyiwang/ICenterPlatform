@@ -1,6 +1,5 @@
 package com.icenter.core.client.json;
 
-import com.google.gwt.json.client.JSONException;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
@@ -13,7 +12,8 @@ public final class JSON {
         try {
             JSONValue json = JSONParser.parseStrict(couldBeJson); // this method not execute javascript code.
             return JSONParseResult.succeed(json);
-        } catch(JSONException error){
+        }
+        catch(Exception error){
             return JSONParseResult.failed(error);
         }
    }

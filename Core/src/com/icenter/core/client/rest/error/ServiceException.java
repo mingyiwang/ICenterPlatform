@@ -2,15 +2,15 @@ package com.icenter.core.client.rest.error;
 
 public class ServiceException extends RuntimeException {
 
-    private int statusCode;
+    private int status;
 
     public ServiceException(String message, int statusCode) {
         super(message);
-        this.statusCode = statusCode;
+        this.status = statusCode;
     }
 
     public int getStatusCode() {
-        return statusCode;
+        return status;
     }
 
 }

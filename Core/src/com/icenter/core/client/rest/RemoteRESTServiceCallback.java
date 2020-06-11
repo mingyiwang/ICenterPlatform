@@ -49,19 +49,20 @@ public final class RemoteRESTServiceCallback<T> implements HttpHandler {
            return;
         }
 
-        // It is not a json message
         JSONParseResult result = JSON.parse(response.getText());
+
+        // It is not a json message
         if(!result.isSucceed()){
-            callback.onFailure(new MalformedJSONException(response.getText(), result.getError())); // Create MalformedJSONException, Returns is not a JSON
+            callback.onFailure(new MalformedJSONException(response.getText() + " is not a valid json.", result.getError())); // Create MalformedJSONException, Returns is not a JSON
         }
         else {
-            T object = null;
+            T object;
             try {
                 object = converter.convertJSONToObject(result.getResult());
             }
             catch(Exception error) {
                 object = null;
-                callback.onFailure(new UnexpectedJSONException(error)); // Create UnexpectedJSONException
+                callback.onFailure(new UnexpectedJSONException(response.getText() + " is not expected json.", error)); // Create UnexpectedJSONException
             }
 
             // We dun handle delegate errors
