@@ -21,15 +21,12 @@ public final class JSONParseResult {
     public JSONValue getResult() {
         return this.result;
     }
-
     public boolean isSucceed() {
         return this.succeed;
     }
-
     public Exception getError() {
         return this.error;
     }
-
     public String getErrorMessage() {
         return this.error == null ? Strings.Empty : this.error.getMessage();
     }
@@ -45,6 +42,7 @@ public final class JSONParseResult {
     }
 
     private JSONParseResult setError(Exception error) {
+        this.succeed = false;
         this.error = error;
         return this;
     }

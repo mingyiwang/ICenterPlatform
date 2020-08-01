@@ -15,14 +15,14 @@ import java.util.Objects;
 public final class RemoteRESTServiceCallback<T> implements HttpResponseHandler {
 
     private JSONConverter<T> converter;
-    private AsyncCallback<T> callback;
+    private AsyncCallback<T> serviceCallback;
 
-    public RemoteRESTServiceCallback(JSONConverter<T> converter, AsyncCallback<T> callback) {
+    public RemoteRESTServiceCallback(JSONConverter<T> converter, AsyncCallback<T> serviceCallback) {
         Objects.requireNonNull(converter);
-        Objects.requireNonNull(callback);
+        Objects.requireNonNull(serviceCallback);
 
         this.converter = converter;
-        this.callback  = callback;
+        this.serviceCallback = serviceCallback;
     }
 
     /**
@@ -45,7 +45,7 @@ public final class RemoteRESTServiceCallback<T> implements HttpResponseHandler {
     @Override
     public void handleResponse(Response response) {
         if(response.getStatusCode() != Response.SC_OK){
-           callback.onFailure(new ServiceException(response.getText(), response.getStatusCode())); // ServiceException
+           serviceCallback.onFailure(new ServiceException(response.getText(), response.getStatusCode())); // ServiceException
            return;
         }
 
@@ -53,7 +53,7 @@ public final class RemoteRESTServiceCallback<T> implements HttpResponseHandler {
 
         // It is not a json message
         if(!result.isSucceed()){
-            callback.onFailure(new MalformedJSONException(response.getText() + " is not a valid json.", result.getError())); // Create MalformedJSONException, Returns is not a JSON
+            serviceCallback.onFailure(new MalformedJSONException(response.getText() + " is not a valid json.", result.getError())); // Create MalformedJSONException, Returns is not a JSON
         }
         else {
             T object;
@@ -62,11 +62,11 @@ public final class RemoteRESTServiceCallback<T> implements HttpResponseHandler {
             }
             catch(Exception error) {
                 object = null;
-                callback.onFailure(new UnexpectedJSONException(response.getText() + " is not expected json.", error)); // Create UnexpectedJSONException
+                serviceCallback.onFailure(new UnexpectedJSONException(response.getText() + " is not expected json.", error)); // Create UnexpectedJSONException
             }
 
             // We dun handle delegate errors
-            callback.onSuccess(object);
+            serviceCallback.onSuccess(object);
         }
     }
 

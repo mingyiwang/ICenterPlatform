@@ -10,8 +10,8 @@ public final class SimpleSourceWriter implements SourceWriter {
     private int indent = 0;
 
     public SimpleSourceWriter(SourceWriter writer){
-        this.sw = writer;
         this.builder = new StringBuilder();
+        this.sw = writer;
     }
 
     public static SimpleSourceWriter of(SourceWriter writer){

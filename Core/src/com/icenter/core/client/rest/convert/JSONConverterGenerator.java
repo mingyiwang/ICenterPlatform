@@ -106,7 +106,7 @@ public final class JSONConverterGenerator  {
         composer.setSuperclass(AbstractJSONMapConverter.class.getCanonicalName() + "<" + keyType.getQualifiedSourceName() + "," + valueType.getParameterizedQualifiedSourceName()+ ">");
 
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
-        if(pw == null) {
+        if (pw == null) {
             return qualifiedSourceName;
         }
         else {
@@ -128,10 +128,9 @@ public final class JSONConverterGenerator  {
             sw.println("}");
             sw.commit(logger);
 
-            System.out.println(sw.toString());
-
+            // System.out.println(sw.toString());
+            return qualifiedSourceName;
         }
-        return qualifiedSourceName;
     }
 
     private final static String generateList(TreeLogger logger, GeneratorContext context, JClassType targetType){
@@ -301,8 +300,11 @@ public final class JSONConverterGenerator  {
            sourceName = type.isClassOrInterface().getSimpleSourceName()+"_JSONConverter";
         }
 
+        //Todo: create cache for sourceName, since converter is immutable if already exists then return
+        //Todo: Otherwise create new one.
         System.out.println("Converter Name ---> " + sourceName);
         return sourceName;
+
     }
 
 }

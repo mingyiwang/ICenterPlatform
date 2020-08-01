@@ -85,6 +85,15 @@ public final class HttpClient {
         return this;
     }
 
+    /***
+     * Send request with specified retry times when custom error happens.
+     * @param retries
+     */
+    public final void send(int retries){
+
+    }
+
+
     public final void send() {
         Objects.requireNonNull(handler, "Request Handler can not be null.");
         Objects.requireNonNull(data,    "Request data can not be null.");
@@ -99,11 +108,12 @@ public final class HttpClient {
             builder.setHeader(h.getName(), h.getValue());
         }
 
-        try{
+        try {
             builder.sendRequest(data.toString(), new RequestCallback() {
                 @Override
                 public void onError(Request request, Throwable exception) {
                     HttpClient.this.handler.handleError(exception);
+                    // retries
                 }
 
                 @Override
@@ -120,9 +130,11 @@ public final class HttpClient {
     private void setMethod(HttpMethod method) {
         this.method = method;
     }
+
     private void setUrl(String url) {
         this.url = url;
     }
-    private HttpClient(){ }
+
+    private HttpClient(){}
 
 }
