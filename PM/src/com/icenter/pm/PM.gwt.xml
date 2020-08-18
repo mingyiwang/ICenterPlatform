@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.8.2//EN"
+  "http://gwtproject.org/doctype/2.8.2/gwt-module.dtd">
+<module rename-to='el'>
+  <inherits name='com.icenter.core.Core'/>
+  <entry-point class='com.icenter.el.client.EL'/>
+  <source path='client'/>
+  <add-linker name="xsiframe"/>
+</module>

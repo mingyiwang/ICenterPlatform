@@ -30,7 +30,7 @@ public final class Checks {
     }
 
     public static JSONArray requireArray(JSONValue value){
-        if(value.isArray() == null) throw new UnexpectedJSONException("Expected is array but was not.");
+        if(value.isArray() == null) throw new UnexpectedJSONException("Expected is json array but was not.");
         return value.isArray();
     }
 

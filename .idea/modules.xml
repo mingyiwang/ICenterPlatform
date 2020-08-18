@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Core/Core.iml" filepath="$PROJECT_DIR$/Core/Core.iml" />
       <module fileurl="file://$PROJECT_DIR$/EL/EL.iml" filepath="$PROJECT_DIR$/EL/EL.iml" />
       <module fileurl="file://$PROJECT_DIR$/ICenterPlaform.iml" filepath="$PROJECT_DIR$/ICenterPlaform.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PM/PM.iml" filepath="$PROJECT_DIR$/PM/PM.iml" />
     </modules>
   </component>
 </project>
