@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 /***
- * JSONConvertible Object Converter, used to generates object converters,
+ * JSONConvertible Object Converter, used to generates object converter classes and returns generated class name,
  * shouldn't use it directly. It does't do any validation against Variables.
  */
 public final class JSONConverterGenerator  {
@@ -31,13 +31,17 @@ public final class JSONConverterGenerator  {
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType) {
         if(Reflects.isPrimitive(targetType)){
            return generatePrimitive(logger, context, targetType);
-        } else if(Reflects.isArray(targetType)){
+        }
+        else if(Reflects.isArray(targetType)){
            return generateArray(logger, context,targetType.isArray());
-        } else if(Reflects.isList(targetType,context.getTypeOracle())){
+        }
+        else if(Reflects.isList(targetType,context.getTypeOracle())){
            return generateList(logger, context, targetType.isClassOrInterface());
-        } else if(Reflects.isMap(targetType, context.getTypeOracle())){
+        }
+        else if(Reflects.isMap(targetType, context.getTypeOracle())){
            return generateMap(logger,  context, targetType.isClassOrInterface());
-        } else {
+        }
+        else {
            return generateClass(logger, context, targetType.isClassOrInterface());
         }
     }
@@ -52,8 +56,8 @@ public final class JSONConverterGenerator  {
     private final static String generateArray(TreeLogger logger, GeneratorContext context, JArrayType targetType)  {
         JType  componentType = targetType.getComponentType();
         String componentTypeQualifiedName = componentType.isPrimitive() != null
-               ? componentType.isPrimitive().getQualifiedBoxedSourceName()
-               : componentType.getQualifiedSourceName();
+                ? componentType.isPrimitive().getQualifiedBoxedSourceName()
+                : componentType.getQualifiedSourceName();
 
         // Primitive arrays: int[], double[] etc.
         if (componentType.isPrimitive() != null ) {

@@ -5,7 +5,6 @@ import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.Checks;
 import com.icenter.core.client.rest.convert.JSONConverter;
-
 import java.util.ArrayList;
 import java.util.List;
 

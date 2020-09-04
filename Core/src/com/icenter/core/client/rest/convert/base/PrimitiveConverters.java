@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public final class PrimitiveConverters {
 
-    private final static HashMap<String, String> primitive_type_to_convert_map = new HashMap<>();
+    private final static HashMap<String, String> primitive_type_to_convert_map = new HashMap<>(20);
 
     static {
         primitive_type_to_convert_map.put(String.class.getCanonicalName(),    JSONStringConverter.class.getCanonicalName());
