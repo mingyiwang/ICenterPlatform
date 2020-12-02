@@ -1,6 +1,8 @@
 package com.icenter.core.client.http;
 
-public final class HttpHeader {
+import com.google.gwt.http.client.Header;
+
+public final class HttpHeader extends Header {
 
     private String name;
     private String value;
@@ -9,14 +11,6 @@ public final class HttpHeader {
         HttpHeader header = new HttpHeader();
         header.setName(name);
         return header;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getValue() {
-        return this.value;
     }
 
     public HttpHeader val(String value) {
@@ -28,5 +22,16 @@ public final class HttpHeader {
         this.name = name;
     }
 
+    @Override
+    public final String getName() {
+        return this.name;
+    }
+
+    @Override
+    public final String getValue() {
+        return this.value;
+    }
+
     private HttpHeader(){}
+
 }

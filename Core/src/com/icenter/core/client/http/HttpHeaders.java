@@ -1,6 +1,6 @@
 package com.icenter.core.client.http;
 
-public class Headers {
+public class HttpHeaders {
 
     public static class ContentType {
         public static String Json = "";

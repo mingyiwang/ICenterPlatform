@@ -118,7 +118,6 @@ public final class HttpClient {
                     HttpClient.this.handler.handleError(exception);
                     // retries
                 }
-
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     HttpClient.this.handler.handleResponse(response);

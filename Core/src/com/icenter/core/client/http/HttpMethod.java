@@ -7,7 +7,7 @@ public enum HttpMethod {
     DELETE,
     GET,
     HEAD,
-    POST, // Indicates Http Post action.
+    POST,
     PUT;
 
     public RequestBuilder.Method getMethod() {
@@ -22,7 +22,7 @@ public enum HttpMethod {
     }
 
     public static RequestBuilder.Method getMethod(String method){
-        switch(method) {
+        switch(method.toUpperCase()) {
             case "GET"    : return RequestBuilder.GET;
             case "POST"   : return RequestBuilder.POST;
             case "HEAD"   : return RequestBuilder.HEAD;
@@ -33,7 +33,7 @@ public enum HttpMethod {
     }
 
     public final static HttpMethod of(String method){
-        switch(method) {
+        switch(method.toUpperCase()) {
             case "GET"    : return HttpMethod.GET;
             case "POST"   : return HttpMethod.POST;
             case "HEAD"   : return HttpMethod.HEAD;
