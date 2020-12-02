@@ -2,10 +2,11 @@ package com.icenter.core.client.primitive;
 
 import java.util.Date;
 
+
 public final class Primitives {
 
     public static class CanonicalNames {
-        
+
         public final static String _String    = String.class.getCanonicalName();
         public final static String _Character = Character.class.getCanonicalName();
         public final static String _Byte      = Byte.class.getCanonicalName();
@@ -17,9 +18,8 @@ public final class Primitives {
         public final static String _Short     = Short.class.getCanonicalName();
         public final static String _Date      = Date.class.getCanonicalName();
 
-        private CanonicalNames(){
+        private CanonicalNames(){ }
 
-        }
     }
 
 

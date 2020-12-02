@@ -5,7 +5,7 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.icenter.core.client.rest.convert.JSONConverter;
 
-public final class JSONCharConverter extends JSONConverter<Character> {
+public final class JSONCharacterConverter extends JSONConverter<Character> {
 
     @Override
     public Character createInstance() {

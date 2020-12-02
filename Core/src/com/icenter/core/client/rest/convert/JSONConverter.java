@@ -9,7 +9,9 @@ public abstract class JSONConverter<T> {
     /**
      * Create new object
      * */
-    public abstract T createInstance();
+    public  T createInstance(){
+        throw new UnsupportedOperationException();
+    }
 
 
     /**

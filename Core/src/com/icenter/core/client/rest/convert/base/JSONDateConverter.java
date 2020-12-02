@@ -9,11 +9,6 @@ import java.util.Date;
 public final class JSONDateConverter extends JSONConverter<Date> {
 
     @Override
-    public Date createInstance() {
-        return new Date();
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(Date object) {
         return object == null
              ? JSONNull.getInstance()
@@ -21,18 +16,22 @@ public final class JSONDateConverter extends JSONConverter<Date> {
              ;
     }
 
-
     @Override
     public Date convertJSONToObject(JSONValue value) {
         if (value == null || value.isNull() != null){
             return null;
         }
 
+        // the milliseconds since January 1, 1970, 00:00:00 GMT
         if(value.isString() != null){
            return new Date(Long.parseLong(value.isString().stringValue()));
         }
 
-        return new Date((long)value.isNumber().doubleValue());
+        if(value.isNumber() != null){
+           long milliseconds = (long) value.isNumber().doubleValue();
+           return new Date(milliseconds);
+        }
+        return null;
     }
 
 }

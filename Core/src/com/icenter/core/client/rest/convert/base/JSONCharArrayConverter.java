@@ -6,10 +6,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 
 public class JSONCharArrayConverter extends JSONConverter<char[]> {
 
-    @Override
-    public final char[] createInstance() {
-        return null;
-    }
 
     @Override
     public JSONValue convertObjectToJSON(char[] object) {

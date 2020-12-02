@@ -9,11 +9,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 public final class JSONDoubleConverter extends JSONConverter<Double> {
 
     @Override
-    public Double createInstance() {
-        return null;
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(Double object) {
         return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }

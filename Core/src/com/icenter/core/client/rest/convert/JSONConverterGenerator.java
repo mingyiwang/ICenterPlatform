@@ -6,7 +6,6 @@ import com.google.gwt.core.ext.typeinfo.*;
 import com.google.gwt.json.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
-import com.google.gwt.user.rebind.SourceWriter;
 import com.icenter.core.client.lambda.BiAction;
 import com.icenter.core.client.reflect.Reflects;
 import com.icenter.core.client.reflect.SimpleSourceWriter;
@@ -24,6 +23,7 @@ public final class JSONConverterGenerator  {
 
     // classes generated should be under below package path.
     private final static String packagePath = "com.icenter.core.client.rest.convert";
+    private final static String Suffix = JSONConverter.class.getSimpleName();
 
     /**
      * Returns newly generated JSONConverter class based the targetType.
@@ -31,18 +31,16 @@ public final class JSONConverterGenerator  {
     public final static String generate(TreeLogger logger, GeneratorContext context, JType targetType) {
         if(Reflects.isPrimitive(targetType)){
            return generatePrimitive(logger, context, targetType);
-        }
-        else if(Reflects.isArray(targetType)){
+        } else if(Reflects.isArray(targetType)){
            return generateArray(logger, context,targetType.isArray());
-        }
-        else if(Reflects.isList(targetType,context.getTypeOracle())){
+        } else if(Reflects.isList(targetType,context.getTypeOracle())){
            return generateList(logger, context, targetType.isClassOrInterface());
-        }
-        else if(Reflects.isMap(targetType, context.getTypeOracle())){
+        } else if(Reflects.isMap(targetType, context.getTypeOracle())){
            return generateMap(logger,  context, targetType.isClassOrInterface());
-        }
-        else {
+        } else if(targetType.isClassOrInterface() != null ){
            return generateClass(logger, context, targetType.isClassOrInterface());
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -55,9 +53,10 @@ public final class JSONConverterGenerator  {
 
     private final static String generateArray(TreeLogger logger, GeneratorContext context, JArrayType targetType)  {
         JType  componentType = targetType.getComponentType();
-        String componentTypeQualifiedName = componentType.isPrimitive() != null
-                ? componentType.isPrimitive().getQualifiedBoxedSourceName()
-                : componentType.getQualifiedSourceName();
+        String componentTypeQualifiedName =
+               componentType.isPrimitive() != null
+                        ? componentType.isPrimitive().getQualifiedBoxedSourceName()
+                        : componentType.getQualifiedSourceName();
 
         // Primitive arrays: int[], double[] etc.
         if (componentType.isPrimitive() != null ) {
@@ -171,17 +170,19 @@ public final class JSONConverterGenerator  {
     }
 
     private final static String generateClass(TreeLogger logger, GeneratorContext context, JClassType targetType) {
-        String targetTypeClassName = targetType.getName();
-        String sourceName = targetTypeClassName + JSONConverter.class.getSimpleName();
+
+        String sourceName = targetType.getName() + Suffix;
         String qualifiedSourceName = packagePath + "." + sourceName;
 
         ClassSourceFileComposerFactory composer = createSourceComposer(sourceName);
         composer.addImport(targetType.getQualifiedSourceName());
         composer.setSuperclass("JSONConverter<" + targetType.getQualifiedSourceName() + ">");
 
+        // Generate source writer when the target type is not exist, return null if the type is exist.
         PrintWriter pw = context.tryCreate(logger, packagePath, sourceName);
         if(pw == null) {
-           return qualifiedSourceName;
+            System.out.println("----------" + qualifiedSourceName + " is already exists.----------");
+            return qualifiedSourceName;
         }
         else {
             String targetTypeQualifiedName = targetType.getQualifiedSourceName();
@@ -202,7 +203,7 @@ public final class JSONConverterGenerator  {
             sw.indent();
             sw.println("if (instance == null) { return JSONNull.getInstance(); }"); //should we handle null value?
             sw.println("JSONObject jsonObject = new JSONObject();");
-            forEach(targetType.isClassOrInterface(),(f, p) -> {
+            forEachProperty(targetType.isClassOrInterface(),(f, p) -> {
                 sw.indentln(String.format("jsonObject.put(\"%1$s\", new %2$s().convertObjectToJSON(instance.%3$s()));",
                    f.getName(),
                    JSONConverterGenerator.generate(logger, context, f.getType()),
@@ -221,7 +222,7 @@ public final class JSONConverterGenerator  {
             sw.println("JSONObject jsonObject = value.isObject();");
             sw.println(String.format("%1$s instance = createInstance();", targetTypeQualifiedName));
 
-            forEach(targetType.isClassOrInterface(),(f, p)-> {
+            forEachProperty(targetType.isClassOrInterface(),(f, p)-> {
                 sw.println(String.format("instance.%1$s(new %2$s().convertJSONToObject(jsonObject.get(\"%3$s\")));",
                    p.getSetMethod(),
                    JSONConverterGenerator.generate(logger, context, f.getType()),
@@ -257,7 +258,7 @@ public final class JSONConverterGenerator  {
         composerFactory.addImport(JSONConverter.class.getCanonicalName());
         composerFactory.addImport(JSONBooleanConverter.class.getCanonicalName());
         composerFactory.addImport(JSONByteConverter.class.getCanonicalName());
-        composerFactory.addImport(JSONCharConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONCharacterConverter.class.getCanonicalName());
         composerFactory.addImport(JSONDateConverter.class.getCanonicalName());
         composerFactory.addImport(JSONDoubleConverter.class.getCanonicalName());
         composerFactory.addImport(JSONFloatConverter.class.getCanonicalName());
@@ -272,7 +273,7 @@ public final class JSONConverterGenerator  {
         return composerFactory;
     }
 
-    private final static void forEach(JClassType classType, BiAction<JField, JProperty> action){
+    private final static void forEachProperty(JClassType classType, BiAction<JField, JProperty> action){
         Objects.requireNonNull(classType);
         Objects.requireNonNull(action);
 

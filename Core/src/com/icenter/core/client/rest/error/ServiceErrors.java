@@ -14,6 +14,7 @@ public final class ServiceErrors {
            JSONObject _error = value.isObject();
            _error.get("statusCode");
            _error.get("message");
+
         }
         else {
            // not a service error?

@@ -10,10 +10,6 @@ import com.icenter.core.client.rest.error.UnexpectedJSONException;
 
 public class JSONFloatArrayConverter extends JSONConverter<float[]> {
 
-    @Override
-    public final float[] createInstance() {
-        return null;
-    }
 
     @Override
     public JSONValue convertObjectToJSON(float[] object) {

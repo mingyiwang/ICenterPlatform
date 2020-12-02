@@ -10,7 +10,7 @@ public final class PrimitiveConverters {
         primitive_type_to_convert_map.put(String.class.getCanonicalName(),    JSONStringConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Boolean.class.getCanonicalName(),   JSONBooleanConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Byte.class.getCanonicalName(),      JSONByteConverter.class.getCanonicalName());
-        primitive_type_to_convert_map.put(Character.class.getCanonicalName(), JSONCharConverter.class.getCanonicalName());
+        primitive_type_to_convert_map.put(Character.class.getCanonicalName(), JSONCharacterConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Double.class.getCanonicalName(),    JSONDoubleConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Float.class.getCanonicalName(),     JSONFloatConverter.class.getCanonicalName());
         primitive_type_to_convert_map.put(Integer.class.getCanonicalName(),   JSONIntegerConverter.class.getCanonicalName());

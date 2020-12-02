@@ -9,11 +9,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 public final class JSONLongConverter extends JSONConverter<Long> {
 
     @Override
-    public Long createInstance() {
-        return null;
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(Long object) {
         return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }

@@ -9,16 +9,13 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 
 public class JSONIntegerArrayConverter extends JSONConverter<int[]> {
 
-    @Override
-    public final int[] createInstance() {
-        return null;
-    }
 
     @Override
     public JSONValue convertObjectToJSON(int[] object) {
         if (object == null){
             return JSONNull.getInstance();
         }
+        
         JSONArray json = new JSONArray();
         for (int i=0; i<object.length; i++) {
              json.set(i, new JSONNumber(object[i]));

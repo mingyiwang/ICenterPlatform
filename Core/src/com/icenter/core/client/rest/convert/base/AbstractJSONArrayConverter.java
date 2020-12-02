@@ -47,12 +47,13 @@ public abstract class AbstractJSONArrayConverter<T> extends JSONConverter<T[]> {
 
         JSONArray array = Checks.requireArray(value);
         int size = array.size();
-        List<T> wrapper = new ArrayList<T>(size);
+        
+        T[] tst = (T[]) new Object[size];
         for (int i = 0; i < size; i++) {
-             wrapper.add(getConverter().convertJSONToObject(array.get(i)));
+             tst[i] = getConverter().convertJSONToObject(array.get(i));
         }
 
-        return (T[]) wrapper.toArray();
+        return tst;
     }
 
 }

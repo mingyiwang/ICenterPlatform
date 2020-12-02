@@ -104,10 +104,13 @@ public final class HttpClient {
 
         // 1. validates url
         RequestBuilder builder = new RequestBuilder(method.getMethod(), URL.encode(url));
+
+        // 2. add headers
         for(HttpHeader h : headers){
             builder.setHeader(h.getName(), h.getValue());
         }
 
+        // 3. try send request
         try {
             builder.sendRequest(data.toString(), new RequestCallback() {
                 @Override

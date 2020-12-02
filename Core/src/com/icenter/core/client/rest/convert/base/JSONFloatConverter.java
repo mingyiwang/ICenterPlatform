@@ -9,11 +9,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 public final class JSONFloatConverter extends JSONConverter<Float> {
 
     @Override
-    public Float createInstance() {
-        return null;
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(Float object) {
         return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }

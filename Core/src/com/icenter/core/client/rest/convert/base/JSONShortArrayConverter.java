@@ -9,10 +9,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 
 public class JSONShortArrayConverter extends JSONConverter<short[]> {
 
-    @Override
-    public final short[] createInstance() {
-        return null;
-    }
 
     @Override
     public JSONValue convertObjectToJSON(short[] object) {

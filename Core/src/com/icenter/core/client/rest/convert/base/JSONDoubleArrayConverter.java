@@ -9,10 +9,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 
 public class JSONDoubleArrayConverter extends JSONConverter<double[]> {
 
-    @Override
-    public final double[] createInstance() {
-        return null;
-    }
 
     @Override
     public JSONValue convertObjectToJSON(double[] object) {

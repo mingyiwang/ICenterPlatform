@@ -21,6 +21,7 @@ public class EL implements EntryPoint {
                 public void onFailure(Throwable caught) {
 
                 }
+
                 @Override
                 public void onSuccess(Session session) {
                     String passport = session.getPassport();
@@ -28,7 +29,6 @@ public class EL implements EntryPoint {
                 }
             });
         });
-
         w.add(button);
     }
 

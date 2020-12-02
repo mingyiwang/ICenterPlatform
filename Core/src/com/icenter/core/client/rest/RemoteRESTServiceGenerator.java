@@ -55,8 +55,9 @@ public final class RemoteRESTServiceGenerator extends Generator {
         else {
             SimpleSourceWriter sw = new SimpleSourceWriter(composerFactory.createSourceWriter(context, pw));
             for (JMethod method : service.getMethods()) {
+
                 /*
-                * Recursive Validator used to validates method and variables.
+                * Recursive Validator used to validate methods and variables.
                 * **/
                 RemoteRESTServiceValidator.validateMethod(logger, types, method);
 
@@ -118,7 +119,7 @@ public final class RemoteRESTServiceGenerator extends Generator {
         composerFactory.addImport(JSONConverter.class.getCanonicalName());
         composerFactory.addImport(JSONBooleanConverter.class.getCanonicalName());
         composerFactory.addImport(JSONByteConverter.class.getCanonicalName());
-        composerFactory.addImport(JSONCharConverter.class.getCanonicalName());
+        composerFactory.addImport(JSONCharacterConverter.class.getCanonicalName());
         composerFactory.addImport(JSONDateConverter.class.getCanonicalName());
         composerFactory.addImport(JSONDoubleConverter.class.getCanonicalName());
         composerFactory.addImport(JSONFloatConverter.class.getCanonicalName());

@@ -10,11 +10,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 public class JSONLongArrayConverter extends JSONConverter<long[]> {
 
     @Override
-    public final long[] createInstance() {
-        return null;
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(long[] object) {
         if (object == null){
             return JSONNull.getInstance();

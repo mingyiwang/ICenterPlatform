@@ -7,11 +7,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 public class JSONBooleanArrayConverter extends JSONConverter<boolean[]> {
 
     @Override
-    public final boolean[] createInstance() {
-        return null;
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(boolean[] object) {
         if (object == null){
             return JSONNull.getInstance();

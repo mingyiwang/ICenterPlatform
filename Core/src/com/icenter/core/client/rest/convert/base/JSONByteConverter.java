@@ -8,11 +8,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 public final class JSONByteConverter extends JSONConverter<Byte> {
 
     @Override
-    public Byte createInstance() {
-        return null;
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(Byte object) {
         return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }

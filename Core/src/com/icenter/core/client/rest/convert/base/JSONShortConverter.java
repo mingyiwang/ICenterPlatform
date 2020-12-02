@@ -8,11 +8,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 public final class JSONShortConverter extends JSONConverter<Short> {
 
     @Override
-    public Short createInstance() {
-        return null;
-    }
-
-    @Override
     public JSONValue convertObjectToJSON(Short object) {
         return object == null ? JSONNull.getInstance() : new JSONNumber(object);
     }

@@ -1,23 +1,30 @@
 package com.icenter.core.client.rest.error;
 
-public class ServiceException extends RuntimeException {
+public final class ServiceException extends RuntimeException {
 
     private int statusCode;
-    private String message;
 
     public ServiceException(String message, int statusCode) {
         super(message);
         this.statusCode = statusCode;
-        this.message = message;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public ServiceException(String message, Throwable cause, int statusCode) {
+        super(message, cause);
+        this.statusCode = statusCode;
     }
 
-    @Override
-    public String getMessage() {
-        return this.message;
+    public ServiceException(Throwable cause, int statusCode) {
+        super(cause);
+        this.statusCode = statusCode;
     }
+
+    public ServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, int statusCode) {
+        super(message, cause, enableSuppression, writableStackTrace);
+        this.statusCode = statusCode;
+    }
+
+    public final int getStatusCode() { return this.statusCode; }
+
 
 }

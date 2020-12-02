@@ -6,10 +6,6 @@ import com.icenter.core.client.rest.convert.JSONConverter;
 
 public class JSONByteArrayConverter extends JSONConverter<byte[]> {
 
-    @Override
-    public final byte[] createInstance() {
-        return null;
-    }
 
     @Override
     public JSONValue convertObjectToJSON(byte[] object) {
